@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
-import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/controller/login_controller.dart';
 import 'package:sound_app/controller/controller.dart';
 import 'package:sound_app/helper/appbar_with_icons.dart';
 import 'package:sound_app/helper/asset_helper.dart';
@@ -28,7 +28,7 @@ class CreateChallenge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find();
+    final LoginController authController = Get.find();
     final AddChallengeController controller = Get.put(AddChallengeController());
     final MyNewChallengeController _myNewChallengeController =
         Get.put(MyNewChallengeController());
@@ -337,7 +337,7 @@ class CreateChallenge extends StatelessWidget {
   }
 
   void createChallenge(
-      {required AuthController authController,
+      {required LoginController authController,
       required AddChallengeController controller,
       required MyNewChallengeController myNewChallengeController,
       required BuildContext context}) {

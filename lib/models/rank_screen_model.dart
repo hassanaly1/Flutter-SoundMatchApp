@@ -1,4 +1,8 @@
-class RankScreenModel {
+
+
+
+class RankScreenModel{
+
   String? name;
   String? profilePath;
   int? accuracy;
@@ -7,5 +11,8 @@ class RankScreenModel {
     this.name,
     this.profilePath,
     this.accuracy,
+
   });
+
+
 }

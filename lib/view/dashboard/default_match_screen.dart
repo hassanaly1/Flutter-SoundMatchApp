@@ -14,6 +14,7 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/view/dashboard/final_result_screen.dart';
+import 'package:sound_app/view/dashboard/final_result_screen2.dart';
 
 late MyNewChallengeController _myNewChallengeController;
 
@@ -187,7 +188,7 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      Get.off(const FinalResultScreen(),
+                                      Get.off(FinalResultScreen2(),
                                           transition: Transition.downToUp);
                                     },
                                     child: Image.asset(
@@ -287,13 +288,13 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
                                       : Container(),
                                   GestureDetector(
                                     onLongPress: () {
-                                      _myNewChallengeController.micPressed();
+                                      _myNewChallengeController.micPressed(true);
                                       _myNewChallengeController
                                           .audioFileInvisible();
                                     },
                                     onLongPressEnd: (details) {
-                                      _myNewChallengeController
-                                          .stopMicAnimation();
+                                      _myNewChallengeController.micPressed(false);
+
                                       _myNewChallengeController
                                           .audioFileVisible();
                                     },

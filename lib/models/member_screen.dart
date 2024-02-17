@@ -1,7 +1,9 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+
 import '../helper/colors.dart';
 import '../helper/snackbars.dart';
 
@@ -12,13 +14,11 @@ class SocialMediaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: (){
         Get.back();
-        MySnackBarsHelper.showMessage(
-          "Challenge posted on $appName account ",
-          "Challenge Invitation",
-          CupertinoIcons.share,
-        );
+        MySnackBarsHelper.showMessage( "Challenge posted on $appName account ","Challenge Invitation",CupertinoIcons.share,);
+
+
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -31,9 +31,8 @@ class SocialMediaCard extends StatelessWidget {
               // Adjust width and height as needed
             ),
             const SizedBox(height: 8),
-            CustomTextWidget(
-              text: appName,
-              textColor: MyColorHelper.white,
+            CustomTextWidget(text: appName,
+              textColor:MyColorHelper.white,
             ),
           ],
         ),

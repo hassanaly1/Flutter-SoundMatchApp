@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/controller/login_controller.dart';
 import 'package:sound_app/helper/auth_textfield.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
@@ -23,8 +23,8 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthController authController =
-        Get.put(AuthController(), permanent: true);
+    final LoginController authController =
+        Get.put(LoginController(), permanent: true);
     return SafeArea(
       child: Stack(
         fit: StackFit.expand,

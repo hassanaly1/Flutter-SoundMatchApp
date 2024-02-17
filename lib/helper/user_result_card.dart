@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-
 class UserResultCard extends StatelessWidget {
   final int index;
   const UserResultCard({super.key, required this.index});
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -74,7 +73,6 @@ class UserResultCard extends StatelessWidget {
     );
   }
 }
-
 String getOrdinalSuffix(int number) {
   if (number % 100 >= 11 && number % 100 <= 13) {
     return '$number' + 'th';

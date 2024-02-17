@@ -9,7 +9,7 @@ class CustomPopUp extends StatelessWidget {
   final double opacity;
   final String text;
   final String lottiePath;
-  const CustomPopUp(
+  const   CustomPopUp(
       {super.key,
       required MyNewChallengeController myNewChallengeController,
       required this.lottiePath,

@@ -1,4 +1,5 @@
-class ChallengeRequestModel {
+class ChallengeRequestModel{
+
   String? leaderName;
   String? gameName;
   String? imagePath;
@@ -6,10 +7,12 @@ class ChallengeRequestModel {
   String? gameDescription;
 
   ChallengeRequestModel({
-    this.gameName,
+  this.gameName,
     this.leaderName,
     this.gameDescription,
     this.participantName,
-    this.imagePath,
+    this.imagePath
   });
+
+
 }

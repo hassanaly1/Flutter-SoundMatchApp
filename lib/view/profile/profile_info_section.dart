@@ -5,7 +5,7 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/profile_text_field.dart';
 
 class PersonalInfoSection extends StatefulWidget {
-  const PersonalInfoSection({super.key});
+  const     PersonalInfoSection({super.key});
 
   @override
   State<PersonalInfoSection> createState() => _PersonalInfoSectionState();

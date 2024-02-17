@@ -1,12 +1,21 @@
+import 'dart:async';
+
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sound_app/helper/asset_helper.dart';
+import 'package:sound_app/helper/snackbars.dart';
+import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/challenge_requestModel.dart';
+import 'package:sound_app/models/member_model.dart';
 import 'package:sound_app/models/notification_model.dart';
 import 'package:sound_app/models/profile.dart';
 import 'package:sound_app/models/rank_screen_model.dart';
+import 'package:sound_app/view/dashboard/result_screen.dart';
+import 'package:sound_app/view/dashboard/result_screen_2.dart';
 
 import '../helper/custom_text_widget.dart';
 
@@ -17,11 +26,15 @@ class MyNewChallengeController extends GetxController {
   final _checkBoxValue = false.obs;
 
   bool get switchValue => _switchValue.value;
+
   bool get passwordIconTap => _passwordIconTap.value;
+
   bool get confirmPasswordIconTap => _confirmPasswordIconTap.value;
+
   bool get checkBoxValue => _checkBoxValue.value;
 
   set setSwitchValue(value) => _switchValue.value = value;
+
   set setCheckBoxValue(value) => _checkBoxValue.value = value;
 
   void toggleIconButton() {
@@ -32,59 +45,46 @@ class MyNewChallengeController extends GetxController {
     _confirmPasswordIconTap.value = !_confirmPasswordIconTap.value;
   }
 
-  final List<MyProfile> _profileInitial = <MyProfile>[].obs;
-  final List<MyProfile> _profilesLeft = <MyProfile>[].obs;
-  final List<MyProfile> _profilesRight = <MyProfile>[].obs;
-  final List<MyProfile> _profilesBottom = <MyProfile>[].obs;
-  final List<int> _popUpShowList = <int>[].obs;
 
   final List<RankScreenModel> _ranks = List.generate(
       7,
-      (index) => RankScreenModel(
-          name: "User $index",
-          profilePath: MyAssetHelper.getDummyImage(),
-          accuracy: 70 + index));
+          (index) =>
+          RankScreenModel(
+              name: "User $index",
+              profilePath: MyAssetHelper.getDummyImage(),
+              accuracy: 70 + index));
 
   final List<NotificationModel> _notifications = List.generate(
       7,
-      (index) => NotificationModel(
+          (index) =>
+          NotificationModel(
             title: "New Challenge ${index + 1}",
             time: "now",
             subtitle:
-                "Leader ${index + 1} has sent you invitation to join his game",
+            "Leader ${index + 1} has sent you invitation to join his game",
             imagePath: MyAssetHelper.getDummyImage(),
           ));
 
   final List<ChallengeRequestModel> _challengeRequestList = List.generate(
       15,
-      (index) => ChallengeRequestModel(
+          (index) =>
+          ChallengeRequestModel(
             leaderName: "Leader ${index + 1}",
             participantName: "User ${index + 1}",
             gameName: "Game Name ${index + 1}",
             gameDescription:
-                "Leader ${index + 1} has sent you invitation to join his game",
+            "Leader ${index + 1} has sent you invitation to join his game",
             imagePath: MyAssetHelper.getDummyImage(),
           ));
 
   final List<MyProfile> _members = List.generate(
       10,
-      (index) => MyProfile(
+          (index) =>
+          MyProfile(
             name: "User ${index + 1}",
             profilePath: MyAssetHelper.getDummyImage(),
           ));
 
-  void addContainer(MyProfile myProfile) {
-    if (_profileInitial.length < 6) {
-      _profileInitial.add(myProfile);
-      if (_profilesLeft.length <= _profilesRight.length) {
-        _profilesLeft.add(myProfile);
-      } else {
-        _profilesRight.add(myProfile);
-      }
-    } else {
-      _profilesBottom.add(myProfile);
-    }
-  }
 
   void removeChallengeRequest(int index) {
     if (index >= 0 && index < _challengeRequestList.length) {
@@ -96,58 +96,37 @@ class MyNewChallengeController extends GetxController {
   RxInt pressedIndex = 0.obs;
 
   RxInt tabIndex = 0.obs;
+
   void setIndex(int index) {
     tabIndex.value = index;
   }
 
   RxBool isMicPressed = false.obs;
 
-  List<MyProfile> get profileInitial => _profileInitial;
-  List<MyProfile> get profilesLeft => _profilesLeft;
-  List<MyProfile> get profilesRight => _profilesRight;
-  List<MyProfile> get profilesBottom => _profilesBottom;
+
+
+
+
   List<ChallengeRequestModel> get challengeRequestList => _challengeRequestList;
 
   List<RankScreenModel> get rank => _ranks;
-  List<NotificationModel> get notifications => _notifications;
-  List<MyProfile> get members => _members;
-  List<int> get popUpShowList => _popUpShowList;
 
-  void addPopUpIndex(int index) {
-    _popUpShowList.add(index);
-  }
+  List<NotificationModel> get notifications => _notifications;
+
+  List<MyProfile> get members => _members;
+
+
 
   void loaderClicked(int value) {
     pressedIndex.value = value;
   }
 
-  void micPressed() {
-    isMicPressed.value = true;
+  void micPressed(bool value) {
+    isMicPressed.value = value;
   }
 
-  void stopMicAnimation() {
-    isMicPressed.value = false;
-  }
 
-  RxString pickedFile = ''.obs;
-  Future<void> pickAudio() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.audio,
-        allowMultiple: false,
-      );
 
-      if (result != null) {
-        PlatformFile file = result.files.first;
-        pickedFile.value = file.path!;
-        debugPrint('File path------------------->: ${file.path}');
-      } else {
-        debugPrint('User canceled the picker');
-      }
-    } catch (e) {
-      debugPrint('Error picking audio: $e');
-    }
-  }
 
   RxBool isAudioFileVisible = false.obs;
 
@@ -159,11 +138,7 @@ class MyNewChallengeController extends GetxController {
     isAudioFileVisible.value = false;
   }
 
-  // RxInt visibleDriversCount = 0.obs;
-  //
-  // void visibleDriversCounter(){
-  //   visibleDriversCount.value++;
-  // }
+
 
   RxBool isUserPlaying = false.obs;
   RxBool isLeaderPlaying = false.obs;
@@ -182,44 +157,6 @@ class MyNewChallengeController extends GetxController {
     think.value = value;
   }
 
-  void showLottiePopup(BuildContext context, String message, lottiePath) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Get.back();
-              },
-              child: const Text('Done'),
-            ),
-          ],
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 200,
-                height: 200,
-                child: Lottie.asset(
-                  lottiePath, // Replace with your Lottie animation file path
-                  fit: BoxFit.cover,
-                ),
-              ),
-              SizedBox(
-                height: Get.height * 0.002,
-              ),
-              CustomTextWidget(
-                text: message,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   RxBool isGameStarted = false.obs;
 
@@ -258,25 +195,208 @@ class MyNewChallengeController extends GetxController {
 
   void nextButton(bool value) {
     nextButtonPressed.value = value;
-  
-  
   }
-RxBool firstBorder=false.obs;
 
-  void showFirstBorderMethod(bool value){
-    firstBorder.value=value;
+  RxBool firstBorder = false.obs;
+
+  void showFirstBorderMethod(bool value) {
+    firstBorder.value = value;
+  }
+
+  RxBool secondBorder = false.obs;
+
+  void showSecondBorderMethod(bool value) {
+    secondBorder.value = value;
+  }
+
+
+
+
+  RxInt currentIndex = 0.obs;
+  RxBool micPressedForIncreaseIndex = false.obs;
+  RxInt currentIndex1 = 0.obs;
+  RxInt currentIndex2 = 0.obs;
+
+
+  void toggleMicPressedForIncreaseIndex(bool value) {
+    micPressedForIncreaseIndex.value = value;
+  }
+
+
+  void makeIndexZero() {
+    currentIndex.value = 0;
+    currentIndex1.value = 0;
+    currentIndex2.value = 0;
+  }
+
+
+
+
+
+
+  RxBool loaderWaiting = false.obs;
+
+  void loaderWaitingMethod(bool value) {
+    loaderWaiting.value = value;
+  }
+
+  RxBool loaderRoundEntered = false.obs;
+
+  void loaderRoundEnteredMethod(bool value) {
+    loaderRoundEntered.value = value;
+  }
+
+  RxBool thirdBorder = false.obs;
+
+  void showThirdBorderMethod(bool value) {
+    thirdBorder.value = value;
+  }
+
+  void increaseIndexBottomProfile() {
+    currentIndex2.value++;
+  }
+
+
+  RxInt t=0.obs;
+  RxInt indexAll=0.obs;
+  void makeIndexAllZero(){
+    indexAll.value=0;
+  }
+
+
+  RxInt maxTime=30.obs;
+
+  void timerStart1(int participantsLength,List<Member>  leftProfiles,List<Member> rightProfiles,
+      List<Member> bottomProfiles,CountDownController controller,
+      ChallengeModel challengeModel,
+      ScrollController scrollController,
+      BuildContext context
+      ) {
+    controller.start();
+    showFirstBorderMethod(true);
+    showSecondBorderMethod(true);
+    MySnackBarsHelper.showMessage(
+        "Record your voice by long pressing on mic",
+        "Now your turn ${leftProfiles[indexAll.value].name}",
+        CupertinoIcons.mic);
+
+    Timer.periodic(Duration(seconds: 1), (Timer timer) {
+
+      if(indexAll.value<participantsLength){
+
+
+        if (t.value < maxTime.value) {
+          t.value++;
+          // print("-----------------------> t= "+t.value.toString());
+          // print("-----------------------> index= "+indexAll.value.toString());
+        } else {
+          t.value = 0;
+          controller.start();
+          indexAll.value++;
+
+          if(indexAll.value>0 && indexAll<=2){
+            MySnackBarsHelper.showMessage(
+                "Record your voice by long pressing on mic",
+                "Now your turn ${leftProfiles[indexAll.value].name}",
+                CupertinoIcons.mic);
+
+          }
+          if(indexAll.value>2&& indexAll.value<6){
+            MySnackBarsHelper.showMessage(
+                "Record your voice by long pressing on mic",
+                "Now your turn ${rightProfiles[indexAll.value-3].name}",
+                CupertinoIcons.mic);
+
+          }
+          if(indexAll.value>5&&indexAll.value<participantsLength){
+            if (indexAll.value > 8) {
+              double offset = (scrollController.position.pixels + 80) +
+                  (MediaQuery.of(context).size.width * 0.08);
+              scrollController.animateTo(offset,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.ease);
+            }
+            MySnackBarsHelper.showMessage(
+                "Record your voice by long pressing on mic",
+                "Now your turn ${bottomProfiles[indexAll.value-6].name}",
+                CupertinoIcons.mic);
+
+          }
+
+
+
+        }
+
+
+
+      }else{
+        timer.cancel();
+        toggleThink(true);
+        Future.delayed(const Duration(seconds: 5), () {
+          toggleThink(false);
+          showFirstBorderMethod(false);
+
+          showSecondBorderMethod(false);
+          showThirdBorderMethod(false);
+
+          Get.off(
+              ResultScreen2(challengeModel: challengeModel));
+          startGame(false);
+        });
+      }
+
+    });
+  }
+
+
+void nextTimer(CountDownController controller,List<Member>  leftProfiles,List<Member> rightProfiles,
+    List<Member> bottomProfiles,int participantsLength,  ScrollController scrollController,   BuildContext context){
+  t.value=0;
+
+    controller.start();
+
+
+  indexAll++;
+  if(indexAll.value>0 && indexAll<=2){
+    MySnackBarsHelper.showMessage(
+        "Record your voice by long pressing on mic",
+        "Now your turn ${leftProfiles[indexAll.value].name}",
+        CupertinoIcons.mic);
 
   }
-  RxBool secondBorder=false.obs;
-
-  void showSecondBorderMethod(bool value){
-    secondBorder.value=value;
-
-  }
-    RxBool lastBorder=false.obs;
-
-  void closeLastBorderMethod (bool value){
-    lastBorder.value=value;
+  if(indexAll.value>2&& indexAll.value<6){
+    MySnackBarsHelper.showMessage(
+        "Record your voice by long pressing on mic",
+        "Now your turn ${rightProfiles[indexAll.value-3].name}",
+        CupertinoIcons.mic);
 
   }
+  if(indexAll.value>5&&indexAll.value<participantsLength){
+    MySnackBarsHelper.showMessage(
+        "Record your voice by long pressing on mic",
+        "Now your turn ${bottomProfiles[indexAll.value-6].name}",
+        CupertinoIcons.mic);
+    if (indexAll.value > 8) {
+      double offset = (scrollController.position.pixels + 80) +
+          (MediaQuery.of(context).size.width * 0.07);
+      scrollController.animateTo(offset,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease);
+    }
+
+  }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
 }

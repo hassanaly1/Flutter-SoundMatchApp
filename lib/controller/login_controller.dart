@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-class AuthController extends GetxController {
+class LoginController extends GetxController {
   RxBool isGuestUser = false.obs;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();

@@ -13,6 +13,7 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/view/dashboard/create_challenge.dart';
 import 'package:sound_app/view/dashboard/default_match_screen.dart';
 import 'package:sound_app/view/dashboard/final_result_screen.dart';
+import 'package:sound_app/view/dashboard/final_result_screen2.dart';
 import 'package:sound_app/view/dashboard/purchase_songs.dart';
 import 'package:sound_app/view/notifications/notification_screen.dart';
 import 'package:sound_app/view/profile/profile.dart';
@@ -236,10 +237,10 @@ class ChallengesList extends StatelessWidget {
                   if (index == 0) {
                     return DefaultMatchScreen(challengeModel: challenge);
                   } else {
-                    return FinalResultScreen();
-                    // return MainChallengeScreen(
-                    //   challengeModel: challenge,
-                    // );
+                    return const FinalResultScreen2();
+
+                    // return FinalResultScreen();
+
                   }
                 },
                 openElevation: 0,

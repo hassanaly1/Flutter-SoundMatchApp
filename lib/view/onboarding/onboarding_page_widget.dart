@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sound_app/controller/onboarding_controller.dart';
 import 'package:sound_app/helper/custom_button.dart';
@@ -102,6 +103,9 @@ class CustomOnboardingScreen extends StatelessWidget {
               onTap: () {
                 if (onBoardingController.currentPage.value ==
                     onBoardingController.pages.length - 1) {
+                  final storage = GetStorage();
+                  storage.write('isFirstTime', false);
+                  print(storage.read('isFirstTime'));
                   Get.offAll(() => const LoginScreen(),
                       transition: Transition.rightToLeft);
                 } else {
