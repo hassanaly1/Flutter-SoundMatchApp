@@ -11,7 +11,6 @@ class ChallengeModel {
   List<Member>? rightProfiles;
   List<Member>? bottomProfiles;
 
-
   ChallengeModel({
     this.id,
     this.challengeName,
@@ -22,8 +21,4 @@ class ChallengeModel {
     this.bottomProfiles,
     this.roundsCount,
   });
-
-
-
-
 }

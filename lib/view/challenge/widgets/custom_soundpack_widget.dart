@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/helper/create_account_popup.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/songs_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
-import 'package:sound_app/view/dashboard/sound_pack_list.dart';
-
-import 'create_account_popup.dart';
+import 'package:sound_app/view/challenge/sound_pack_list.dart';
 
 class CustomSoundPackWidget extends StatelessWidget {
   final SoundPackModel soundPackModel;
   final bool? showAddIcon;
   final bool showTickIcon;
 
-  CustomSoundPackWidget({
+  const CustomSoundPackWidget({
     Key? key,
     required this.soundPackModel,
     this.showAddIcon = true,

@@ -1,12 +1,10 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 
-import 'custom_text_widget.dart';
+import '../../../helper/custom_text_widget.dart';
 
 class RanksLoader extends StatelessWidget {
   const RanksLoader({

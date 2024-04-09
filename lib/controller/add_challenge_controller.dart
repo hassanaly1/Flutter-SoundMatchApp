@@ -141,26 +141,6 @@ class AddChallengeController extends GetxController {
   Rx<SoundPackModel?> selectedSoundPack = Rx<SoundPackModel?>(null);
   Rx<SongsModel?> selectedSong = Rx<SongsModel?>(null);
 
-  // RxList<SongsModel> usersSongs = <SoundPackModel>[
-  //   SongsModel(
-  //     songName: 'Imagine',
-  //     songImage:
-  //         'https://img.freepik.com/free-photo/caucasian-woman-s-portrait-isolated-blue-background-multicolored-neon-light_155003-32526.jpg?size=626&ext=jpg&uid=R133237588&ga=GA1.1.1091155359.1700008188&semt=sph',
-  //     isPaid: false,
-  //   ),
-  //   SongsModel(
-  //     songName: 'Bohemian Rhapsody',
-  //     songImage:
-  //         'https://img.freepik.com/free-photo/one-young-woman-singing-sensually-stage-generated-by-ai_188544-25352.jpg?size=626&ext=jpg&uid=R133237588&ga=GA1.1.1091155359.1700008188&semt=sph',
-  //     isPaid: false,
-  //   ),
-  //   SongsModel(
-  //     songName: 'Hotel California',
-  //     songImage:
-  //         'https://img.freepik.com/free-psd/neon-poster-template-electronic-music-with-female-dj_23-2148979680.jpg?size=626&ext=jpg&uid=R133237588&ga=GA1.1.1091155359.1700008188&semt=sph',
-  //     isPaid: false,
-  //   ),
-  // ].obs;
   RxList<ChallengeModel> challenges = <ChallengeModel>[
     ChallengeModel(
         challengeName: 'Free Sound Match',

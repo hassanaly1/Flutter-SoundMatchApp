@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/login_controller.dart';
-import 'package:sound_app/helper/auth_textfield.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/view/auth/login.dart';
 
@@ -57,7 +57,7 @@ class VerifyEmailScreen extends StatelessWidget {
                       textColor: Colors.white54,
                     ),
                     const SizedBox(height: 15.0),
-                    AuthTextField(
+                    CustomTextField(
                         controller: authController.nameController,
                         hintText: 'Enter your Email'),
                     const SizedBox(height: 20.0),

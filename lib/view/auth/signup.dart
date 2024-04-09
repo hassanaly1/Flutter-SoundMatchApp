@@ -1,14 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/signup_controller.dart';
-import 'package:sound_app/helper/auth_textfield.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_social_icon.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/utils/validator.dart';
 import 'package:sound_app/view/auth/login.dart';
 
@@ -95,7 +94,7 @@ class SignupScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          AuthTextField(
+                          CustomTextField(
                               controller: controller.nameController,
                               validator: (value) {
                                 print('helllo');
@@ -104,30 +103,30 @@ class SignupScreen extends StatelessWidget {
                               },
                               hintText: 'Enter your Name'),
                           SizedBox(height: context.height * 0.02),
-                          AuthTextField(
+                          CustomTextField(
                               controller: controller.emailController,
                               validator: (value) =>
                                   AppValidator.validateEmail(value),
                               hintText: 'Enter your Email'),
                           SizedBox(height: context.height * 0.02),
                           Obx(
-                            () => AuthTextField(
+                            () => CustomTextField(
                               controller: controller.passwordController,
                               validator: (value) =>
                                   AppValidator.validatePassword(value),
                               hintText: 'Enter your Password',
                               obscureText: !controller.showPassword.value,
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  controller.showPassword.value =
-                                      !controller.showPassword.value;
-                                },
-                                icon: Icon(
-                                    controller.showPassword.value
-                                        ? CupertinoIcons.eye
-                                        : CupertinoIcons.eye_slash,
-                                    color: MyColorHelper.verdigris),
-                              ),
+                              // suffixIcon: IconButton(
+                              //   onPressed: () {
+                              //     controller.showPassword.value =
+                              //         !controller.showPassword.value;
+                              //   },
+                              //   icon: Icon(
+                              //       controller.showPassword.value
+                              //           ? CupertinoIcons.eye
+                              //           : CupertinoIcons.eye_slash,
+                              //       color: MyColorHelper.verdigris),
+                              // ),
                             ),
                           ),
                           SizedBox(height: context.height * 0.03),

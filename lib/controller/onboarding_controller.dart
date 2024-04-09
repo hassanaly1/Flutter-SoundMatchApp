@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/view/auth/login.dart';
-import 'package:sound_app/view/onboarding/onboarding_page_widget.dart';
+import 'package:sound_app/view/auth/onboarding/onboarding_page_widget.dart';
 
 class OnBoardingController extends GetxController {
   final controller = LiquidController();

@@ -8,20 +8,18 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/controller/login_controller.dart';
-import 'package:sound_app/controller/controller.dart';
-import 'package:sound_app/helper/appbar_with_icons.dart';
+import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
-import 'package:sound_app/helper/auth_textfield.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/create_account_popup.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/member_model.dart';
 import 'package:sound_app/view/auth/signup.dart';
-import 'package:sound_app/view/dashboard/main_challenge_screen.dart';
-import 'package:sound_app/view/dashboard/select_members.dart';
-import 'package:sound_app/view/dashboard/select_song.dart';
+import 'package:sound_app/view/challenge/select_members.dart';
+import 'package:sound_app/view/challenge/select_song.dart';
 
 class CreateChallenge extends StatelessWidget {
   const CreateChallenge({super.key});
@@ -30,8 +28,6 @@ class CreateChallenge extends StatelessWidget {
   Widget build(BuildContext context) {
     final LoginController authController = Get.find();
     final AddChallengeController controller = Get.put(AddChallengeController());
-    final MyNewChallengeController _myNewChallengeController =
-        Get.put(MyNewChallengeController());
 
     return SafeArea(
       child: GestureDetector(
@@ -53,7 +49,7 @@ class CreateChallenge extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            const AppbarWithIcons(),
+                            const CustomAppbar(showNotificationsIcon: true),
                             //Create New Challenge button
                             const CreateChallengeImage(),
                             //MainChallengeContainer
@@ -86,9 +82,8 @@ class CreateChallenge extends StatelessWidget {
                                           SizedBox(
                                             height: context.height * 0.07,
                                             width: context.width * 0.5,
-                                            child: AuthTextField(
+                                            child: CustomTextField(
                                               hintText: 'Enter Challenge Name',
-                                              fontSize: 12.0,
                                               controller: controller
                                                   .challengeNameController,
                                             ),
@@ -261,8 +256,6 @@ class CreateChallenge extends StatelessWidget {
                                                     authController:
                                                         authController,
                                                     controller: controller,
-                                                    myNewChallengeController:
-                                                        _myNewChallengeController,
                                                     context: context);
                                               },
                                               child: Image.asset(
@@ -339,7 +332,7 @@ class CreateChallenge extends StatelessWidget {
   void createChallenge(
       {required LoginController authController,
       required AddChallengeController controller,
-      required MyNewChallengeController myNewChallengeController,
+      // required MyNewChallengeController myNewChallengeController,
       required BuildContext context}) {
     if (authController.isGuestUser.value) {
       showDialog(
@@ -393,25 +386,21 @@ class CreateChallenge extends StatelessWidget {
           ),
         );
 
-        debugPrint(participants.length.toString());
-        myNewChallengeController.roundValueOne();
-        Get.off(
-          MainChallengeScreen(
-            challengeModel: ChallengeModel(
-              id: Random().nextInt(50),
-              challengeName: controller.challengeNameController.text,
-              participants: participants,
-              song: controller.selectedSong.value!,
-              leftProfiles: leftProfiles,
-              rightProfiles: rightProfiles,
-              bottomProfiles: bottomProfiles,
-              roundsCount: controller.gameRound.value,
-            ),
-          ),
-        )!
-            .then((value) {
-          // controller.selectedMembers.value = [];
-        });
+        // myNewChallengeController.roundValueOne();
+        // Get.off(
+        //   MainChallengeScreen(
+        //     challengeModel: ChallengeModel(
+        //       id: Random().nextInt(50),
+        //       challengeName: controller.challengeNameController.text,
+        //       participants: participants,
+        //       song: controller.selectedSong.value!,
+        //       leftProfiles: leftProfiles,
+        //       rightProfiles: rightProfiles,
+        //       bottomProfiles: bottomProfiles,
+        //       roundsCount: controller.gameRound.value,
+        //     ),
+        //   ),
+        // )!
 
         MySnackBarsHelper.showMessage(
           "Successfully ",

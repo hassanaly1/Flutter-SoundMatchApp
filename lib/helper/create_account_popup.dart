@@ -1,12 +1,7 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
-import 'package:sound_app/controller/controller.dart';
-import 'package:sound_app/helper/custom_next_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/view/auth/signup.dart';
 import 'colors.dart';
 
 class CreateAccountPopup extends StatelessWidget {
@@ -32,7 +27,7 @@ class CreateAccountPopup extends StatelessWidget {
       child: Container(
         height: context.height * 0.5,
         width: context.width,
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         margin: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),

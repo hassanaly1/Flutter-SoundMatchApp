@@ -6,7 +6,7 @@ import 'package:sound_app/firebase_options.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/services/authentication_repository.dart';
 import 'package:sound_app/utils/bindings.dart';
-import 'package:sound_app/view/onboarding/onboarding_screen.dart';
+import 'package:sound_app/view/auth/onboarding/onboarding_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

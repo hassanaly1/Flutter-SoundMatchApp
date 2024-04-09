@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/helper/colors.dart';
 
-class AuthTextField extends StatelessWidget {
+class CustomTextField extends StatelessWidget {
   final String hintText;
-  Widget? suffixIcon;
-  double? fontSize;
-  TextEditingController? controller;
+  final String? labelText;
+  final Widget? suffixIcon;
   bool obscureText;
   final String? Function(String?)? validator;
-  AuthTextField(
+  TextEditingController? controller;
+  CustomTextField(
       {super.key,
       required this.hintText,
+      this.labelText,
       this.controller,
-      this.fontSize,
       this.suffixIcon,
       this.obscureText = false,
       this.validator});
@@ -21,22 +21,27 @@ class AuthTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
       validator: validator,
       obscureText: obscureText,
       cursorColor: MyColorHelper.lightBlue,
+      autofocus: false,
       cursorOpacityAnimates: true,
       style: GoogleFonts.poppins(
-          fontSize: fontSize ?? 14.0,
+          fontSize: 14.0,
           fontWeight: FontWeight.w400,
           color: MyColorHelper.verdigris),
       decoration: InputDecoration(
+        suffixIcon: suffixIcon,
         hintText: hintText,
-        hintStyle: GoogleFonts.poppins(
-            fontSize: fontSize ?? 14.0,
+        labelText: labelText,
+        labelStyle: GoogleFonts.poppins(
+            fontSize: 17.0,
             fontWeight: FontWeight.w400,
             color: MyColorHelper.verdigris),
-        suffixIcon: suffixIcon,
+        hintStyle: GoogleFonts.poppins(
+            fontSize: 14.0,
+            fontWeight: FontWeight.w300,
+            color: MyColorHelper.lightGreyColor),
         enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: MyColorHelper.verdigris)),
         focusedBorder: const OutlineInputBorder(

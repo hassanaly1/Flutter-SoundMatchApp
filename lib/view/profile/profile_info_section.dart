@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/helper/profile_text_field.dart';
+import 'package:sound_app/helper/custom_text_field.dart';
 
 class PersonalInfoSection extends StatefulWidget {
-  const     PersonalInfoSection({super.key});
+  const PersonalInfoSection({super.key});
 
   @override
   State<PersonalInfoSection> createState() => _PersonalInfoSectionState();
@@ -22,53 +22,58 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const ProfileTextField(
+            CustomTextField(
               hintText: 'James Anderson',
               labelText: "Username",
             ),
             SizedBox(height: context.height * 0.02),
-            const ProfileTextField(
+            CustomTextField(
               hintText: 'james@gmail.com',
               labelText: "Email",
             ),
             SizedBox(height: context.height * 0.02),
-            Container(
-              height: height * 0.08,
-              decoration: BoxDecoration(
-                  color: MyColorHelper.blue.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: MyColorHelper.verdigris)),
-              child: Center(
-                child: CustomTextWidget(
-                  text: "Add Avatar",
-                  textColor: MyColorHelper.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'poppins',
-                ),
-              ),
+            CustomProfileButton(
+              buttonText: 'Add Avatar',
+              onTap: () {},
             ),
             SizedBox(height: context.height * 0.02),
-            GestureDetector(
+            CustomProfileButton(
+              buttonText: 'Save',
               onTap: () {},
-              child: Container(
-                width: width * 0.6,
-                height: height * 0.08,
-                decoration: BoxDecoration(
-                    color: MyColorHelper.primaryColor.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(15)),
-                child: Center(
-                  child: CustomTextWidget(
-                    text: "Save",
-                    fontFamily: 'poppins',
-                    textColor: MyColorHelper.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            )
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomProfileButton extends StatelessWidget {
+  final String buttonText;
+  final VoidCallback onTap;
+  const CustomProfileButton({
+    super.key,
+    required this.buttonText,
+    required this.onTap,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: context.height * 0.02),
+        decoration: BoxDecoration(
+            color: MyColorHelper.blue.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: MyColorHelper.verdigris)),
+        child: Center(
+          child: CustomTextWidget(
+            text: buttonText,
+            textColor: MyColorHelper.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'poppins',
+          ),
         ),
       ),
     );

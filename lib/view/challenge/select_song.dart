@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
-import 'package:sound_app/helper/custom_sound_avatar.dart';
+import 'package:sound_app/view/challenge/widgets/custom_sound_avatar.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 
 class SelectSongsScreen extends StatelessWidget {

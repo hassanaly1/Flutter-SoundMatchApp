@@ -6,10 +6,10 @@ import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
-import 'package:sound_app/helper/custom_soundpack_widget.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
-import 'package:sound_app/view/dashboard/sound_pack_list.dart';
+import 'package:sound_app/view/challenge/sound_pack_list.dart';
+import 'package:sound_app/view/challenge/widgets/custom_soundpack_widget.dart';
 
 class PurchaseSongsScreen extends StatelessWidget {
   const PurchaseSongsScreen({super.key});

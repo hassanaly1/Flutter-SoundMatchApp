@@ -6,18 +6,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
-import 'package:sound_app/controller/controller.dart';
 import 'package:sound_app/helper/colors.dart';
-import 'package:sound_app/helper/custom_match_card.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/view/dashboard/create_challenge.dart';
-import 'package:sound_app/view/dashboard/default_match_screen.dart';
-import 'package:sound_app/view/dashboard/final_result_screen.dart';
-import 'package:sound_app/view/dashboard/final_result_screen2.dart';
-import 'package:sound_app/view/dashboard/purchase_songs.dart';
+import 'package:sound_app/view/challenge/create_challenge.dart';
+import 'package:sound_app/view/challenge/purchase_songs.dart';
+import 'package:sound_app/view/challenge/widgets/custom_match_card.dart';
 import 'package:sound_app/view/notifications/notification_screen.dart';
 import 'package:sound_app/view/profile/profile.dart';
-import '../../helper/asset_helper.dart';
+import '../helper/asset_helper.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,39 +22,41 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final AddChallengeController challengeController =
         Get.put(AddChallengeController());
-    final CarouselSliderController controller =
+    final CarouselSliderController carouselController =
         Get.put(CarouselSliderController());
-    final MyNewChallengeController _myNewChallengeController =
-        Get.put(MyNewChallengeController(), permanent: true);
-
     return SafeArea(
       child: Stack(fit: StackFit.expand, children: [
         SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
         Scaffold(
             backgroundColor: Colors.transparent,
             body: SingleChildScrollView(
-                child: Column(children: [
-              //Appbar
-              HomeAppbar(),
-              SizedBox(height: context.height * 0.002),
-              CreateNewChallenge(),
-              SizedBox(height: context.height * 0.01),
-              SizedBox(
+                child: Column(
+              children: [
+                //Appbar
+                const HomeAppbar(),
+                SizedBox(height: context.height * 0.002),
+                const CreateNewChallenge(),
+                SizedBox(height: context.height * 0.01),
+                SizedBox(
+                    height: 35,
+                    width: context.width * 0.8,
+                    child: Image.asset('assets/images/homeicon2.png')),
+                ChallengesList(
+                  challengeController: challengeController,
+                  controller: carouselController,
+                ),
+                SizedBox(
                   height: 35,
                   width: context.width * 0.8,
-                  child: Image.asset('assets/images/homeicon2.png')),
-              ChallengesList(
+                  child: Image.asset('assets/images/homeicon3.png'),
+                ),
+                DotsIndicator(
                   challengeController: challengeController,
-                  controller: controller),
-              SizedBox(
-                  height: 35,
-                  width: context.width * 0.8,
-                  child: Image.asset('assets/images/homeicon3.png')),
-              DotsIndicator(
-                  challengeController: challengeController,
-                  controller: controller),
-              SoundPacksContainer()
-            ])))
+                  controller: carouselController,
+                ),
+                const SoundPacksContainer()
+              ],
+            )))
       ]),
     );
   }
@@ -100,7 +98,7 @@ class SoundPacksContainer extends StatelessWidget {
                           'assets/images/music.png',
                           height: 40,
                         ),
-                        SizedBox(width: 12.0),
+                        const SizedBox(width: 12.0),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -152,7 +150,7 @@ class SoundPacksContainer extends StatelessWidget {
         );
       },
       openBuilder: (context, action) {
-        return PurchaseSongsScreen();
+        return const PurchaseSongsScreen();
       },
       openElevation: 0,
       closedElevation: 0,
@@ -235,12 +233,12 @@ class ChallengesList extends StatelessWidget {
                 },
                 openBuilder: (context, action) {
                   if (index == 0) {
-                    return DefaultMatchScreen(challengeModel: challenge);
+                    // return DefaultMatchScreen(challengeModel: challenge);
+                    return Container();
                   } else {
-                    return const FinalResultScreen2();
-
+                    // return const FinalResultScreen2();
+                    return Container();
                     // return FinalResultScreen();
-
                   }
                 },
                 openElevation: 0,
@@ -339,7 +337,7 @@ class HomeAppbar extends StatelessWidget {
               InkWell(
                   onTap: () {
                     Get.to(
-                        NotificationScreen(
+                        const NotificationScreen(
                             //  challengeModel: challengeModel,
                             ),
                         transition: Transition.upToDown);

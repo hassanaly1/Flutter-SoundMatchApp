@@ -7,7 +7,7 @@ import 'package:sound_app/utils/exceptions/firebase_auth_exceptions.dart';
 import 'package:sound_app/utils/exceptions/firebase_exceptions.dart';
 import 'package:sound_app/utils/exceptions/platform_exceptions.dart';
 import 'package:sound_app/view/auth/login.dart';
-import 'package:sound_app/view/onboarding/onboarding_screen.dart';
+import 'package:sound_app/view/auth/onboarding/onboarding_screen.dart';
 
 class AuthenticationRepository extends GetxController {
   static AuthenticationRepository get instance => Get.find();

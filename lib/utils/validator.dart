@@ -4,6 +4,7 @@ class AppValidator {
     if (value == null || value.isEmpty) {
       return '$fieldName is required.';
     }
+    return null;
   }
 
   static String? validateEmail(String? value) {

@@ -4,15 +4,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/login_controller.dart';
-import 'package:sound_app/helper/auth_textfield.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_social_icon.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/view/auth/forget_password.dart';
 import 'package:sound_app/view/auth/signup.dart';
-import 'package:sound_app/view/dashboard/home_screen.dart';
+import 'package:sound_app/view/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -92,11 +92,11 @@ class LoginScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        AuthTextField(
+                        CustomTextField(
                             controller: authController.emailController,
                             hintText: 'Enter your Email'),
                         SizedBox(height: context.height * 0.02),
-                        AuthTextField(
+                        CustomTextField(
                             controller: authController.passwordController,
                             hintText: 'Enter your Password'),
                         Visibility(

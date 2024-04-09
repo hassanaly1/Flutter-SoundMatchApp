@@ -1,16 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
+import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/helper/custom_user_card.dart';
 import 'package:sound_app/helper/snackbars.dart';
-import 'package:sound_app/models/member_screen.dart';
-
-import '../../helper/colors.dart';
-
-late MyNewChallengeController _myNewChallengeController;
+import 'package:sound_app/view/challenge/member_screen.dart';
 
 class SocialMediaSharingBottomSheet extends StatefulWidget {
   const SocialMediaSharingBottomSheet({super.key});
@@ -21,20 +16,6 @@ class SocialMediaSharingBottomSheet extends StatefulWidget {
 
 class _SocialMediaSharingBottomSheetState
     extends State<SocialMediaSharingBottomSheet> {
-  @override
-  void initState() {
-    _myNewChallengeController =
-        Get.put(MyNewChallengeController(), permanent: true);
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    Get.delete<MyNewChallengeController>();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -78,13 +59,14 @@ class _SocialMediaSharingBottomSheetState
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
-                  itemCount: _myNewChallengeController.members.length,
+                  itemCount: 10,
                   itemBuilder: (context, index) {
-                    final member = _myNewChallengeController.members[index];
-                    return CustomUserCard(
-                      member.profilePath!,
-                      member.name!,
-                    );
+                    return null;
+                  
+                    // return CustomUserCard(
+                    //   member.profilePath!,
+                    //   member.name!,
+                    // );
                   },
                 ),
               ),

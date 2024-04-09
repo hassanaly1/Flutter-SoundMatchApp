@@ -1,38 +1,17 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:sound_app/controller/controller.dart';
+import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/view/notifications/notifications_tab.dart';
 import 'package:sound_app/view/notifications/request_tab.dart';
 
-class NotificationScreen extends StatefulWidget {
-  // final ChallengeModel challengeModel;
-
+class NotificationScreen extends StatelessWidget {
   const NotificationScreen({
     super.key,
-    //required this.challengeModel,
   });
-
-  @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
-}
-
-class _NotificationScreenState extends State<NotificationScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    Get.delete<MyNewChallengeController>();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +36,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            GestureDetector(
-                                onTap: () {
-                                  Get.back();
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back,
-                                  color: MyColorHelper.white,
-                                  size: 25,
-                                )),
+                            const CustomAppbar(showNotificationsIcon: false),
                             SizedBox(
                               height: height * 0.02,
                             ),
@@ -110,9 +81,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               child: TabBarView(
                                 children: [
                                   NotificationsTab(),
-                                  RequestTab(
-                                      //  challengeModel: widget.challengeModel,
-                                      ),
+                                  RequestTab(),
                                 ],
                               ),
                             ),
