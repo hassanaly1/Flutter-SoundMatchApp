@@ -3,9 +3,13 @@ import 'package:get/get.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+
 class UserResultCard extends StatelessWidget {
-  final int index;
-  const UserResultCard({super.key, required this.index});
+  // final int index;
+  const UserResultCard({
+    super.key,
+    // required this.index,
+  });
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -16,7 +20,7 @@ class UserResultCard extends StatelessWidget {
           Image.asset(
             MyAssetHelper.rankContainerBackground,
             fit: BoxFit.fill,
-            height: context.height * 0.3,
+            height: context.height * 0.2,
             width: context.width * 0.6,
           ),
           // Positioned widget to center the Row
@@ -56,12 +60,12 @@ class UserResultCard extends StatelessWidget {
                           textColor: MyColorHelper.white,
                           fontSize: 18,
                         ),
-                        CustomTextWidget(
-                          text: getOrdinalSuffix(index + 1),
-                          fontFamily: "Horta",
-                          textColor: MyColorHelper.white,
-                          fontSize: 30,
-                        ),
+                        // CustomTextWidget(
+                        //   text: getOrdinalSuffix(index + 1),
+                        //   fontFamily: "Horta",
+                        //   textColor: MyColorHelper.white,
+                        //   fontSize: 30,
+                        // ),
                       ],
                     ),
                   )),
@@ -72,6 +76,7 @@ class UserResultCard extends StatelessWidget {
     );
   }
 }
+
 String getOrdinalSuffix(int number) {
   if (number % 100 >= 11 && number % 100 <= 13) {
     return '$number' 'th';

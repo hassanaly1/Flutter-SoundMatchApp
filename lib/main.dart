@@ -6,7 +6,8 @@ import 'package:sound_app/firebase_options.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/services/authentication_repository.dart';
 import 'package:sound_app/utils/bindings.dart';
-import 'package:sound_app/view/auth/onboarding/onboarding_screen.dart';
+import 'package:sound_app/view/challenge/default_match.dart';
+import 'package:sound_app/view/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         initialBinding: GeneralBindings(),
-        home: const OnBoardingScreen());
+        home: const HomeScreen());
   }
 }

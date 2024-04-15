@@ -9,6 +9,7 @@ import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/view/challenge/create_challenge.dart';
+import 'package:sound_app/view/challenge/default_match.dart';
 import 'package:sound_app/view/challenge/purchase_songs.dart';
 import 'package:sound_app/view/challenge/widgets/custom_match_card.dart';
 import 'package:sound_app/view/notifications/notification_screen.dart';
@@ -233,7 +234,7 @@ class ChallengesList extends StatelessWidget {
                 },
                 openBuilder: (context, action) {
                   if (index == 0) {
-                    // return DefaultMatchScreen(challengeModel: challenge);
+                    return DefaultMatchScreen();
                     return Container();
                   } else {
                     // return const FinalResultScreen2();
