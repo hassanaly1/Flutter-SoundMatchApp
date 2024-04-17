@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
-import 'package:sound_app/controller/login_controller.dart';
+import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -26,7 +26,7 @@ class CreateChallenge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LoginController authController = Get.find();
+    final AuthController authController = Get.find();
     final AddChallengeController controller = Get.put(AddChallengeController());
 
     return SafeArea(
@@ -330,7 +330,7 @@ class CreateChallenge extends StatelessWidget {
   }
 
   void createChallenge(
-      {required LoginController authController,
+      {required AuthController authController,
       required AddChallengeController controller,
       // required MyNewChallengeController myNewChallengeController,
       required BuildContext context}) {

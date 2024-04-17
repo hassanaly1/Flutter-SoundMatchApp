@@ -21,6 +21,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       validator: validator,
       obscureText: obscureText,
       cursorColor: MyColorHelper.lightBlue,
@@ -41,7 +42,8 @@ class CustomTextField extends StatelessWidget {
         hintStyle: GoogleFonts.poppins(
             fontSize: 14.0,
             fontWeight: FontWeight.w300,
-            color: MyColorHelper.lightGreyColor),
+            color: Colors.grey.shade300),
+        errorStyle: const TextStyle(fontFamily: 'poppins'),
         enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: MyColorHelper.verdigris)),
         focusedBorder: const OutlineInputBorder(

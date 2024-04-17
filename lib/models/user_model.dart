@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserModel {
   final String id;
 
@@ -23,20 +21,20 @@ class UserModel {
       'ProfilePicture': profilePicture,
     };
   }
-
-  // Factory method to create a UserModel from a Firebase document snapshot.
-  factory UserModel.fromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> document) {
-    if (document.data() != null) {
-      final data = document.data()!;
-      return UserModel(
-        id: document.id,
-        name: data['name'] ?? '',
-        email: data['Email'] ?? '',
-        profilePicture: data['ProfilePicture'] ?? '',
-      );
-    } else {
-      throw Exception('Document data is null');
-    }
-  }
+  //
+  // // Factory method to create a UserModel from a Firebase document snapshot.
+  // factory UserModel.fromSnapshot(
+  //     DocumentSnapshot<Map<String, dynamic>> document) {
+  //   if (document.data() != null) {
+  //     final data = document.data()!;
+  //     return UserModel(
+  //       id: document.id,
+  //       name: data['name'] ?? '',
+  //       email: data['Email'] ?? '',
+  //       profilePicture: data['ProfilePicture'] ?? '',
+  //     );
+  //   } else {
+  //     throw Exception('Document data is null');
+  //   }
+  // }
 }

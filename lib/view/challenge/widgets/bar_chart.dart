@@ -128,7 +128,6 @@ class _MyBarChartState extends State<MyBarChart> {
                     enabled: true,
                     handleBuiltInTouches: false,
                     touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Colors.transparent,
                       tooltipMargin: 0,
                       getTooltipItem: (
                         BarChartGroupData group,

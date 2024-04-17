@@ -11,7 +11,6 @@ import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
-import 'package:sound_app/view/home_screen.dart';
 
 class DefaultMatchScreen extends StatelessWidget {
   DefaultMatchScreen({super.key});

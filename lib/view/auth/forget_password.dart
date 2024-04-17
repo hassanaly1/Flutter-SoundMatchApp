@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/login_controller.dart';
+import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
@@ -14,7 +14,7 @@ class ForgetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LoginController authController = Get.find();
+    final AuthController authController = Get.find();
     return SafeArea(
       child: Stack(
         fit: StackFit.expand,
@@ -57,9 +57,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                       textColor: Colors.white54,
                     ),
                     const SizedBox(height: 15.0),
-                    CustomTextField(
-                        controller: authController.nameController,
-                        hintText: 'Enter your Email'),
+                    CustomTextField(hintText: 'Enter your Email'),
                     const SizedBox(height: 20.0),
                     CustomAuthButton(
                       text: 'Send',
