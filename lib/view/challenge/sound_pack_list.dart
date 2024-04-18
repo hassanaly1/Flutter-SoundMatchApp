@@ -101,17 +101,17 @@ class SoundPackList extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    soundPackModel.songs[index].songImage),
-                              ),
-                              title: CustomTextWidget(
-                                text: soundPackModel.songs[index].songName,
-                                textColor: Colors.white,
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'poppins',
-                              ),
+                              // leading: CircleAvatar(
+                              //   backgroundImage: NetworkImage(
+                              //       soundPackModel.sounds[index].songImage),
+                              // ),
+                              // title: CustomTextWidget(
+                              //   text: soundPackModel.songs[index].songName,
+                              //   textColor: Colors.white,
+                              //   fontSize: 14.0,
+                              //   fontWeight: FontWeight.w500,
+                              //   fontFamily: 'poppins',
+                              // ),
                               trailing: InkWell(
                                 onTap: () {},
                                 child: const Icon(

@@ -3,19 +3,18 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/view/challenge/sound_pack_list.dart';
 import 'package:sound_app/view/challenge/widgets/custom_soundpack_widget.dart';
 
 class PurchaseSongsScreen extends StatelessWidget {
-  const PurchaseSongsScreen({super.key});
+  PurchaseSongsScreen({super.key});
+  final MyUniversalController universalController = Get.find();
   @override
   Widget build(BuildContext context) {
-    final AddChallengeController controller = Get.find();
     return SafeArea(
       child: Stack(fit: StackFit.expand, children: [
         SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
@@ -100,7 +99,7 @@ class PurchaseSongsScreen extends StatelessWidget {
                           () => Container(
                             color: Colors.transparent,
                             height: context.height * 0.2,
-                            child: controller.soundPacks.isEmpty
+                            child: universalController.userSoundPacks.isEmpty
                                 ? Center(
                                     child: Padding(
                                       padding: const EdgeInsets.all(12.0),
@@ -119,10 +118,11 @@ class PurchaseSongsScreen extends StatelessWidget {
                                 : ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     shrinkWrap: true,
-                                    itemCount: controller.soundPacks.length,
+                                    itemCount: universalController
+                                        .userSoundPacks.length,
                                     itemBuilder: (context, index) {
-                                      final soundPack =
-                                          controller.soundPacks[index];
+                                      final soundPack = universalController
+                                          .userSoundPacks[index];
                                       {
                                         return Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -135,8 +135,10 @@ class PurchaseSongsScreen extends StatelessWidget {
                                                 InkWell(
                                                   onTap: () => Get.to(
                                                     () => SoundPackList(
-                                                      soundPackModel: controller
-                                                          .soundPacks[index],
+                                                      soundPackModel:
+                                                          universalController
+                                                                  .userSoundPacks[
+                                                              index],
                                                     ),
                                                     transition: Transition.zoom,
                                                     duration: const Duration(
@@ -179,8 +181,8 @@ class PurchaseSongsScreen extends StatelessWidget {
                         GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: soundPacks
-                              .where((soundPack) => soundPack.isPaid == true)
+                          itemCount: universalController.allSoundPacks
+                              .where((soundPack) => soundPack.isPaid == false)
                               .length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
@@ -188,8 +190,9 @@ class PurchaseSongsScreen extends StatelessWidget {
                             childAspectRatio: 0.6,
                           ),
                           itemBuilder: (context, index) {
-                            final paidSoundPacks = soundPacks
-                                .where((soundPack) => soundPack.isPaid == true)
+                            final paidSoundPacks = universalController
+                                .allSoundPacks
+                                .where((soundPack) => soundPack.isPaid == false)
                                 .toList();
                             if (index < paidSoundPacks.length) {
                               // Show paid soundPacks
@@ -199,8 +202,11 @@ class PurchaseSongsScreen extends StatelessWidget {
                                 showAddIcon: true,
                               );
                             } else {
-                              return Container(
-                                color: Colors.red,
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  color: Colors.red,
+                                ),
                               );
                             }
                           },

@@ -10,11 +10,11 @@ class CustomParticipantWidget extends StatelessWidget {
   final bool? showTickIcon;
 
   const CustomParticipantWidget({
-    Key? key,
+    super.key,
     required this.member,
     this.showAddIcon = true,
     this.showTickIcon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

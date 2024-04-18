@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -6,8 +5,7 @@ import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
-import 'package:sound_app/helper/snackbars.dart';
-import 'package:sound_app/view/auth/login.dart';
+import 'package:sound_app/view/auth/otp.dart';
 
 class VerifyEmailScreen extends StatelessWidget {
   const VerifyEmailScreen({super.key});
@@ -40,7 +38,7 @@ class VerifyEmailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20.0),
                     CustomTextWidget(
-                      text: 'Forget Password?',
+                      text: 'Verify Email',
                       fontSize: 30,
                       fontFamily: 'horta',
                       fontWeight: FontWeight.w700,
@@ -57,18 +55,28 @@ class VerifyEmailScreen extends StatelessWidget {
                       textColor: Colors.white54,
                     ),
                     const SizedBox(height: 15.0),
-                    CustomTextField(hintText: 'Enter your Email'),
+                    CustomTextField(
+                      hintText: 'Enter your Email',
+                      controller: authController.emailController,
+                    ),
                     const SizedBox(height: 20.0),
-                    CustomAuthButton(
-                      text: 'Send',
-                      onTap: () {
-                        MySnackBarsHelper.showMessage(
-                            "Successfully",
-                            "6 digits verification code has been sent to your email. ",
-                            CupertinoIcons.check_mark_circled);
-                        Get.offAll(() => const LoginScreen(),
-                            transition: Transition.downToUp);
-                      },
+                    Obx(
+                      () => authController.isLoading.value
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                  color: Colors.white70),
+                            )
+                          : CustomAuthButton(
+                              text: 'Send OTP',
+                              onTap: () {
+                                print('VerifyEmailButtonTapped');
+                                Get.off(() => OtpScreen(
+                                    verifyOtpForForgetPassword: false,
+                                    email: authController.emailController.text
+                                        .trim()));
+                                authController.sendOtp();
+                              },
+                            ),
                     ),
                     const SizedBox(height: 20.0),
                   ],

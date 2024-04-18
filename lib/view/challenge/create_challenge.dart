@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
-import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -26,7 +26,7 @@ class CreateChallenge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find();
+    final MyUniversalController universalController = Get.find();
     final AddChallengeController controller = Get.put(AddChallengeController());
 
     return SafeArea(
@@ -229,19 +229,19 @@ class CreateChallenge extends StatelessWidget {
                                                                 .blue,
                                                         context: context,
                                                         onTap: () {
-                                                          showModalBottomSheet(
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .transparent,
-                                                            context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return SelectSongsScreen();
-                                                            },
-                                                          );
+                                                          // showModalBottomSheet(
+                                                          //   backgroundColor:
+                                                          //       Colors
+                                                          //           .transparent,
+                                                          //   context: context,
+                                                          //   isScrollControlled:
+                                                          //       true,
+                                                          //   builder:
+                                                          //       (BuildContext
+                                                          //           context) {
+                                                          //     return SelectSongsScreen();
+                                                          //   },
+                                                          // );
                                                         },
                                                       )
                                                     ]),
@@ -253,8 +253,8 @@ class CreateChallenge extends StatelessWidget {
                                             child: InkWell(
                                               onTap: () {
                                                 createChallenge(
-                                                    authController:
-                                                        authController,
+                                                    universalController:
+                                                        universalController,
                                                     controller: controller,
                                                     context: context);
                                               },
@@ -330,11 +330,11 @@ class CreateChallenge extends StatelessWidget {
   }
 
   void createChallenge(
-      {required AuthController authController,
+      {required MyUniversalController universalController,
       required AddChallengeController controller,
       // required MyNewChallengeController myNewChallengeController,
       required BuildContext context}) {
-    if (authController.isGuestUser.value) {
+    if (universalController.isGuestUser.value) {
       showDialog(
         context: context,
         builder: (BuildContext context) {

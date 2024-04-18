@@ -10,8 +10,12 @@ import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 
 class OtpScreen extends StatefulWidget {
+  final bool verifyOtpForForgetPassword;
   final String email;
-  const OtpScreen({super.key, required this.email});
+  const OtpScreen(
+      {super.key,
+      required this.email,
+      required this.verifyOtpForForgetPassword});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -137,7 +141,9 @@ class _OtpScreenState extends State<OtpScreen> {
                       length: 6,
                       keyboardType: TextInputType.text,
                       controller: controller.otpController,
-                      validator: (s) {},
+                      validator: (s) {
+                        return null;
+                      },
                       errorTextStyle: const TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 12,
@@ -213,7 +219,13 @@ class _OtpScreenState extends State<OtpScreen> {
                           ))
                         : CustomAuthButton(
                             text: 'Verify OTP',
-                            onTap: () => controller.verifyEmail(),
+                            onTap: () {
+                              debugPrint(
+                                  widget.verifyOtpForForgetPassword.toString());
+                              widget.verifyOtpForForgetPassword
+                                  ? controller.verifyOtp()
+                                  : controller.verifyEmail();
+                            },
                           ),
                   ),
                   SizedBox(height: context.height * 0.02),

@@ -1,15 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_social_icon.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
-import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/view/auth/forget_password.dart';
 import 'package:sound_app/view/auth/signup.dart';
 import 'package:sound_app/view/home_screen.dart';
@@ -21,6 +20,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthController authController =
         Get.put(AuthController(), permanent: true);
+    final MyUniversalController universalController = Get.find();
     return SafeArea(
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -67,17 +67,11 @@ class LoginScreen extends StatelessWidget {
                               ),
                             ),
                             child: Center(
-                                child: InkWell(
-                              onTap: () {
-                                Get.to(() => const SignupScreen(),
-                                    transition: Transition.rightToLeft);
-                              },
-                              child: CustomTextWidget(
-                                text: 'Register',
-                                fontSize: 22.0,
-                                textColor: Colors.white,
-                                fontFamily: 'poppins',
-                              ),
+                                child: CustomTextWidget(
+                              text: 'Login',
+                              fontSize: 22.0,
+                              textColor: Colors.white,
+                              fontFamily: 'poppins',
                             )),
                           ),
                         ],
@@ -193,7 +187,7 @@ class LoginScreen extends StatelessWidget {
                           onTap: () {
                             Get.offAll(() => const HomeScreen(),
                                 transition: Transition.downToUp);
-                            authController.isGuestUser.value = true;
+                            universalController.isGuestUser.value = true;
                             debugPrint('Login as GuestUser');
                           },
                           child: Container(

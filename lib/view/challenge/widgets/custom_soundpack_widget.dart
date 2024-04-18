@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/create_account_popup.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
@@ -11,18 +13,17 @@ class CustomSoundPackWidget extends StatelessWidget {
   final bool? showAddIcon;
   final bool showTickIcon;
 
-  const CustomSoundPackWidget({
-    Key? key,
+  CustomSoundPackWidget({
+    super.key,
     required this.soundPackModel,
     this.showAddIcon = true,
     required this.showTickIcon,
-  }) : super(key: key);
+  });
+
+  final MyUniversalController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    final AddChallengeController controller =
-        Get.find<AddChallengeController>();
-
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: InkWell(
@@ -118,7 +119,7 @@ class CustomSoundPackWidget extends StatelessWidget {
                           right: 0,
                           child: GestureDetector(
                             onTap: () {
-                              !controller.soundPacks.contains(soundPackModel)
+                              controller.userSoundPacks.contains(soundPackModel)
                                   ? showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -129,16 +130,16 @@ class CustomSoundPackWidget extends StatelessWidget {
                                           backgroundColor: Colors.transparent,
                                           content: CreateAccountPopup(
                                               onTap: () {
-                                                controller.addSoundPack(
+                                                controller.addOrRemoveSoundPack(
                                                     soundPackModel);
                                                 Get.back();
                                               },
-                                              buttonText: 'Buy Now',
-                                              isSvg: true,
+                                              buttonText: 'Remove',
+                                              isSvg: false,
                                               imagePath:
-                                                  'assets/svgs/payment.svg',
+                                                  'assets/images/remove.png',
                                               text:
-                                                  'Upgrade your gaming sound with this amazing sound pack!',
+                                                  'Are you sure to remove this sound pack from your bucket?',
                                               opacity: 1),
                                         );
                                       },
@@ -153,34 +154,32 @@ class CustomSoundPackWidget extends StatelessWidget {
                                           backgroundColor: Colors.transparent,
                                           content: CreateAccountPopup(
                                               onTap: () {
-                                                controller.addSoundPack(
+                                                controller.addOrRemoveSoundPack(
                                                     soundPackModel);
                                                 Get.back();
                                               },
-                                              buttonText: 'Remove',
-                                              isSvg: false,
+                                              buttonText: 'Buy Now',
+                                              isSvg: true,
                                               imagePath:
-                                                  'assets/images/remove.png',
+                                                  'assets/svgs/payment.svg',
                                               text:
-                                                  'Are you sure to remove this sound pack from your bucket?',
+                                                  'Upgrade your gaming sound with this amazing sound pack!',
                                               opacity: 1),
                                         );
                                       },
                                     );
-
-                              debugPrint(
-                                  controller.soundPacks.length.toString());
                             },
                             child: Container(
                               padding: const EdgeInsets.all(4.0),
                               decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: controller.soundPacks
+                                  color: controller.userSoundPacks
                                           .contains(soundPackModel)
                                       ? Colors.lightGreen
                                       : Colors.white70),
                               child: Icon(
-                                controller.soundPacks.contains(soundPackModel)
+                                controller.userSoundPacks
+                                        .contains(soundPackModel)
                                     ? Icons.done
                                     : Icons.add,
                                 size: 22,

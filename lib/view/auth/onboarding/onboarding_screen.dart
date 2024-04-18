@@ -4,7 +4,7 @@ import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:sound_app/controller/onboarding_controller.dart';
 
 class OnBoardingScreen extends StatelessWidget {
-  const OnBoardingScreen({Key? key}) : super(key: key);
+  const OnBoardingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

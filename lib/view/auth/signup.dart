@@ -6,10 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
-import 'package:sound_app/helper/custom_social_icon.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
-import 'package:sound_app/utils/validator.dart';
 import 'package:sound_app/view/auth/login.dart';
 
 class SignupScreen extends StatelessWidget {

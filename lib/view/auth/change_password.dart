@@ -6,8 +6,8 @@ import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 
-class ForgetPasswordScreen extends StatelessWidget {
-  const ForgetPasswordScreen({super.key});
+class ChangePasswordScreen extends StatelessWidget {
+  const ChangePasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20.0),
                     CustomTextWidget(
-                      text: 'Forget Password?',
+                      text: 'Change Password',
                       fontSize: 30,
                       fontFamily: 'horta',
                       fontWeight: FontWeight.w700,
@@ -46,7 +46,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                     const SizedBox(height: 10.0),
                     CustomTextWidget(
                       text:
-                          'Please provide your email address so we can send you the verification code.',
+                          'Please enter the strong password for your Account.',
                       fontSize: 14,
                       maxLines: 3,
                       textAlign: TextAlign.center,
@@ -55,8 +55,13 @@ class ForgetPasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 15.0),
                     CustomTextField(
-                      hintText: 'Enter your Email',
-                      controller: authController.emailController,
+                      hintText: 'Enter your New Password',
+                      controller: authController.passwordController,
+                    ),
+                    const SizedBox(height: 20.0),
+                    CustomTextField(
+                      hintText: 'Re-Enter your New Password',
+                      controller: authController.confirmPasswordController,
                     ),
                     const SizedBox(height: 20.0),
                     Obx(
@@ -66,9 +71,9 @@ class ForgetPasswordScreen extends StatelessWidget {
                                   color: Colors.white70),
                             )
                           : CustomAuthButton(
-                              text: 'Send OTP',
+                              text: 'Change Password',
                               onTap: () {
-                                authController.sendOtp();
+                                authController.changePassword();
                               },
                             ),
                     ),

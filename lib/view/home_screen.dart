@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
+import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/view/challenge/create_challenge.dart';
@@ -21,8 +22,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AddChallengeController challengeController =
-        Get.put(AddChallengeController());
+    // final AddChallengeController challengeController =
+    //     Get.put(AddChallengeController());
+    final MyUniversalController controller = Get.find();
     final CarouselSliderController carouselController =
         Get.put(CarouselSliderController());
     return SafeArea(
@@ -43,7 +45,7 @@ class HomeScreen extends StatelessWidget {
                     width: context.width * 0.8,
                     child: Image.asset('assets/images/homeicon2.png')),
                 ChallengesList(
-                  challengeController: challengeController,
+                  universalController: controller,
                   controller: carouselController,
                 ),
                 SizedBox(
@@ -52,10 +54,10 @@ class HomeScreen extends StatelessWidget {
                   child: Image.asset('assets/images/homeicon3.png'),
                 ),
                 DotsIndicator(
-                  challengeController: challengeController,
+                  universalController: controller,
                   controller: carouselController,
                 ),
-                const SoundPacksContainer()
+                SoundPacksContainer(controller: controller)
               ],
             )))
       ]),
@@ -64,8 +66,10 @@ class HomeScreen extends StatelessWidget {
 }
 
 class SoundPacksContainer extends StatelessWidget {
+  final MyUniversalController controller;
   const SoundPacksContainer({
     super.key,
+    required this.controller,
   });
 
   @override
@@ -89,7 +93,7 @@ class SoundPacksContainer extends StatelessWidget {
                   //   top: context.height * 0.07,
                   left: 0,
                   right: 0,
-                  bottom: context.height * 0.08,
+                  bottom: context.height * 0.1,
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -100,49 +104,25 @@ class SoundPacksContainer extends StatelessWidget {
                           height: 40,
                         ),
                         const SizedBox(width: 12.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomTextWidget(
-                                fontFamily: 'horta',
-                                text: 'Sound Pack',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 28.0,
-                                textColor: Colors.white,
-                                isShadow: true,
-                                shadow: const [
-                                  Shadow(
-                                    blurRadius: 15.0,
-                                    color: Colors.black,
-                                    offset: Offset(0, 0),
-                                  ),
-                                  Shadow(
-                                    blurRadius: 5.0,
-                                    color: MyColorHelper.primaryColor,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ]),
-                            CustomTextWidget(
-                                fontFamily: 'poppins',
-                                text: '10 Sounds',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.0,
-                                textColor: Colors.white,
-                                isShadow: true,
-                                shadow: const [
-                                  Shadow(
-                                    blurRadius: 15.0,
-                                    color: Colors.black,
-                                    offset: Offset(0, 0),
-                                  ),
-                                  Shadow(
-                                    blurRadius: 5.0,
-                                    color: MyColorHelper.primaryColor,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ]),
-                          ],
-                        ),
+                        CustomTextWidget(
+                            fontFamily: 'horta',
+                            text: 'Sound Pack',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 28.0,
+                            textColor: Colors.white,
+                            isShadow: true,
+                            shadow: const [
+                              Shadow(
+                                blurRadius: 15.0,
+                                color: Colors.black,
+                                offset: Offset(0, 0),
+                              ),
+                              Shadow(
+                                blurRadius: 5.0,
+                                color: MyColorHelper.primaryColor,
+                                offset: Offset(0, 0),
+                              ),
+                            ]),
                       ],
                     ),
                   ))
@@ -151,7 +131,7 @@ class SoundPacksContainer extends StatelessWidget {
         );
       },
       openBuilder: (context, action) {
-        return const PurchaseSongsScreen();
+        return PurchaseSongsScreen();
       },
       openElevation: 0,
       closedElevation: 0,
@@ -165,11 +145,11 @@ class SoundPacksContainer extends StatelessWidget {
 class DotsIndicator extends StatelessWidget {
   const DotsIndicator({
     super.key,
-    required this.challengeController,
+    required this.universalController,
     required this.controller,
   });
 
-  final AddChallengeController challengeController;
+  final MyUniversalController universalController;
   final CarouselSliderController controller;
 
   @override
@@ -177,7 +157,7 @@ class DotsIndicator extends StatelessWidget {
     return Obx(
       () => Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: challengeController.challenges.asMap().entries.map((entry) {
+        children: universalController.challenges.asMap().entries.map((entry) {
           final int i = entry.key; // Get the index of the challenge
           return Container(
             width: 18.0,
@@ -203,11 +183,11 @@ class DotsIndicator extends StatelessWidget {
 class ChallengesList extends StatelessWidget {
   const ChallengesList({
     super.key,
-    required this.challengeController,
+    required this.universalController,
     required this.controller,
   });
 
-  final AddChallengeController challengeController;
+  final MyUniversalController universalController;
   final CarouselSliderController controller;
 
   @override
@@ -218,7 +198,7 @@ class ChallengesList extends StatelessWidget {
         color: Colors.transparent,
         child: Obx(
           () => CarouselSlider(
-            items: challengeController.challenges.asMap().entries.map((entry) {
+            items: universalController.challenges.asMap().entries.map((entry) {
               final int index = entry.key; // Get the index of the challenge
               final challenge = entry.value;
               return OpenContainer(

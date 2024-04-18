@@ -14,12 +14,12 @@ class CustomOnboardingScreen extends StatelessWidget {
   final List<Color> gradientColors;
 
   const CustomOnboardingScreen({
-    Key? key,
+    super.key,
     required this.text,
     required this.subText,
     required this.imageUrl,
     required this.gradientColors,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

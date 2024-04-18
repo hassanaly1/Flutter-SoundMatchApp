@@ -1,12 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sound_app/view/auth/onboarding/onboarding_screen.dart';
+import 'package:sound_app/view/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  SplashScreen({super.key});
+  final GetStorage storage = GetStorage();
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -16,9 +18,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Check if the JWT token is present in Get Storage
+    String? token = widget.storage.read('token');
+
     Timer(const Duration(seconds: 2), () {
-      Get.offAll(() => const OnBoardingScreen(),
-          transition: Transition.rightToLeft);
+      if (token == null) {
+        Get.offAll(() => const OnBoardingScreen(),
+            transition: Transition.rightToLeft);
+      } else {
+        Get.offAll(() => const HomeScreen(),
+            transition: Transition.rightToLeft);
+      }
     });
   }
 
@@ -32,12 +43,14 @@ class _SplashScreenState extends State<SplashScreen> {
           fit: BoxFit.cover,
         ),
         Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Center(
-                child: Image.asset(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Image.asset(
               'assets/images/splash-logo.png',
               height: context.height * 0.3,
-            )))
+            ),
+          ),
+        ),
       ],
     );
   }
