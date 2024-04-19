@@ -1,23 +1,20 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
-import 'package:sound_app/helper/create_account_popup.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/view/challenge/sound_pack_list.dart';
 
 class CustomSoundPackWidget extends StatelessWidget {
   final SoundPackModel soundPackModel;
-  final bool? showAddIcon;
-  final bool showTickIcon;
+  // final bool? showAddIcon;
+  // final bool showTickIcon;
 
   CustomSoundPackWidget({
     super.key,
     required this.soundPackModel,
-    this.showAddIcon = true,
-    required this.showTickIcon,
+    // this.showAddIcon = true,
+    // required this.showTickIcon,
   });
 
   final MyUniversalController controller = Get.find();
@@ -28,15 +25,23 @@ class CustomSoundPackWidget extends StatelessWidget {
       padding: const EdgeInsets.all(4.0),
       child: InkWell(
         onTap: () {
-          showTickIcon == true
-              ? controller.selectedSoundPack(soundPackModel)
-              : Get.to(
-                  () => SoundPackList(
-                    soundPackModel: soundPackModel,
-                  ),
-                  transition: Transition.zoom,
-                  duration: const Duration(milliseconds: 500),
-                );
+          controller.sounds.clear(); //To remove the previously added sounds.
+          controller.fetchSoundsByPackId(soundPackModel.id);
+          debugPrint('SoundsLength: ${controller.sounds.length}');
+          Get.to(
+              () => SoundPackList(
+                  soundPackModel: soundPackModel, sounds: controller.sounds),
+              transition: Transition.zoom,
+              duration: const Duration(milliseconds: 500));
+          // showTickIcon == true
+          //     ? controller.selectedSoundPack(soundPackModel)
+          //     : Get.to(
+          //         () => SoundPackList(
+          //           soundPackModel: soundPackModel,
+          //         ),
+          //         transition: Transition.zoom,
+          //         duration: const Duration(milliseconds: 500),
+          //       );
         },
         child: SizedBox(
           width: 100,
@@ -88,108 +93,130 @@ class CustomSoundPackWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              showTickIcon == true
-                  ? Obx(
-                      () => Visibility(
-                        visible: controller.isSoundPackSelected.value &&
-                            controller.selectedSoundPack.value ==
-                                soundPackModel,
-                        child: Positioned(
-                          top: 10,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(4.0),
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.lightGreen),
-                            child: const Icon(
-                              Icons.done,
-                              size: 12,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : Obx(
-                      () => Visibility(
-                        visible: showAddIcon == true,
-                        child: Positioned(
-                          top: 10,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: () {
-                              controller.userSoundPacks.contains(soundPackModel)
-                                  ? showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          insetPadding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                          backgroundColor: Colors.transparent,
-                                          content: CreateAccountPopup(
-                                              onTap: () {
-                                                controller.addOrRemoveSoundPack(
-                                                    soundPackModel);
-                                                Get.back();
-                                              },
-                                              buttonText: 'Remove',
-                                              isSvg: false,
-                                              imagePath:
-                                                  'assets/images/remove.png',
-                                              text:
-                                                  'Are you sure to remove this sound pack from your bucket?',
-                                              opacity: 1),
-                                        );
-                                      },
-                                    )
-                                  : showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          insetPadding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                          backgroundColor: Colors.transparent,
-                                          content: CreateAccountPopup(
-                                              onTap: () {
-                                                controller.addOrRemoveSoundPack(
-                                                    soundPackModel);
-                                                Get.back();
-                                              },
-                                              buttonText: 'Buy Now',
-                                              isSvg: true,
-                                              imagePath:
-                                                  'assets/svgs/payment.svg',
-                                              text:
-                                                  'Upgrade your gaming sound with this amazing sound pack!',
-                                              opacity: 1),
-                                        );
-                                      },
-                                    );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(4.0),
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: controller.userSoundPacks
-                                          .contains(soundPackModel)
-                                      ? Colors.lightGreen
-                                      : Colors.white70),
-                              child: Icon(
-                                controller.userSoundPacks
-                                        .contains(soundPackModel)
-                                    ? Icons.done
-                                    : Icons.add,
-                                size: 22,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+              Obx(
+                () => Positioned(
+                  top: 10,
+                  right: 0,
+                  child: InkWell(
+                    onTap: () {
+                      controller.addOrRemoveSoundPack(soundPackModel);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4.0),
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.lightGreen),
+                      child: Icon(
+                          controller.userSoundPacks.contains(soundPackModel)
+                              ? Icons.done
+                              : Icons.add,
+                          size: 20,
+                          color: Colors.black87),
                     ),
+                  ),
+                ),
+              ),
+              // showTickIcon == true
+              //     ? Obx(
+              //         () => Visibility(
+              //           visible: controller.isSoundPackSelected.value &&
+              //               controller.selectedSoundPack.value ==
+              //                   soundPackModel,
+              //           child: Positioned(
+              //             top: 10,
+              //             right: 0,
+              //             child: Container(
+              //               padding: const EdgeInsets.all(4.0),
+              //               decoration: const BoxDecoration(
+              //                   shape: BoxShape.circle,
+              //                   color: Colors.lightGreen),
+              //               child: const Icon(
+              //                 Icons.done,
+              //                 size: 12,
+              //                 color: Colors.black87,
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       )
+              //     : Obx(
+              //         () => Visibility(
+              //           visible: showAddIcon == true,
+              //           child: Positioned(
+              //             top: 10,
+              //             right: 0,
+              //             child: GestureDetector(
+              //               onTap: () {
+              //                 controller.userSoundPacks.contains(soundPackModel)
+              //                     ? showDialog(
+              //                         context: context,
+              //                         builder: (BuildContext context) {
+              //                           return AlertDialog(
+              //                             insetPadding:
+              //                                 const EdgeInsets.symmetric(
+              //                                     horizontal: 10),
+              //                             backgroundColor: Colors.transparent,
+              //                             content: CreateAccountPopup(
+              //                                 onTap: () {
+              //                                   controller.addOrRemoveSoundPack(
+              //                                       soundPackModel);
+              //                                   Get.back();
+              //                                 },
+              //                                 buttonText: 'Remove',
+              //                                 isSvg: false,
+              //                                 imagePath:
+              //                                     'assets/images/remove.png',
+              //                                 text:
+              //                                     'Are you sure to remove this sound pack from your bucket?',
+              //                                 opacity: 1),
+              //                           );
+              //                         },
+              //                       )
+              //                     : showDialog(
+              //                         context: context,
+              //                         builder: (BuildContext context) {
+              //                           return AlertDialog(
+              //                             insetPadding:
+              //                                 const EdgeInsets.symmetric(
+              //                                     horizontal: 10),
+              //                             backgroundColor: Colors.transparent,
+              //                             content: CreateAccountPopup(
+              //                                 onTap: () {
+              //                                   controller.addOrRemoveSoundPack(
+              //                                       soundPackModel);
+              //                                   Get.back();
+              //                                 },
+              //                                 buttonText: 'Buy Now',
+              //                                 isSvg: true,
+              //                                 imagePath:
+              //                                     'assets/svgs/payment.svg',
+              //                                 text:
+              //                                     'Upgrade your gaming sound with this amazing sound pack!',
+              //                                 opacity: 1),
+              //                           );
+              //                         },
+              //                       );
+              //               },
+              //               child: Container(
+              //                 padding: const EdgeInsets.all(4.0),
+              //                 decoration: BoxDecoration(
+              //                     shape: BoxShape.circle,
+              //                     color: controller.userSoundPacks
+              //                             .contains(soundPackModel)
+              //                         ? Colors.lightGreen
+              //                         : Colors.white70),
+              //                 child: Icon(
+              //                   controller.userSoundPacks
+              //                           .contains(soundPackModel)
+              //                       ? Icons.done
+              //                       : Icons.add,
+              //                   size: 22,
+              //                   color: Colors.black,
+              //                 ),
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
             ],
           ),
         ),

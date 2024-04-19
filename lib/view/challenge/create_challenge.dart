@@ -19,7 +19,6 @@ import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/member_model.dart';
 import 'package:sound_app/view/auth/signup.dart';
 import 'package:sound_app/view/challenge/select_members.dart';
-import 'package:sound_app/view/challenge/select_song.dart';
 
 class CreateChallenge extends StatelessWidget {
   const CreateChallenge({super.key});

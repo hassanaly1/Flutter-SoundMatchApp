@@ -1,9 +1,9 @@
 import 'package:sound_app/models/member_model.dart';
-import 'package:sound_app/models/songs_model.dart';
+import 'package:sound_app/models/sound_model.dart';
 
 class ChallengeModel {
   String? challengeName;
-  SongsModel? song;
+  SoundModel? song;
   int? id;
   int? roundsCount;
   List<Member>? participants;

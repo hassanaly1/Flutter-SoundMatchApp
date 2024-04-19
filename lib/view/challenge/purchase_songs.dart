@@ -12,7 +12,7 @@ import 'package:sound_app/view/challenge/widgets/custom_soundpack_widget.dart';
 
 class PurchaseSongsScreen extends StatelessWidget {
   PurchaseSongsScreen({super.key});
-  final MyUniversalController universalController = Get.find();
+  final MyUniversalController controller = Get.find();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -99,7 +99,7 @@ class PurchaseSongsScreen extends StatelessWidget {
                           () => Container(
                             color: Colors.transparent,
                             height: context.height * 0.2,
-                            child: universalController.userSoundPacks.isEmpty
+                            child: controller.userSoundPacks.isEmpty
                                 ? Center(
                                     child: Padding(
                                       padding: const EdgeInsets.all(12.0),
@@ -118,11 +118,10 @@ class PurchaseSongsScreen extends StatelessWidget {
                                 : ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     shrinkWrap: true,
-                                    itemCount: universalController
-                                        .userSoundPacks.length,
+                                    itemCount: controller.userSoundPacks.length,
                                     itemBuilder: (context, index) {
-                                      final soundPack = universalController
-                                          .userSoundPacks[index];
+                                      final soundPack =
+                                          controller.userSoundPacks[index];
                                       {
                                         return Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -133,17 +132,40 @@ class PurchaseSongsScreen extends StatelessWidget {
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 InkWell(
-                                                  onTap: () => Get.to(
-                                                    () => SoundPackList(
-                                                      soundPackModel:
-                                                          universalController
-                                                                  .userSoundPacks[
-                                                              index],
-                                                    ),
-                                                    transition: Transition.zoom,
-                                                    duration: const Duration(
-                                                        milliseconds: 500),
-                                                  ),
+                                                  onTap: () {
+                                                    controller.sounds
+                                                        .clear(); //To remove the previously added sounds.
+                                                    controller
+                                                        .fetchSoundsByPackId(
+                                                            soundPack.id);
+                                                    debugPrint(
+                                                        'SoundsLength: ${controller.sounds.length}');
+                                                    Get.to(
+                                                        () => SoundPackList(
+                                                            soundPackModel:
+                                                                soundPack,
+                                                            sounds: controller
+                                                                .sounds),
+                                                        transition:
+                                                            Transition.zoom,
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500));
+                                                  },
+                                                  // onTap: () {
+                                                  //   //   Get.to(
+                                                  //   //   () => SoundPackList(
+                                                  //   //     soundPackModel:
+                                                  //   //         universalController
+                                                  //   //                 .userSoundPacks[
+                                                  //   //             index],
+                                                  //   //   ),
+                                                  //   //   transition: Transition.zoom,
+                                                  //   //   duration: const Duration(
+                                                  //   //       milliseconds: 500),
+                                                  //   // );
+                                                  // },
                                                   child: CircleAvatar(
                                                     backgroundColor:
                                                         Colors.grey.shade300,
@@ -181,7 +203,7 @@ class PurchaseSongsScreen extends StatelessWidget {
                         GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: universalController.allSoundPacks
+                          itemCount: controller.allSoundPacks
                               .where((soundPack) => soundPack.isPaid == false)
                               .length,
                           gridDelegate:
@@ -190,16 +212,15 @@ class PurchaseSongsScreen extends StatelessWidget {
                             childAspectRatio: 0.6,
                           ),
                           itemBuilder: (context, index) {
-                            final paidSoundPacks = universalController
-                                .allSoundPacks
+                            final paidSoundPacks = controller.allSoundPacks
                                 .where((soundPack) => soundPack.isPaid == false)
                                 .toList();
                             if (index < paidSoundPacks.length) {
                               // Show paid soundPacks
                               return CustomSoundPackWidget(
-                                showTickIcon: false,
                                 soundPackModel: paidSoundPacks[index],
-                                showAddIcon: true,
+                                // showTickIcon: false,
+                                // showAddIcon: true,
                               );
                             } else {
                               return Padding(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/data/sounds_service.dart';
 import 'package:sound_app/models/challenge_model.dart';
-import 'package:sound_app/models/songs_model.dart';
+import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 
 class MyUniversalController extends GetxController {
@@ -10,6 +10,9 @@ class MyUniversalController extends GetxController {
   RxBool isGuestUser = false.obs;
   Rx<SoundPackModel?> selectedSoundPack = Rx<SoundPackModel?>(null);
   RxBool isSoundPackSelected = false.obs;
+
+  // Reactive list for sounds based on sound pack ID
+  RxList<SoundModel> sounds = <SoundModel>[].obs;
 
   @override
   onInit() async {
@@ -21,7 +24,7 @@ class MyUniversalController extends GetxController {
   // Challenges
   RxList<ChallengeModel> challenges = <ChallengeModel>[
     ChallengeModel(
-        challengeName: 'Free Sound Match', song: SongsModel(name: '', url: ''))
+        challengeName: 'Free Sound Match', song: SoundModel(name: '', url: ''))
   ].obs;
 
   // all sound pack list
@@ -45,40 +48,6 @@ class MyUniversalController extends GetxController {
     }
   }
 
-  // Method to fetch and integrate sounds for a specific sound pack
-  // Future<void> fetchAndIntegrateSoundsForSoundPack(String soundPackId) async {
-  //   // Create an instance of SoundServices
-  //   SoundServices soundServices = SoundServices();
-  //
-  //   try {
-  //     // Fetch sounds by sound pack ID
-  //     final List<dynamic> fetchedSounds =
-  //         await soundServices.fetchSoundById(soundPackId);
-  //
-  //     // Find the specific sound pack in the soundPacks list
-  //     SoundPackModel? soundPackToUpdate = soundPacks
-  //         .firstWhereOrNull((soundPack) => soundPack.id == soundPackId);
-  //
-  //     // If sound pack is found, integrate fetched sounds
-  //     if (soundPackToUpdate != null) {
-  //       // Clear existing sounds and integrate fetched sounds
-  //       soundPackToUpdate.sounds.clear();
-  //       for (var soundData in fetchedSounds) {
-  //         SongsModel song = SongsModel.fromJson(soundData);
-  //         soundPackToUpdate.sounds.add(song);
-  //       }
-  //
-  //       // Update the sound pack in the list
-  //       final index = soundPacks.indexOf(soundPackToUpdate);
-  //       if (index != -1) {
-  //         soundPacks[index] = soundPackToUpdate;
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching sounds for sound pack: $e');
-  //   }
-  // }
-
   //ApiCalls
   Future<void> fetchSoundPacks(int page) async {
     try {
@@ -91,6 +60,21 @@ class MyUniversalController extends GetxController {
       }
     } catch (e) {
       debugPrint('Error fetching sounds: $e');
+    }
+  }
+
+  // Method to fetch sounds of a particular sound pack
+  Future<void> fetchSoundsByPackId(String soundPackId) async {
+    try {
+      List<SoundModel> fetchedSounds =
+          await SoundServices().fetchSoundsByPackId(soundPackId);
+      sounds.clear();
+      sounds.addAll(fetchedSounds);
+
+      debugPrint(
+          'Fetched sounds for sound pack ID $soundPackId: ${sounds.length}');
+    } catch (e) {
+      debugPrint('Error fetching sounds for sound pack ID $soundPackId: $e');
     }
   }
 }

@@ -4,8 +4,7 @@ import 'package:get/get.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/member_model.dart';
-import 'package:sound_app/models/songs_model.dart';
-import 'package:sound_app/models/sound_pack_model.dart';
+import 'package:sound_app/models/sound_model.dart';
 
 class AddChallengeController extends GetxController {
   // RxBool isSoundPackSelected = false.obs;
@@ -32,7 +31,7 @@ class AddChallengeController extends GetxController {
   RxList<Member> filteredMembers = <Member>[].obs; //for searching
   //UsersSoundPackList
   //the sound user selects while creating the challenge
-  Rx<SongsModel?> selectedSong = Rx<SongsModel?>(null);
+  Rx<SoundModel?> selectedSong = Rx<SoundModel?>(null);
 
   @override
   void onInit() {

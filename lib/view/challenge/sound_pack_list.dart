@@ -7,11 +7,14 @@ import 'package:get/get.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 
 class SoundPackList extends StatelessWidget {
   final SoundPackModel soundPackModel;
-  const SoundPackList({super.key, required this.soundPackModel});
+  final List<SoundModel> sounds;
+  const SoundPackList(
+      {super.key, required this.soundPackModel, required this.sounds});
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -34,7 +37,7 @@ class SoundPackList extends StatelessWidget {
                     const IconThemeData(color: Colors.white60, size: 30.0),
                 backgroundColor: Colors.transparent,
                 title: CustomTextWidget(
-                  text: 'Sound Treasury',
+                  text: 'Sound Treasury ${sounds.length}',
                   fontFamily: 'horta',
                   textColor: Colors.white,
                   fontSize: 26.0,
@@ -95,32 +98,41 @@ class SoundPackList extends StatelessWidget {
                         ),
                         const Divider(),
                         SizedBox(height: context.height * 0.02),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: 10,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              // leading: CircleAvatar(
-                              //   backgroundImage: NetworkImage(
-                              //       soundPackModel.sounds[index].songImage),
-                              // ),
-                              // title: CustomTextWidget(
-                              //   text: soundPackModel.songs[index].songName,
-                              //   textColor: Colors.white,
-                              //   fontSize: 14.0,
-                              //   fontWeight: FontWeight.w500,
-                              //   fontFamily: 'poppins',
-                              // ),
-                              trailing: InkWell(
-                                onTap: () {},
-                                child: const Icon(
-                                  CupertinoIcons.play_circle_fill,
-                                  color: Colors.white70,
+                        Obx(
+                          () => sounds.isEmpty
+                              ? const Center(
+                                  heightFactor: 10,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white70,
+                                    strokeCap: StrokeCap.butt,
+                                  ))
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: 10,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            sounds[index].url ?? ''),
+                                      ),
+                                      title: CustomTextWidget(
+                                        text: sounds[index].name ?? '',
+                                        textColor: Colors.white,
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'poppins',
+                                      ),
+                                      trailing: InkWell(
+                                        onTap: () {},
+                                        child: const Icon(
+                                          CupertinoIcons.play_circle_fill,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              ),
-                            );
-                          },
                         )
                       ],
                     ),

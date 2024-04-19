@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/colors.dart';
