@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
-import 'package:sound_app/view/challenge/sound_pack_list.dart';
+import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 
 class CustomSoundPackWidget extends StatelessWidget {
   final SoundPackModel soundPackModel;

@@ -9,11 +9,11 @@ import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/view/challenge/widgets/custom_participant_widget.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/searchbar.dart';
-import 'package:sound_app/models/member_model.dart';
+import 'package:sound_app/models/participant_model.dart';
 
 class SelectMemberScreen extends StatelessWidget {
-  final RxList<Member> selectedMembers;
-  final RxList<Member> filteredMembers;
+  final RxList<Participant> selectedMembers;
+  final RxList<Participant> filteredMembers;
   final Function(String) onSearchChanged;
   const SelectMemberScreen(
       {super.key,

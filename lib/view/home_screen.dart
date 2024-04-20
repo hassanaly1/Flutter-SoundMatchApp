@@ -6,15 +6,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
+import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/view/challenge/create_challenge.dart';
 import 'package:sound_app/view/challenge/default_match.dart';
-import 'package:sound_app/view/challenge/purchase_songs.dart';
+import 'package:sound_app/view/create_challenge/create_challenge.dart';
+import 'package:sound_app/view/soundpacks/purchase_songs.dart';
 import 'package:sound_app/view/challenge/widgets/custom_match_card.dart';
 import 'package:sound_app/view/notifications/notification_screen.dart';
 import 'package:sound_app/view/profile/profile.dart';
-import '../helper/asset_helper.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

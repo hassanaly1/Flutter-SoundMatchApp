@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/member_model.dart';
+import 'package:sound_app/models/participant_model.dart';
 
 class CustomParticipantWidget extends StatelessWidget {
-  final Member member;
+  final Participant member;
   final bool? showAddIcon;
   final bool? showTickIcon;
 

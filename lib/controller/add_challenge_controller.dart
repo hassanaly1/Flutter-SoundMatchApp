@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/models/challenge_model.dart';
-import 'package:sound_app/models/member_model.dart';
+import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 
 class AddChallengeController extends GetxController {
@@ -13,31 +13,24 @@ class AddChallengeController extends GetxController {
 
   final MyUniversalController universalController = Get.find();
 
-  // //Challenges
-  // RxList<ChallengeModel> challenges = <ChallengeModel>[
-  //   ChallengeModel(
-  //       challengeName: 'Free Sound Match',
-  //       song: SongsModel(songName: '', songImage: ''))
-  // ].obs;
-  //
-  // //UsersSoundPackList
-  // RxList<SoundPackModel> soundPacks = <SoundPackModel>[].obs;
-
   //CreateNewChallenge
   TextEditingController challengeNameController = TextEditingController();
   TextEditingController numberOfRounds = TextEditingController();
   //ParticipantsList
-  RxList<Member> selectedMembers = <Member>[].obs; //for selectedMembers
-  RxList<Member> filteredMembers = <Member>[].obs; //for searching
+  RxList<Participant> selectedMembers =
+      <Participant>[].obs; //for selectedMembers
+  RxList<Participant> filteredMembers = <Participant>[].obs; //for searching
   //UsersSoundPackList
   //the sound user selects while creating the challenge
-  Rx<SoundModel?> selectedSong = Rx<SoundModel?>(null);
+  RxBool isSoundSelected = false.obs;
+  Rx<SoundModel?> selectedSound = Rx<SoundModel?>(null);
 
+  RxList<SoundModel> sounds = <SoundModel>[].obs;
   @override
   void onInit() {
     super.onInit();
     addListener(() {});
-    filteredMembers.assignAll(members);
+    filteredMembers.assignAll(participants);
   }
 
   void updateGameRound(String value) {
@@ -45,13 +38,13 @@ class AddChallengeController extends GetxController {
   }
 
   void filterMembers(String query) {
-    filteredMembers.assignAll(members
-        .where((member) =>
-            member.name!.toLowerCase().contains(query.toLowerCase()))
+    filteredMembers.assignAll(participants
+        .where((participant) =>
+            participant.name!.toLowerCase().contains(query.toLowerCase()))
         .toList());
   }
 
-  void addMembers(Member member) {
+  void addMembers(Participant member) {
     if (selectedMembers.contains(member)) {
       selectedMembers.remove(member);
     } else {
@@ -74,20 +67,20 @@ class AddChallengeController extends GetxController {
   //   }
   // }
 
-  // void selectSound(SongsModel songsModel) {
-  //   if (selectedSong.value == songsModel) {
-  //     // If the same sound is tapped again, deselect it
-  //     isSoundPackSelected.value = false;
-  //     selectedSong.value = null;
-  //   } else {
-  //     // Deselect the previously selected sound
-  //     isSoundPackSelected.value = false;
-  //
-  //     // Select the new sound
-  //     isSoundPackSelected.value = true;
-  //     selectedSong.value = songsModel;
-  //   }
-  // }
+  void selectSound(SoundModel songsModel) {
+    if (selectedSound.value == songsModel) {
+      // If the same sound is tapped again, deselect it
+      isSoundSelected.value = false;
+      selectedSound.value = null;
+    } else {
+      // Deselect the previously selected sound
+      isSoundSelected.value = false;
+
+      // Select the new sound
+      isSoundSelected.value = true;
+      selectedSound.value = songsModel;
+    }
+  }
 
   void createChallenge(ChallengeModel challenge) {
     if (!universalController.challenges.contains(challenge)) {

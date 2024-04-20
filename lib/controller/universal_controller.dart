@@ -6,11 +6,11 @@ import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 
 class MyUniversalController extends GetxController {
-  // Reactive variables and lists
   RxBool isGuestUser = false.obs;
-  Rx<SoundPackModel?> selectedSoundPack = Rx<SoundPackModel?>(null);
-  RxBool isSoundPackSelected = false.obs;
-
+  // Rx<SoundPackModel?> selectedSoundPack = Rx<SoundPackModel?>(null);
+  // RxBool isSoundPackSelected = false.obs;
+  // Rx<SoundModel?> selectedSound = Rx<SoundModel?>(null);
+  // RxBool isSoundSelected = false.obs;
   // Reactive list for sounds based on sound pack ID
   RxList<SoundModel> sounds = <SoundModel>[].obs;
 

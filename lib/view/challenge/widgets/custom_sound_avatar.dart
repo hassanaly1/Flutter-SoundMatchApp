@@ -17,8 +17,8 @@ class CustomSoundAvatar extends StatelessWidget {
       child: Column(
         children: [
           CircleAvatar(
-            backgroundColor: Colors.grey.shade300,
-            backgroundImage: NetworkImage(soundPackModel.packImage),
+            backgroundColor: Colors.grey.shade400,
+            // backgroundImage: NetworkImage(soundPackModel.packImage),
             radius: 40,
           ),
           CustomTextWidget(

@@ -7,7 +7,7 @@ import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/view/challenge/sound_pack_list.dart';
+import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 import 'package:sound_app/view/challenge/widgets/custom_soundpack_widget.dart';
 
 class PurchaseSongsScreen extends StatelessWidget {
