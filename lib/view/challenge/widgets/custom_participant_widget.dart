@@ -42,10 +42,35 @@ class CustomParticipantWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(8.0),
-                      image: DecorationImage(
-                        image: NetworkImage(member.imageUrl.toString()),
-                        fit: BoxFit.cover,
-                      ),
+                      // image: DecorationImage(
+                      //   image: NetworkImage(
+                      //     member.imageUrl.toString(),
+                      //   ),
+                      //   fit: BoxFit.cover,
+                      // ),
+                    ),
+                    child: Image.network(
+                      member.imageUrl.toString(),
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      (loadingProgress.expectedTotalBytes ?? 1)
+                                  : null,
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        return const Center(child: CircularProgressIndicator());
+                      },
                     ),
                   ),
                   CustomTextWidget(

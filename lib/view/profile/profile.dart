@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -17,6 +18,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _storage = GetStorage();
     final isKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
     double height = MediaQuery.of(context).size.height;
     return SafeArea(
@@ -64,14 +66,17 @@ class ProfileScreen extends StatelessWidget {
 
                                   //name and email
                                   CustomTextWidget(
-                                    text: "James Anderson",
+                                    text: _storage
+                                            .read('user_info')['first_name'] +
+                                        " " +
+                                        _storage.read('user_info')['last_name'],
                                     fontWeight: FontWeight.bold,
                                     fontSize: 22,
                                     textColor: MyColorHelper.white,
                                     fontFamily: "poppins",
                                   ),
                                   CustomTextWidget(
-                                    text: "james@gmail.com",
+                                    text: _storage.read('user_info')['email'],
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
                                     textColor: MyColorHelper.white,

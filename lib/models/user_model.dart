@@ -1,40 +1,57 @@
-class UserModel {
-  final String id;
+class User {
+  String id;
+  String firstName;
+  String lastName;
+  String email;
+  bool isEmailVerified;
+  String password;
+  bool isAdmin;
+  DateTime createdAt;
+  DateTime updatedAt;
+  ResetOTP resetOTP;
 
-  final String email;
-  final String profilePicture;
-  String name;
-
-  // Constructor for UserModel.
-  UserModel({
+  User({
     required this.id,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.email,
-    required this.profilePicture,
+    required this.isEmailVerified,
+    required this.password,
+    required this.isAdmin,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.resetOTP,
   });
 
-  // Convert model to JSON structure for storing data in Firebase.
-  Map<String, dynamic> toJson() {
-    return {
-      'FirstName': name,
-      'Email': email,
-      'ProfilePicture': profilePicture,
-    };
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['_id'],
+      firstName: json['first_name'],
+      lastName: json['last_name'],
+      email: json['email'],
+      isEmailVerified: json['is_email_verified'],
+      password: json['password'],
+      isAdmin: json['is_admin'],
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+      resetOTP: ResetOTP.fromJson(json['resetOTP']),
+    );
   }
-  //
-  // // Factory method to create a UserModel from a Firebase document snapshot.
-  // factory UserModel.fromSnapshot(
-  //     DocumentSnapshot<Map<String, dynamic>> document) {
-  //   if (document.data() != null) {
-  //     final data = document.data()!;
-  //     return UserModel(
-  //       id: document.id,
-  //       name: data['name'] ?? '',
-  //       email: data['Email'] ?? '',
-  //       profilePicture: data['ProfilePicture'] ?? '',
-  //     );
-  //   } else {
-  //     throw Exception('Document data is null');
-  //   }
-  // }
+}
+
+class ResetOTP {
+  String otp;
+  DateTime expiresAt;
+
+  ResetOTP({
+    required this.otp,
+    required this.expiresAt,
+  });
+
+  factory ResetOTP.fromJson(Map<String, dynamic> json) {
+    return ResetOTP(
+      otp: json['otp'],
+      expiresAt: DateTime.parse(json['expiresAt']),
+    );
+  }
 }

@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/splash.dart';
+import 'package:sound_app/view/challenge/challenge.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

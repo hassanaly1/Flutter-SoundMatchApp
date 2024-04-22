@@ -7,12 +7,12 @@ import 'package:sound_app/models/sound_pack_model.dart';
 
 class MyUniversalController extends GetxController {
   RxBool isGuestUser = false.obs;
-  // Rx<SoundPackModel?> selectedSoundPack = Rx<SoundPackModel?>(null);
-  // RxBool isSoundPackSelected = false.obs;
-  // Rx<SoundModel?> selectedSound = Rx<SoundModel?>(null);
-  // RxBool isSoundSelected = false.obs;
   // Reactive list for sounds based on sound pack ID
   RxList<SoundModel> sounds = <SoundModel>[].obs;
+  // all sound pack list
+  RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
+  // user sound pack list
+  RxList<SoundPackModel> userSoundPacks = <SoundPackModel>[].obs;
 
   @override
   onInit() async {
@@ -27,21 +27,11 @@ class MyUniversalController extends GetxController {
         challengeName: 'Free Sound Match', song: SoundModel(name: '', url: ''))
   ].obs;
 
-  // all sound pack list
-  RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
-  // user sound pack list
-  RxList<SoundPackModel> userSoundPacks = <SoundPackModel>[].obs;
-
   // Add sound pack to the list
   void addOrRemoveSoundPack(SoundPackModel soundPack) {
     if (userSoundPacks.contains(soundPack)) {
       userSoundPacks.remove(soundPack);
       debugPrint(soundPack.packName);
-      // if (selectedSoundPack.value == soundPack) {
-      //   // If the same sound is tapped again, deselect it
-      //   isSoundPackSelected.value = false;
-      //   selectedSoundPack.value = null;
-      // }
     } else {
       userSoundPacks.add(soundPack);
       debugPrint(soundPack.packName);

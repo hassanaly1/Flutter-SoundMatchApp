@@ -27,7 +27,10 @@ class AuthController extends GetxController {
   // TextEditingController forgetPasswordController = TextEditingController();
   TextEditingController otpController = TextEditingController();
 
-  final storage = GetStorage();
+  final _storage = GetStorage();
+  void saveUserInfo(Map<String, dynamic> userInfo) {
+    _storage.write('user_info', userInfo);
+  }
 
   //Calling Apis Methods.
 
@@ -114,8 +117,11 @@ class AuthController extends GetxController {
 
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
-          storage.write('token', response['token']);
-          debugPrint('TokenAtStorage: ${storage.read('token')}');
+          _storage.write('token', response['token']);
+          debugPrint('TokenAtStorage: ${_storage.read('token')}');
+
+          saveUserInfo(response['user']);
+          debugPrint('UserInfo: ${_storage.read('user_info')}');
           Get.offAll(() => const HomeScreen(), transition: Transition.zoom);
         } else {
           response['message'] == 'Please Verify Your Email First'
@@ -179,8 +185,8 @@ class AuthController extends GetxController {
           debugPrint('VERIFY OTP API CALLED SUCCESSFULLY');
           Fluttertoast.showToast(msg: response['message']);
           debugPrint('TokenReceived: ${response['data']['token']}');
-          storage.write('token', response['data']['token']);
-          debugPrint('TokenAtStorage: ${storage.read('token')}');
+          _storage.write('token', response['data']['token']);
+          debugPrint('TokenAtStorage: ${_storage.read('token')}');
           Get.offAll(() => const ChangePasswordScreen());
         } else {
           Fluttertoast.showToast(msg: response['message']);
@@ -205,7 +211,7 @@ class AuthController extends GetxController {
         Map<String, dynamic> response = await AuthService().changePassword(
             password: passwordController.text.trim(),
             confirmPassword: confirmPasswordController.text.trim(),
-            token: storage.read('token'));
+            token: _storage.read('token'));
 
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);

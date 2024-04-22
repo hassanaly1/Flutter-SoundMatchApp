@@ -200,38 +200,48 @@ class PurchaseSongsScreen extends StatelessWidget {
                           fontFamily: 'poppins',
                           textColor: Colors.white,
                         ),
-                        GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: controller.allSoundPacks
-                              .where((soundPack) => soundPack.isPaid == false)
-                              .length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 0.6,
-                          ),
-                          itemBuilder: (context, index) {
-                            final paidSoundPacks = controller.allSoundPacks
-                                .where((soundPack) => soundPack.isPaid == false)
-                                .toList();
-                            if (index < paidSoundPacks.length) {
-                              // Show paid soundPacks
-                              return CustomSoundPackWidget(
-                                soundPackModel: paidSoundPacks[index],
-                                // showTickIcon: false,
-                                // showAddIcon: true,
-                              );
-                            } else {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  color: Colors.red,
+                        controller.allSoundPacks.isEmpty
+                            ? const Center(
+                                heightFactor: 5.0,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
                                 ),
-                              );
-                            }
-                          },
-                        ),
+                              )
+                            : GridView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: controller.allSoundPacks
+                                    .where((soundPack) =>
+                                        soundPack.isPaid == false)
+                                    .length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  childAspectRatio: 0.6,
+                                ),
+                                itemBuilder: (context, index) {
+                                  final paidSoundPacks = controller
+                                      .allSoundPacks
+                                      .where((soundPack) =>
+                                          soundPack.isPaid == false)
+                                      .toList();
+                                  if (index < paidSoundPacks.length) {
+                                    // Show paid soundPacks
+                                    return CustomSoundPackWidget(
+                                      soundPackModel: paidSoundPacks[index],
+                                      // showTickIcon: false,
+                                      // showAddIcon: true,
+                                    );
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        color: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
                       ],
                     ),
                   )),

@@ -5,7 +5,7 @@ class ChallengeModel {
   String? challengeName;
   SoundModel? song;
   int? id;
-  int? roundsCount;
+  int? numberOfRounds;
   List<Participant>? participants;
   // List<Participant>? leftProfiles;
   // List<Participant>? rightProfiles;
@@ -19,6 +19,6 @@ class ChallengeModel {
     // this.leftProfiles,
     // this.rightProfiles,
     // this.bottomProfiles,
-    this.roundsCount,
+    this.numberOfRounds,
   });
 }

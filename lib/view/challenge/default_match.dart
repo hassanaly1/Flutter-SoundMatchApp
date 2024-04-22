@@ -63,7 +63,7 @@ class CenterPart extends StatelessWidget {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const UserResultCard(),
+                  const UserResultCard(index: 0),
                   CustomAuthButton(
                     text: 'Back to Dashboard',
                     onTap: () {

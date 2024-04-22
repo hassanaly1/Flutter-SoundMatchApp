@@ -5,6 +5,7 @@ import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
+import 'package:sound_app/view/challenge/challenge.dart';
 
 class AddChallengeController extends GetxController {
   // RxBool isSoundPackSelected = false.obs;
@@ -87,6 +88,7 @@ class AddChallengeController extends GetxController {
       universalController.challenges.add(challenge);
       debugPrint(
           'Challenges Length : ${universalController.challenges.length.toString()}');
+      Get.off(() => ChallengeScreen(challengeModel: challenge));
     }
   }
 

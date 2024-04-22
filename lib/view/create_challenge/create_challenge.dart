@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+// import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:sound_app/controller/add_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/appbar.dart';
@@ -17,6 +18,7 @@ import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/participant_model.dart';
+// import 'package:sound_app/utils/api_endpoints.dart';
 import 'package:sound_app/view/auth/signup.dart';
 import 'package:sound_app/view/create_challenge/select_members.dart';
 import 'package:sound_app/view/create_challenge/select_song.dart';
@@ -253,12 +255,36 @@ class CreateChallenge extends StatelessWidget {
                                         padding: const EdgeInsets.all(8.0),
                                         child: InkWell(
                                           onTap: () {
-                                            buildConnection();
-                                            // createChallenge(
-                                            //     universalController:
-                                            //         universalController,
-                                            //     controller: controller,
-                                            //     context: context);
+                                            createChallenge(
+                                                universalController:
+                                                    universalController,
+                                                controller: controller,
+                                                context: context);
+                                            // print('TAPPED');
+                                            // IO.Socket socket = IO.io(
+                                            //   ApiEndPoints.baseUrl,
+                                            //   IO.OptionBuilder().setTransports(
+                                            //       ['websocket']).build(),
+                                            // );
+                                            // socket.on('connect', (_) {
+                                            //   print('connect');
+                                            //   socket.emit('create_challenge', {
+                                            //     'name': controller
+                                            //         .challengeNameController
+                                            //         .text
+                                            //         .trim(),
+                                            //     'number_of_challenges':
+                                            //         controller.gameRound.value,
+                                            //   });
+                                            // });
+                                            // socket.onConnect((_) {
+                                            //   print('connect');
+                                            // });
+                                            // socket.onConnectError((_) {
+                                            //   print('connect error');
+                                            // });
+                                            // socket.onDisconnect(
+                                            //     (_) => print('disconnect'));
                                           },
                                           child: Image.asset(
                                               MyAssetHelper.startNow,
@@ -318,7 +344,13 @@ class CreateChallenge extends StatelessWidget {
         List<Participant> participants = controller.selectedMembers;
 
         controller.createChallenge(
-          ChallengeModel(),
+          ChallengeModel(
+            id: Random().nextInt(50),
+            challengeName: controller.challengeNameController.text,
+            participants: participants,
+            song: controller.selectedSound.value!,
+            numberOfRounds: controller.gameRound.value,
+          ),
         );
 
         // List<Participant> leftProfiles = participants.length >= 3

@@ -5,10 +5,10 @@ import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 
 class UserResultCard extends StatelessWidget {
-  // final int index;
+  final int index;
   const UserResultCard({
     super.key,
-    // required this.index,
+    required this.index,
   });
   @override
   Widget build(BuildContext context) {
