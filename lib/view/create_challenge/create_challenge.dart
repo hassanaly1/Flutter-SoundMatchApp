@@ -155,7 +155,7 @@ class CreateChallenge extends StatelessWidget {
                                                               0.15,
                                                           child: TextFormField(
                                                               controller: controller
-                                                                  .numberOfRounds,
+                                                                  .numberOfRoundsController,
                                                               onChanged: controller
                                                                   .updateGameRound, // controller: controller
                                                               //     .numberOfRounds,
@@ -349,7 +349,7 @@ class CreateChallenge extends StatelessWidget {
             challengeName: controller.challengeNameController.text,
             participants: participants,
             song: controller.selectedSound.value!,
-            numberOfRounds: controller.gameRound.value,
+            numberOfRounds: controller.numberOfRounds.value,
           ),
         );
 
@@ -456,11 +456,11 @@ class CreateChallenge extends StatelessWidget {
         }),
         activeColor: MyColorHelper.blue,
         value: value,
-        groupValue: controller.gameRound.value,
+        groupValue: controller.numberOfRounds.value,
         onChanged: (int? selectedValue) {
           if (selectedValue != null) {
-            controller.gameRound.value = selectedValue;
-            controller.numberOfRounds.text = selectedValue.toString();
+            controller.numberOfRounds.value = selectedValue;
+            controller.numberOfRoundsController.text = selectedValue.toString();
           }
         },
       );

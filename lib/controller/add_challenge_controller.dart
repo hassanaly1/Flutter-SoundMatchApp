@@ -10,13 +10,13 @@ import 'package:sound_app/view/challenge/challenge.dart';
 class AddChallengeController extends GetxController {
   // RxBool isSoundPackSelected = false.obs;
   RxBool isMemberSelected = false.obs;
-  RxInt gameRound = 1.obs;
+  RxInt numberOfRounds = 1.obs;
 
   final MyUniversalController universalController = Get.find();
 
   //CreateNewChallenge
   TextEditingController challengeNameController = TextEditingController();
-  TextEditingController numberOfRounds = TextEditingController();
+  TextEditingController numberOfRoundsController = TextEditingController();
   //ParticipantsList
   RxList<Participant> selectedMembers =
       <Participant>[].obs; //for selectedMembers
@@ -35,7 +35,7 @@ class AddChallengeController extends GetxController {
   }
 
   void updateGameRound(String value) {
-    gameRound.value = int.parse(value);
+    numberOfRounds.value = int.parse(value);
   }
 
   void filterMembers(String query) {

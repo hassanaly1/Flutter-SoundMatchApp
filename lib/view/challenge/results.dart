@@ -1,23 +1,25 @@
+import 'dart:async';
 import 'dart:ui';
 
-import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:confetti/confetti.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/challenge_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
+import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/models/challenge_model.dart';
+import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/widgets/bar_chart.dart';
-import 'package:sound_app/view/challenge/widgets/radar_chart.dart';
 import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class ResultScreen extends StatelessWidget {
-  const ResultScreen({super.key});
+  final ChallengeModel challengeModel;
+  const ResultScreen({super.key, required this.challengeModel});
 
   @override
   Widget build(BuildContext context) {
@@ -94,15 +96,21 @@ class ResultScreen extends StatelessWidget {
               body: TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  const Column(
+                  Column(
                     children: [
-                      Expanded(child: UserResultPreview2()),
-                      Expanded(child: MyRadarChart(showBlurBackground: true)),
+                      Expanded(
+                          flex: 2,
+                          child: UserResultPreview(
+                              challengeModel: challengeModel)),
+                      // const Expanded(
+                      //     child: MyRadarChart(showBlurBackground: true)),
                     ],
                   ),
                   Column(
                     children: [
-                      const Expanded(child: UserResultPreview2()),
+                      Expanded(
+                          child: UserResultPreview(
+                              challengeModel: challengeModel)),
                       Expanded(child: MyBarChart(showBlurBackground: true)),
                     ],
                   ),
@@ -116,31 +124,56 @@ class ResultScreen extends StatelessWidget {
   }
 }
 
-class UserResultPreview2 extends StatefulWidget {
-  const UserResultPreview2({
+class UserResultPreview extends StatefulWidget {
+  final ChallengeModel challengeModel;
+  const UserResultPreview({
     super.key,
+    required this.challengeModel,
   });
 
   @override
-  _UserResultPreview2State createState() => _UserResultPreview2State();
+  _UserResultPreviewState createState() => _UserResultPreviewState();
 }
 
-class _UserResultPreview2State extends State<UserResultPreview2>
+class _UserResultPreviewState extends State<UserResultPreview>
     with AutomaticKeepAliveClientMixin {
+  final ChallengeController controller = Get.find();
   final CarouselController carouselController = CarouselController();
   late ConfettiController confettiController;
   final RxBool isFirstIndex = true.obs;
-
-  int countDown = 60;
+  Timer? _timer;
+  bool timerCompleted = false;
 
   @override
   void initState() {
     super.initState();
+    _startTimer();
     confettiController = ConfettiController();
     isFirstIndex.value = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       confettiController.play();
     });
+  }
+
+  void _startTimer() {
+    if (!controller.isChallengeCompleted.value) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (controller.countdownForNextRound.value > 0) {
+          controller.countdownForNextRound.value--;
+        } else {
+          _timer?.cancel();
+          timerCompleted = true;
+          controller.countdownForNextRound.value = 60;
+
+          Get.off(
+            () => ChallengeScreen(
+                challengeModel:
+                    controller.updateChallengeModel(widget.challengeModel)),
+          );
+          controller.resetControllerValues();
+        }
+      });
+    }
   }
 
   @override
@@ -170,27 +203,36 @@ class _UserResultPreview2State extends State<UserResultPreview2>
                   initialPage: 0,
                   onPageChanged: onPageChanged,
                 ),
-                itemCount: 6,
+                itemCount: widget.challengeModel.participants?.length,
                 itemBuilder: (BuildContext context, int index, _) {
-                  return UserResultCard(index: index);
+                  final participant =
+                      widget.challengeModel.participants![index];
+                  return UserResultCard(index: index, participant: participant);
                 },
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.002),
               buildCarouselControls(),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+              Visibility(
+                visible: !controller.isChallengeCompleted.value,
+                child: CustomAuthButton(
+                  text: 'Next Round',
+                  onTap: () {},
+                ),
+              )
             ],
           ),
         ),
-        Obx(() {
-          return isFirstIndex.value
-              ? ConfettiWidget(
-                  confettiController: confettiController,
-                  shouldLoop: true,
-                  blastDirectionality: BlastDirectionality.explosive,
-                  numberOfParticles: 40,
-                  colors: const [Colors.green, Colors.blue, Colors.pink],
-                )
-              : const SizedBox();
-        }),
+        // Obx(() {
+        //   return isFirstIndex.value
+        //       ? ConfettiWidget(
+        //           confettiController: confettiController,
+        //           shouldLoop: true,
+        //           blastDirectionality: BlastDirectionality.explosive,
+        //           numberOfParticles: 30,
+        //           colors: const [Colors.green, Colors.blue, Colors.pink],
+        //         )
+        //       : const SizedBox();
+        // }),
       ],
     );
   }
@@ -214,6 +256,46 @@ class _UserResultPreview2State extends State<UserResultPreview2>
           children: [
             buildCarouselControl(
                 MyAssetHelper.rankLeft, carouselController.previousPage),
+            Visibility(
+              visible: !controller.isChallengeCompleted.value,
+              child: Container(
+                height: 80,
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                    color: Colors.white60,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey,
+                        blurRadius: 15.0,
+                        spreadRadius: 4.0,
+                        offset: Offset(5.0, 5.0),
+                      )
+                    ],
+                    shape: BoxShape.circle),
+                child: Center(
+                  child: Obx(
+                    () => Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          value: controller.countdownForNextRound.value / 60,
+                          strokeWidth: 4.0,
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                              MyColorHelper.primaryColor),
+                        ),
+                        CustomTextWidget(
+                          text:
+                              controller.countdownForNextRound.value.toString(),
+                          fontSize: 24.0,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             buildCarouselControl(
                 MyAssetHelper.rankRight, carouselController.nextPage),
           ],

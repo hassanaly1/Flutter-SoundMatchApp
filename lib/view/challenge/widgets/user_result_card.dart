@@ -3,12 +3,15 @@ import 'package:get/get.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/models/participant_model.dart';
 
 class UserResultCard extends StatelessWidget {
+  final Participant participant;
   final int index;
   const UserResultCard({
     super.key,
     required this.index,
+    required this.participant,
   });
   @override
   Widget build(BuildContext context) {
@@ -34,19 +37,19 @@ class UserResultCard extends StatelessWidget {
                     leading: Container(
                       height: 50,
                       width: 50,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           image: NetworkImage(
-                            'https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?size=626&ext=jpg&uid=R133237588&ga=GA1.2.1091155359.1700008188&semt=ais',
+                            participant.imageUrl ?? '',
                           ),
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     title: CustomTextWidget(
-                      text: 'James Anderson',
+                      text: participant.name ?? '',
                       fontFamily: "Horta",
                       textColor: MyColorHelper.white,
                       fontSize: 18,

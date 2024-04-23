@@ -18,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _storage = GetStorage();
+    final storage = GetStorage();
     final isKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
     double height = MediaQuery.of(context).size.height;
     return SafeArea(
@@ -66,17 +66,17 @@ class ProfileScreen extends StatelessWidget {
 
                                   //name and email
                                   CustomTextWidget(
-                                    text: _storage
+                                    text: storage
                                             .read('user_info')['first_name'] +
                                         " " +
-                                        _storage.read('user_info')['last_name'],
+                                        storage.read('user_info')['last_name'],
                                     fontWeight: FontWeight.bold,
                                     fontSize: 22,
                                     textColor: MyColorHelper.white,
                                     fontFamily: "poppins",
                                   ),
                                   CustomTextWidget(
-                                    text: _storage.read('user_info')['email'],
+                                    text: storage.read('user_info')['email'],
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
                                     textColor: MyColorHelper.white,

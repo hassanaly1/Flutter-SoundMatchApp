@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,11 +15,26 @@ import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/view/challenge/sharing_screen.dart';
 
-class ChallengeScreen extends StatelessWidget {
+class ChallengeScreen extends StatefulWidget {
   final ChallengeModel challengeModel;
-  ChallengeScreen({super.key, required this.challengeModel});
+  const ChallengeScreen({super.key, required this.challengeModel});
 
+  @override
+  State<ChallengeScreen> createState() => _ChallengeScreenState();
+}
+
+class _ChallengeScreenState extends State<ChallengeScreen> {
   final ChallengeController controller = Get.put(ChallengeController());
+
+  @override
+  void initState() {
+    debugPrint('ChallengeInitCalled');
+    Future.delayed(const Duration(milliseconds: 1), () {
+      showRoundStartedPopup(controller: controller, context: context);
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +61,7 @@ class ChallengeScreen extends StatelessWidget {
                         children: [
                           TopContainer(
                             controller: controller,
-                            challengeModel: challengeModel,
+                            challengeModel: widget.challengeModel,
                           ),
                           Expanded(
                             child: GridView.builder(
@@ -95,8 +111,8 @@ class ChallengeScreen extends StatelessWidget {
                                     controller.currentUserIndex.value,
                                 child: GestureDetector(
                                   onLongPress: controller.onLongPressedStart,
-                                  onLongPressEnd: (details) =>
-                                      controller.onLongPressedEnd(),
+                                  onLongPressEnd: (details) => controller
+                                      .onLongPressedEnd(widget.challengeModel),
                                   child: Container(
                                     height: 80,
                                     margin: const EdgeInsets.all(10),
@@ -167,10 +183,8 @@ class ChallengeScreen extends StatelessWidget {
                       Obx(
                         () => BackdropFilter(
                           filter: ImageFilter.blur(
-                            sigmaX:
-                                controller.isResultPopupVisible.value ? 5 : 0,
-                            sigmaY:
-                                controller.isResultPopupVisible.value ? 5 : 0,
+                            sigmaX: controller.isRoundCompleted.value ? 5 : 0,
+                            sigmaY: controller.isRoundCompleted.value ? 5 : 0,
                           ),
                           child: const SizedBox(),
                         ),
@@ -184,6 +198,147 @@ class ChallengeScreen extends StatelessWidget {
         )
       ],
     ));
+  }
+
+  void showRoundStartedPopup(
+      {required BuildContext context,
+      required ChallengeController controller}) {
+    // Show the dialog
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierLabel: 'Dismiss',
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) => Container(),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return PopScope(
+          canPop: false,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+            child: FadeTransition(
+              opacity: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: AlertDialog(
+                scrollable: true,
+                backgroundColor: Colors.transparent,
+                content: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: context.height * 0.02,
+                  ),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        MyColorHelper.blue,
+                        MyColorHelper.caribbeanCurrent
+                      ],
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 5.0,
+                        spreadRadius: 5.0,
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: Offset(0.0, 0.0),
+                        blurRadius: 0.0,
+                        spreadRadius: 0.0,
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Lottie.asset(
+                        MyAssetHelper.roundAnimation,
+                        height: 120,
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: DefaultTextStyle(
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 30.0,
+                            fontFamily: 'Horta',
+                            color: MyColorHelper.white,
+                          ),
+                          child: AnimatedTextKit(
+                            animatedTexts: [
+                              TypewriterAnimatedText(
+                                textAlign: TextAlign.center,
+                                'Round 1 Started',
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // Close the dialog after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context).pop();
+    });
+  }
+}
+
+class CalculatingResultPopup extends StatelessWidget {
+  const CalculatingResultPopup({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+      height: context.height * 0.6,
+      width: context.width,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        fit: BoxFit.fill,
+        image: AssetImage(MyAssetHelper.leaderBackground),
+      )),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            MyAssetHelper.robot,
+            height: context.height * 0.15,
+          ),
+          Flexible(
+            child: CustomTextWidget(
+              text:
+                  "All recordings have been received.\n Please wait, Result are Calculating...... ",
+              textAlign: TextAlign.center,
+              maxLines: 4,
+              fontFamily: 'poppins',
+              textColor: MyColorHelper.white,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+          SpinKitSpinningLines(
+            color: Colors.white,
+            size: context.height * 0.06,
+            lineWidth: 2.0,
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -215,6 +370,13 @@ class TopContainer extends StatelessWidget {
                 fontFamily: "Horta",
                 textColor: MyColorHelper.white,
                 fontSize: 32),
+            CustomTextWidget(
+                text: 'Round # ${controller.currentRound.toString()}'
+                    '',
+                fontFamily: "Poppins",
+                fontWeight: FontWeight.w600,
+                textColor: MyColorHelper.white,
+                fontSize: 18),
             Row(
               children: [
                 CircleAvatar(
@@ -286,7 +448,7 @@ class TopContainer extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 controller.currentTurnIndex.value = 0;
-                controller.onGameStarts();
+                controller.onGameStarts(challengeModel);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -358,53 +520,6 @@ class CustomUserCard extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class CalculatingResultPopup extends StatelessWidget {
-  const CalculatingResultPopup({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
-      height: context.height * 0.6,
-      width: context.width,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        fit: BoxFit.fill,
-        image: AssetImage(MyAssetHelper.leaderBackground),
-      )),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            MyAssetHelper.robot,
-            height: context.height * 0.15,
-          ),
-          Flexible(
-            child: CustomTextWidget(
-              text:
-                  "All recordings have been received.\n Please wait, Result are Calculating...... ",
-              textAlign: TextAlign.center,
-              maxLines: 4,
-              fontFamily: 'poppins',
-              textColor: MyColorHelper.white,
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-          ),
-          SpinKitSpinningLines(
-            color: Colors.white,
-            size: context.height * 0.06,
-            lineWidth: 2.0,
-          )
         ],
       ),
     );

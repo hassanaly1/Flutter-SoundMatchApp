@@ -130,7 +130,7 @@ class SoundPacksContainer extends StatelessWidget {
         );
       },
       openBuilder: (context, action) {
-        return PurchaseSongsScreen();
+        return const PurchaseSongsScreen();
       },
       openElevation: 0,
       closedElevation: 0,

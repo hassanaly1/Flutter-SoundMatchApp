@@ -16,8 +16,8 @@ class MyUniversalController extends GetxController {
 
   @override
   onInit() async {
-    await fetchSoundPacks(1);
-    debugPrint('SoundPacks: ${allSoundPacks.length}');
+    // await fetchSoundPacks(1);
+    // debugPrint('SoundPacks: ${allSoundPacks.length}');
     super.onInit();
   }
 

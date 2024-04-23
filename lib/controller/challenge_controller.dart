@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/view/challenge/challenge.dart';
@@ -10,39 +11,64 @@ import 'package:sound_app/view/challenge/results.dart';
 class ChallengeController extends GetxController {
   final AddChallengeController addChallengeController = Get.find();
 
-  RxInt eachTurnDuration = 5.obs;
-  RxInt originalTurnDuration = 5.obs;
   RxBool isDefaultAudioPlaying = false.obs;
   RxBool isUserAudioPlaying = false.obs;
   RxBool isUserRecording = false.obs;
   Timer? _timer;
-  bool timerCompleted = false;
 
+  // Track the current round
+  RxInt currentRound = 1.obs;
+  RxInt eachTurnDuration = 5.obs;
+  RxInt originalTurnDuration = 5.obs;
+  RxBool timerCompleted = false.obs;
+  RxBool isRoundCompleted = false.obs;
   // Track the current participant's turn
   RxInt currentTurnIndex = 0.obs;
   RxInt currentUserIndex = 0.obs;
   RxBool isCurrentTurn = false.obs;
 
+  // Track if the challenge is completed
+  RxBool isChallengeCompleted = false.obs;
+  RxInt countdownForNextRound = 60.obs;
+
   late List<Participant> totalParticipants;
   late Rx<SoundModel?> soundForChallenge;
+  late RxInt totalRounds;
 
   @override
   void onInit() {
     super.onInit();
+    debugPrint('ChallengeControllerInitialized');
     totalParticipants = addChallengeController.selectedMembers;
     soundForChallenge = addChallengeController.selectedSound;
+    totalRounds = addChallengeController.numberOfRounds;
     update();
   }
 
-  RxBool isResultPopupVisible = false.obs;
+  ChallengeModel? challenge;
 
   @override
   void onClose() {
+    debugPrint('ChallengeControllerOnClosedCalled');
     _timer?.cancel();
     super.onClose();
   }
 
-  void onGameStarts() {
+  updateChallengeModel(ChallengeModel challengeModel) {
+    ChallengeModel updatedChallengeModel = ChallengeModel(
+      id: challengeModel.id,
+      challengeName: challengeModel.challengeName,
+      participants: challengeModel.participants
+          ?.where((p) => p.name == 'John Doe')
+          .toList(),
+      numberOfRounds: challengeModel.numberOfRounds,
+      song: challengeModel.song,
+    );
+    return updatedChallengeModel;
+  }
+
+  void onGameStarts(ChallengeModel challengeModel) {
+    challenge = challengeModel;
     // Start the timer only if it's not already running
     if (_timer == null || !_timer!.isActive) {
       _startTimer();
@@ -50,8 +76,6 @@ class ChallengeController extends GetxController {
   }
 
   void _startTimer() {
-    debugPrint('CurrentTurn: ${currentTurnIndex.value}');
-    debugPrint('CurrentUser: ${currentUserIndex.value}');
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (eachTurnDuration.value > 0) {
         eachTurnDuration.value--;
@@ -60,13 +84,21 @@ class ChallengeController extends GetxController {
         eachTurnDuration.value = 5;
         currentTurnIndex.value++;
         isUserRecording.value = false;
-        timerCompleted = true;
+        timerCompleted.value = true;
         update();
         if (currentTurnIndex.value < totalParticipants.length) {
           _restartTimer();
         }
         if (currentTurnIndex.value == totalParticipants.length) {
-          showCalculatingResultPopup();
+          if (challenge != null) {
+            showCalculatingResultPopup(challenge!);
+          }
+
+          isRoundCompleted.value = true;
+          if (currentRound.value == totalRounds.value) {
+            isChallengeCompleted.value = true;
+          }
+          update();
         }
       }
     });
@@ -87,21 +119,20 @@ class ChallengeController extends GetxController {
     }
   }
 
-  void onLongPressedEnd() {
+  void onLongPressedEnd(ChallengeModel challengeModel) {
     isUserRecording.value = false;
-    if (!timerCompleted) {
+    if (!timerCompleted.value) {
       currentTurnIndex.value++;
       _restartTimer(); // Restart the timer
     }
-    timerCompleted = false;
+    timerCompleted.value = false;
     eachTurnDuration.value = 5;
     update();
-    showCalculatingResultPopup();
+    // showCalculatingResultPopup();
   }
 
-  void showCalculatingResultPopup() {
+  void showCalculatingResultPopup(ChallengeModel challengeModel) {
     if (currentTurnIndex.value >= totalParticipants.length) {
-      isResultPopupVisible.value = true;
       Get.dialog(
         const AlertDialog(
           backgroundColor: Colors.transparent,
@@ -110,8 +141,23 @@ class ChallengeController extends GetxController {
       );
       // Navigate to the ResultScreen when the results are calculated.
       Future.delayed(const Duration(seconds: 5), () {
-        Get.off(() => const ResultScreen());
+        Get.off(() => ResultScreen(challengeModel: challengeModel));
       });
+      if (currentRound.value == totalRounds.value) {
+        isChallengeCompleted.value = true;
+      }
     }
+  }
+
+  void resetControllerValues() {
+    debugPrint('ResetControllerValuesCalled');
+    currentRound.value++;
+    eachTurnDuration.value = 5;
+    originalTurnDuration.value = 5;
+    timerCompleted.value = false;
+    isRoundCompleted.value = false;
+    currentTurnIndex.value = 0;
+    currentUserIndex.value = 0;
+    isCurrentTurn.value = false;
   }
 }

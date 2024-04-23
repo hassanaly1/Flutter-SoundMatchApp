@@ -10,6 +10,7 @@ import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
 
 class DefaultMatchScreen extends StatelessWidget {
@@ -63,7 +64,9 @@ class CenterPart extends StatelessWidget {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const UserResultCard(index: 0),
+                  UserResultCard(
+                      index: 0,
+                      participant: Participant(name: 'You', imageUrl: '')),
                   CustomAuthButton(
                     text: 'Back to Dashboard',
                     onTap: () {
