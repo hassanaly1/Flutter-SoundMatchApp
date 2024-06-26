@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -13,9 +15,14 @@ import 'package:lottie/lottie.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
 
-class DefaultMatchScreen extends StatelessWidget {
-  DefaultMatchScreen({super.key});
+class DefaultMatchScreen extends StatefulWidget {
+  const DefaultMatchScreen({super.key});
 
+  @override
+  State<DefaultMatchScreen> createState() => _DefaultMatchScreenState();
+}
+
+class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
   final DefaultMatchController controller = Get.put(DefaultMatchController());
 
   @override
@@ -197,33 +204,52 @@ class CenterPart extends StatelessWidget {
 
 class TopContainer extends StatelessWidget {
   final DefaultMatchController controller;
-  const TopContainer({
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+   TopContainer({
     super.key,
     required this.controller,
   });
+
+  void _toggleAudio() async {
+    try {
+      if (controller.isDefaultAudioPlaying.value) {
+        await _audioPlayer.pause();
+        controller.isDefaultAudioPlaying.value = false;
+      } else {
+        // Reset the audio player before playing to ensure it starts from the beginning
+        await _audioPlayer.stop();
+        await _audioPlayer.play(AssetSource('music/music1.mp3'));
+        controller.isDefaultAudioPlaying.value = true;
+      }
+    } catch (e) {
+      debugPrint('Error playing audio: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
       decoration: BoxDecoration(
-          image: DecorationImage(
-        fit: BoxFit.fill,
-        image: AssetImage(
-          MyAssetHelper.leaderBackground,
+        image: DecorationImage(
+          fit: BoxFit.fill,
+          image: AssetImage(
+            MyAssetHelper.leaderBackground,
+          ),
         ),
-      )),
+      ),
       child: Padding(
         padding: const EdgeInsets.only(bottom: 20, top: 10),
         child: Column(
-          // mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             CustomTextWidget(
-                text: "Free Sound Match",
-                fontFamily: "Horta",
-                textColor: MyColorHelper.white,
-                fontSize: 32),
+              text: "Free Sound Match",
+              fontFamily: "Horta",
+              textColor: MyColorHelper.white,
+              fontSize: 32,
+            ),
             Row(
               children: [
                 CircleAvatar(
@@ -232,37 +258,36 @@ class TopContainer extends StatelessWidget {
                 ),
                 Flexible(
                   child: Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: context.width * 0.05),
+                    margin: EdgeInsets.symmetric(horizontal: context.width * 0.05),
                     height: context.height * 0.06,
                     decoration: BoxDecoration(
-                        color: MyColorHelper.white,
-                        borderRadius: BorderRadius.circular(30)),
+                      color: MyColorHelper.white,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                     child: Obx(
-                      () => Row(
+                          () => Row(
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: InkWell(
-                                onTap: () {
-                                  debugPrint('AudioIconTapped');
-                                  controller.isDefaultAudioPlaying.value =
-                                      !controller.isDefaultAudioPlaying.value;
-                                },
-                                child: Icon(
-                                    controller.isDefaultAudioPlaying.value
-                                        ? Icons.pause_circle
-                                        : Icons.play_circle)),
+                              onTap: _toggleAudio,
+                              child: Icon(
+                                controller.isDefaultAudioPlaying.value
+                                    ? Icons.pause_circle
+                                    : Icons.play_circle,
+                              ),
+                            ),
                           ),
                           Expanded(
                             child: controller.isDefaultAudioPlaying.value
                                 ? Lottie.asset(
-                                    "assets/images/audioAnimation.json",
-                                    fit: BoxFit.fill,
-                                    height: context.height * 0.03)
+                              "assets/images/audioAnimation.json",
+                              fit: BoxFit.fill,
+                              height: context.height * 0.03,
+                            )
                                 : const Divider(
-                                    thickness: 3.0, endIndent: 15.0),
-                          )
+                                thickness: 3.0, endIndent: 15.0),
+                          ),
                         ],
                       ),
                     ),
@@ -276,3 +301,4 @@ class TopContainer extends StatelessWidget {
     );
   }
 }
+

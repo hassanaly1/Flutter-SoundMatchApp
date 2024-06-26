@@ -213,7 +213,7 @@ class ChallengesList extends StatelessWidget {
                 },
                 openBuilder: (context, action) {
                   if (index == 0) {
-                    return DefaultMatchScreen();
+                    return const DefaultMatchScreen();
                     return Container();
                   } else {
                     // return const FinalResultScreen2();

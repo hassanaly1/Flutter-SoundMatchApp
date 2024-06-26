@@ -446,9 +446,9 @@ class CreateChallenge extends StatelessWidget {
       return Radio(
         autofocus: true,
         splashRadius: 20.0,
-        fillColor: MaterialStateProperty.resolveWith((states) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
           // active
-          if (states.contains(MaterialState.selected)) {
+          if (states.contains(WidgetState.selected)) {
             return MyColorHelper.blue;
           }
           // inactive
