@@ -134,7 +134,7 @@ class CreateChallenge extends StatelessWidget {
                                                     mainAxisSize:
                                                         MainAxisSize.min,
                                                     children: [
-                                                      CustomTextWidget(
+                                                      const CustomTextWidget(
                                                         text: 'Select Rounds',
                                                         fontFamily: 'poppins',
                                                         textColor:
@@ -487,14 +487,14 @@ class CreateChallengeImage extends StatelessWidget {
               child: Image.asset(MyAssetHelper.addChallengeBackground),
             ),
           ),
-          Positioned.fill(
+          const Positioned.fill(
               child: Center(
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
                   child: CustomTextWidget(
                     fontFamily: 'horta',
                     text: 'Create New Challenge',
@@ -502,7 +502,7 @@ class CreateChallengeImage extends StatelessWidget {
                     fontSize: 26.0,
                     textColor: Colors.white,
                     isShadow: true,
-                    shadow: const [
+                    shadow: [
                       Shadow(
                         blurRadius: 15.0,
                         color: Colors.black,

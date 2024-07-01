@@ -54,7 +54,7 @@ class UserResultCard extends StatelessWidget {
                       textColor: MyColorHelper.white,
                       fontSize: 18,
                     ),
-                    subtitle: Column(
+                    subtitle: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomTextWidget(

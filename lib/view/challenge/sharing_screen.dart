@@ -35,7 +35,7 @@ class _SocialMediaSharingBottomSheetState
         child: SingleChildScrollView(
           child: Column(
             children: [
-              CustomTextWidget(
+              const CustomTextWidget(
                   text: 'Share with your friends',
                   fontSize: 16.0,
                   textColor: MyColorHelper.white,
@@ -76,12 +76,12 @@ class _SocialMediaSharingBottomSheetState
                   borderRadius: const BorderRadius.all(Radius.circular(12.0)),
                 ),
                 child: ListTile(
-                  title: CustomTextWidget(
+                  title: const CustomTextWidget(
                     text: 'Copy Link',
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
-                  subtitle: CustomTextWidget(
+                  subtitle: const CustomTextWidget(
                     text: 'https://www.example.com',
                     fontSize: 16.0,
                     fontWeight: FontWeight.w500,

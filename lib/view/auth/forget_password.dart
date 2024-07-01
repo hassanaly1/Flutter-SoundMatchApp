@@ -36,7 +36,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                           fit: BoxFit.fill, height: 150),
                     ),
                     const SizedBox(height: 20.0),
-                    CustomTextWidget(
+                    const CustomTextWidget(
                       text: 'Forget Password?',
                       fontSize: 30,
                       fontFamily: 'horta',
@@ -44,7 +44,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                       textColor: Colors.white70,
                     ),
                     const SizedBox(height: 10.0),
-                    CustomTextWidget(
+                    const CustomTextWidget(
                       text:
                           'Please provide your email address so we can send you the verification code.',
                       fontSize: 14,

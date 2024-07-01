@@ -13,9 +13,12 @@ class AuthController extends GetxController {
   // Observable variables
   var isLoading = false.obs;
   RxBool showPassword = false.obs;
+  RxBool showConfirmPassword = false.obs;
 
   // Form keys
+  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> changePasswordFormKey = GlobalKey<FormState>();
 
   // TextEditingControllers for form inputs
   TextEditingController firstNameController = TextEditingController();
@@ -24,10 +27,10 @@ class AuthController extends GetxController {
   TextEditingController verifyEmailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
-  // TextEditingController forgetPasswordController = TextEditingController();
   TextEditingController otpController = TextEditingController();
 
   final _storage = GetStorage();
+
   void saveUserInfo(Map<String, dynamic> userInfo) {
     _storage.write('user_info', userInfo);
   }
@@ -38,13 +41,6 @@ class AuthController extends GetxController {
   Future<void> registerUser() async {
     if (signupFormKey.currentState?.validate() ?? false) {
       isLoading.value = true;
-
-      // Print the first and last name
-      debugPrint('First Name: ${firstNameController.text.trim()}');
-      debugPrint('Last Name: ${lastNameController.text.trim()}');
-      debugPrint('Email: ${emailController.text.trim()}');
-      debugPrint('Password: ${passwordController.text.trim()}');
-      debugPrint('Confirm Password: ${confirmPasswordController.text.trim()}');
 
       try {
         // Call the registerUser method in AuthService and handle the response
@@ -78,8 +74,6 @@ class AuthController extends GetxController {
   Future<void> verifyEmail() async {
     if (emailController.text.isNotEmpty && otpController.text.isNotEmpty) {
       isLoading.value = true;
-      debugPrint('Email: ${emailController.text.trim()}');
-      debugPrint('OTP: ${otpController.text.trim()}');
 
       try {
         Map<String, dynamic> response = await AuthService().verifyEmail(
@@ -90,6 +84,7 @@ class AuthController extends GetxController {
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
           Get.offAll(() => const LoginScreen());
+          clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -106,8 +101,6 @@ class AuthController extends GetxController {
   Future<void> loginUser() async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       isLoading.value = true;
-      debugPrint('Email: ${emailController.text.trim()}');
-      debugPrint('Password: ${passwordController.text.trim()}');
 
       try {
         Map<String, dynamic> response = await AuthService().loginUser(
@@ -118,11 +111,11 @@ class AuthController extends GetxController {
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
           _storage.write('token', response['token']);
-          debugPrint('TokenAtStorage: ${_storage.read('token')}');
 
           saveUserInfo(response['user']);
-          debugPrint('UserInfo: ${_storage.read('user_info')}');
           Get.offAll(() => const HomeScreen(), transition: Transition.zoom);
+
+          clearAllControllers();
         } else {
           response['message'] == 'Please Verify Your Email First'
               ? Get.to(() => const VerifyEmailScreen(),
@@ -143,7 +136,6 @@ class AuthController extends GetxController {
   Future<void> sendOtp() async {
     if (emailController.text.isNotEmpty) {
       isLoading.value = true;
-      debugPrint('Email: ${emailController.text.trim()}');
 
       try {
         Map<String, dynamic> response = await AuthService().sendOtp(
@@ -152,11 +144,14 @@ class AuthController extends GetxController {
 
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
+          print(response['message']);
 
           Get.to(() => OtpScreen(
                 verifyOtpForForgetPassword: true,
                 email: emailController.text.trim(),
               ));
+
+          clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -172,8 +167,6 @@ class AuthController extends GetxController {
   Future<void> verifyOtp() async {
     if (emailController.text.isNotEmpty && otpController.text.isNotEmpty) {
       isLoading.value = true;
-      debugPrint('Email: ${emailController.text.trim()}');
-      debugPrint('OTP: ${otpController.text.trim()}');
 
       try {
         Map<String, dynamic> response = await AuthService().verifyOtp(
@@ -182,12 +175,11 @@ class AuthController extends GetxController {
         );
 
         if (response['status'] == 'success') {
-          debugPrint('VERIFY OTP API CALLED SUCCESSFULLY');
           Fluttertoast.showToast(msg: response['message']);
-          debugPrint('TokenReceived: ${response['data']['token']}');
           _storage.write('token', response['data']['token']);
-          debugPrint('TokenAtStorage: ${_storage.read('token')}');
           Get.offAll(() => const ChangePasswordScreen());
+
+          clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -204,8 +196,6 @@ class AuthController extends GetxController {
     if (passwordController.text.isNotEmpty ==
         confirmPasswordController.text.isNotEmpty) {
       isLoading.value = true;
-      debugPrint('Password: ${passwordController.text.trim()}');
-      debugPrint('ConfirmPassword: ${confirmPasswordController.text.trim()}');
 
       try {
         Map<String, dynamic> response = await AuthService().changePassword(
@@ -216,6 +206,8 @@ class AuthController extends GetxController {
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
           Get.offAll(() => const HomeScreen());
+
+          clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -228,11 +220,21 @@ class AuthController extends GetxController {
     }
   }
 
+  clearAllControllers() {
+    firstNameController.clear();
+    lastNameController.clear();
+    emailController.clear();
+    verifyEmailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+  }
+
   @override
   void onClose() {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
+    verifyEmailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();

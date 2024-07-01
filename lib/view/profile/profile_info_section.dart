@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/helper/colors.dart';
-import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
+import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 
 class PersonalInfoSection extends StatefulWidget {
   const PersonalInfoSection({super.key});
@@ -14,8 +15,6 @@ class PersonalInfoSection extends StatefulWidget {
 class _PersonalInfoSectionState extends State<PersonalInfoSection> {
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -23,12 +22,12 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CustomTextField(
-              hintText: 'James Anderson',
+              hintText: storage.read('user_info')['first_name'],
               labelText: "Username",
             ),
             SizedBox(height: context.height * 0.02),
             CustomTextField(
-              hintText: 'james@gmail.com',
+              hintText: storage.read('user_info')['email'],
               labelText: "Email",
             ),
             SizedBox(height: context.height * 0.02),
@@ -51,11 +50,13 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
 class CustomProfileButton extends StatelessWidget {
   final String buttonText;
   final VoidCallback onTap;
+
   const CustomProfileButton({
     super.key,
     required this.buttonText,
     required this.onTap,
   });
+
   @override
   Widget build(BuildContext context) {
     return InkWell(

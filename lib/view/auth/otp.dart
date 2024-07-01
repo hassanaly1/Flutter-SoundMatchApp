@@ -8,10 +8,12 @@ import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/utils/toast.dart';
 
 class OtpScreen extends StatefulWidget {
   final bool verifyOtpForForgetPassword;
   final String email;
+
   const OtpScreen(
       {super.key,
       required this.email,
@@ -101,10 +103,9 @@ class _OtpScreenState extends State<OtpScreen> {
                               bottomLeft: Radius.circular(22.0),
                             ),
                           ),
-                          child: Center(
+                          child: const Center(
                               child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 6.0),
+                            padding: EdgeInsets.symmetric(horizontal: 6.0),
                             child: CustomTextWidget(
                               text: 'Verification',
                               fontSize: 20.0,
@@ -165,27 +166,20 @@ class _OtpScreenState extends State<OtpScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onCompleted: (pin) {
-                        // if (pin == '2222') {
-                        //   // Utils().toastMessage('Login Successfully');
-                        //   // Get.offAll(const DashboardScreen(),
-                        //   //     transition: Transition.rightToLeft);
-                        // }
-                        // setState(() {
-                        //   _pinController.clear();
-                        //   _timerInProgress = false;
-                        // });
-                      },
+                      onCompleted: (pin) {},
                     ),
                   ),
                   SizedBox(height: context.height * 0.02),
                   _timerInProgress
-                      ? CustomTextWidget(text: 'Resend OTP in $_start seconds')
+                      ? CustomTextWidget(
+                          text: 'Resend OTP in $_start seconds',
+                          textColor: Colors.white,
+                        )
                       : Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(
                             children: [
-                              CustomTextWidget(
+                              const CustomTextWidget(
                                 text: 'Didn\'t receive the code?',
                                 textColor: Colors.white54,
                                 fontSize: 14,
@@ -199,7 +193,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                   controller.otpController.clear();
                                   startTimer();
                                 },
-                                child: CustomTextWidget(
+                                child: const CustomTextWidget(
                                   text: 'Resend OTP',
                                   fontSize: 16,
                                   textColor: Colors.white70,
@@ -220,11 +214,17 @@ class _OtpScreenState extends State<OtpScreen> {
                         : CustomAuthButton(
                             text: 'Verify OTP',
                             onTap: () {
-                              debugPrint(
-                                  widget.verifyOtpForForgetPassword.toString());
-                              widget.verifyOtpForForgetPassword
-                                  ? controller.verifyOtp()
-                                  : controller.verifyEmail();
+                              if (controller.otpController.text.isEmpty) {
+                                ToastMessage.showToastMessage(
+                                    message: 'Please Enter OTP',
+                                    backgroundColor: Colors.red);
+                              } else {
+                                debugPrint(widget.verifyOtpForForgetPassword
+                                    .toString());
+                                widget.verifyOtpForForgetPassword
+                                    ? controller.verifyOtp()
+                                    : controller.verifyEmail();
+                              }
                             },
                           ),
                   ),

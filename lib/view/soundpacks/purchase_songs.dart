@@ -52,7 +52,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                 iconTheme:
                     const IconThemeData(color: Colors.white60, size: 30.0),
                 backgroundColor: Colors.transparent,
-                title: CustomTextWidget(
+                title: const CustomTextWidget(
                   text: 'Sound Treasury',
                   fontFamily: 'horta',
                   textColor: Colors.white,
@@ -106,7 +106,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                       ),
                       child: ListView(
                         children: [
-                          CustomTextWidget(
+                          const CustomTextWidget(
                             text: 'Your Sound Packs',
                             fontSize: 14.0,
                             textAlign: TextAlign.center,
@@ -120,9 +120,9 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                               color: Colors.transparent,
                               height: context.height * 0.2,
                               child: controller.userSoundPacks.isEmpty
-                                  ? Center(
+                                  ? const Center(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
+                                        padding: EdgeInsets.all(12.0),
                                         child: CustomTextWidget(
                                           text:
                                               'Your sound bucket is currently empty. To add sounds, explore the collection of Signature Sounds below.',
@@ -214,7 +214,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                           ),
                           const Divider(),
                           SizedBox(height: context.height * 0.02),
-                          CustomTextWidget(
+                          const CustomTextWidget(
                             text: 'Discover Signature Sound Packs',
                             fontSize: 14.0,
                             textAlign: TextAlign.center,

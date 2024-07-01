@@ -35,7 +35,7 @@ class RanksLoader extends StatelessWidget {
                 MyAssetHelper.robot,
                 height: height * 0.15,
               ),
-              Expanded(
+              const Expanded(
                 child: CustomTextWidget(
                   text:
                       "All recordings have been received.\n Please wait, Result are Loading...... ",

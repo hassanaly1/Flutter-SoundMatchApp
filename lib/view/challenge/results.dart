@@ -19,6 +19,7 @@ import 'package:sound_app/view/home_screen.dart';
 
 class ResultScreen extends StatelessWidget {
   final ChallengeModel challengeModel;
+
   const ResultScreen({super.key, required this.challengeModel});
 
   @override
@@ -37,7 +38,7 @@ class ResultScreen extends StatelessWidget {
               appBar: AppBar(
                 automaticallyImplyLeading: false,
                 centerTitle: true,
-                title: CustomTextWidget(
+                title: const CustomTextWidget(
                   text: "Final Results",
                   textColor: MyColorHelper.white,
                   fontFamily: "Horta",
@@ -49,7 +50,7 @@ class ResultScreen extends StatelessWidget {
                       Get.offAll(() => const HomeScreen());
                       Get.delete<ChallengeController>();
                     },
-                    child: CustomTextWidget(
+                    child: const CustomTextWidget(
                       text: 'Exit',
                       textColor: MyColorHelper.white,
                       fontFamily: "Horta",
@@ -126,13 +127,14 @@ class ResultScreen extends StatelessWidget {
 
 class UserResultPreview extends StatefulWidget {
   final ChallengeModel challengeModel;
+
   const UserResultPreview({
     super.key,
     required this.challengeModel,
   });
 
   @override
-  _UserResultPreviewState createState() => _UserResultPreviewState();
+  State<UserResultPreview> createState() => _UserResultPreviewState();
 }
 
 class _UserResultPreviewState extends State<UserResultPreview>

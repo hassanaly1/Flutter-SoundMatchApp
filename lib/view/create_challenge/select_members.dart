@@ -55,7 +55,7 @@ class SelectMemberScreen extends StatelessWidget {
                     )),
                 iconTheme: const IconThemeData(size: 20.0),
                 backgroundColor: Colors.transparent,
-                title: CustomTextWidget(
+                title: const CustomTextWidget(
                   text: 'Select Participants',
                   fontFamily: 'horta',
                   textColor: Colors.white,
@@ -109,7 +109,7 @@ class SelectMemberScreen extends StatelessWidget {
                     ),
                     child: ListView(
                       children: [
-                        CustomTextWidget(
+                        const CustomTextWidget(
                           text: 'Invite Friends & Family',
                           fontSize: 16.0,
                           textAlign: TextAlign.center,
@@ -126,9 +126,9 @@ class SelectMemberScreen extends StatelessWidget {
                         SizedBox(height: context.height * 0.01),
                         Obx(
                           () => filteredMembers.isEmpty
-                              ? Center(
+                              ? const Center(
                                   child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
+                                    padding: EdgeInsets.all(12.0),
                                     child: CustomTextWidget(
                                       text: 'No Match found',
                                       fontSize: 12.0,

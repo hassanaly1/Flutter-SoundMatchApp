@@ -36,7 +36,7 @@ class ChangePasswordScreen extends StatelessWidget {
                           fit: BoxFit.fill, height: 150),
                     ),
                     const SizedBox(height: 20.0),
-                    CustomTextWidget(
+                    const CustomTextWidget(
                       text: 'Change Password',
                       fontSize: 30,
                       fontFamily: 'horta',
@@ -44,7 +44,7 @@ class ChangePasswordScreen extends StatelessWidget {
                       textColor: Colors.white70,
                     ),
                     const SizedBox(height: 10.0),
-                    CustomTextWidget(
+                    const CustomTextWidget(
                       text:
                           'Please enter the strong password for your Account.',
                       fontSize: 14,

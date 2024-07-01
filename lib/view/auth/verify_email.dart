@@ -3,8 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
-import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
+import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/view/auth/otp.dart';
 
 class VerifyEmailScreen extends StatelessWidget {
@@ -37,7 +37,7 @@ class VerifyEmailScreen extends StatelessWidget {
                           fit: BoxFit.fill, height: 150),
                     ),
                     const SizedBox(height: 20.0),
-                    CustomTextWidget(
+                    const CustomTextWidget(
                       text: 'Verify Email',
                       fontSize: 30,
                       fontFamily: 'horta',
@@ -45,7 +45,7 @@ class VerifyEmailScreen extends StatelessWidget {
                       textColor: Colors.white70,
                     ),
                     const SizedBox(height: 10.0),
-                    CustomTextWidget(
+                    const CustomTextWidget(
                       text:
                           'Please provide your email address so we can send you the verification code.',
                       fontSize: 14,
@@ -69,7 +69,6 @@ class VerifyEmailScreen extends StatelessWidget {
                           : CustomAuthButton(
                               text: 'Send OTP',
                               onTap: () {
-                                print('VerifyEmailButtonTapped');
                                 Get.off(() => OtpScreen(
                                     verifyOtpForForgetPassword: false,
                                     email: authController.emailController.text

@@ -10,22 +10,32 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/view/challenge/default_match.dart';
-import 'package:sound_app/view/create_challenge/create_challenge.dart';
-import 'package:sound_app/view/soundpacks/purchase_songs.dart';
 import 'package:sound_app/view/challenge/widgets/custom_match_card.dart';
+import 'package:sound_app/view/create_challenge/create_challenge.dart';
 import 'package:sound_app/view/notifications/notification_screen.dart';
 import 'package:sound_app/view/profile/profile.dart';
+import 'package:sound_app/view/soundpacks/purchase_songs.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late MyUniversalController controller;
+  late CarouselSliderController carouselController;
+
+  @override
+  void initState() {
+    controller = Get.put(MyUniversalController());
+    carouselController = Get.put(CarouselSliderController());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // final AddChallengeController challengeController =
-    //     Get.put(AddChallengeController());
-    final MyUniversalController controller = Get.find();
-    final CarouselSliderController carouselController =
-        Get.put(CarouselSliderController());
     return SafeArea(
       child: Stack(fit: StackFit.expand, children: [
         SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
@@ -66,6 +76,7 @@ class HomeScreen extends StatelessWidget {
 
 class SoundPacksContainer extends StatelessWidget {
   final MyUniversalController controller;
+
   const SoundPacksContainer({
     super.key,
     required this.controller,
@@ -103,14 +114,14 @@ class SoundPacksContainer extends StatelessWidget {
                           height: 40,
                         ),
                         const SizedBox(width: 12.0),
-                        CustomTextWidget(
+                        const CustomTextWidget(
                             fontFamily: 'horta',
                             text: 'Sound Pack',
                             fontWeight: FontWeight.w700,
                             fontSize: 28.0,
                             textColor: Colors.white,
                             isShadow: true,
-                            shadow: const [
+                            shadow: [
                               Shadow(
                                 blurRadius: 15.0,
                                 color: Colors.black,
@@ -214,11 +225,8 @@ class ChallengesList extends StatelessWidget {
                 openBuilder: (context, action) {
                   if (index == 0) {
                     return const DefaultMatchScreen();
-                    return Container();
                   } else {
-                    // return const FinalResultScreen2();
                     return Container();
-                    // return FinalResultScreen();
                   }
                 },
                 openElevation: 0,
@@ -271,7 +279,7 @@ class CreateNewChallenge extends StatelessWidget {
             top: context.height * 0.07,
             left: 0,
             right: 0,
-            child: Center(
+            child: const Center(
                 child: CustomTextWidget(
                     fontFamily: 'horta',
                     text: 'Create New Challenge',
@@ -279,7 +287,7 @@ class CreateNewChallenge extends StatelessWidget {
                     fontSize: 32.0,
                     textColor: Colors.white,
                     isShadow: true,
-                    shadow: const [
+                    shadow: [
                   Shadow(
                     blurRadius: 15.0,
                     color: Colors.black,
@@ -328,10 +336,8 @@ class HomeAppbar extends StatelessWidget {
                           color: Colors.white70, size: 30))),
               const SizedBox(width: 10.0),
               InkWell(
-                  onTap: () {
-                    Get.to(const ProfileScreen(),
-                        transition: Transition.upToDown);
-                  },
+                  onTap: () => Get.to(() => const ProfileScreen(),
+                      transition: Transition.upToDown),
                   child: const Padding(
                       padding: EdgeInsets.zero,
                       child: Icon(

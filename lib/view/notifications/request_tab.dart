@@ -28,7 +28,7 @@ class RequestTab extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CustomTextWidget(
+                const CustomTextWidget(
                     text: 'gameName!',
                     fontFamily: "Horta",
                     isShadow: true,
@@ -43,7 +43,7 @@ class RequestTab extends StatelessWidget {
                         children: [
                           const CircleAvatar(radius: 20),
                           SizedBox(width: context.width * 0.02),
-                          CustomTextWidget(
+                          const CustomTextWidget(
                               text: 'participantName!',
                               fontFamily: "Poppins",
                               textColor: MyColorHelper.white,

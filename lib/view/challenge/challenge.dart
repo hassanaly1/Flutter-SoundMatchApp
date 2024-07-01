@@ -319,7 +319,7 @@ class CalculatingResultPopup extends StatelessWidget {
             MyAssetHelper.robot,
             height: context.height * 0.15,
           ),
-          Flexible(
+          const Flexible(
             child: CustomTextWidget(
               text:
                   "All recordings have been received.\n Please wait, Result are Calculating...... ",
@@ -458,7 +458,7 @@ class TopContainer extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: MyColorHelper.primaryColor.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(30)),
-                  child: Center(
+                  child: const Center(
                     child: CustomTextWidget(
                       text: "Start",
                       textColor: MyColorHelper.white,

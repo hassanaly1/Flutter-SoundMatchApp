@@ -14,7 +14,7 @@ class SecuritySection extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: context.height * 0.01),
-          CustomTextWidget(
+          const CustomTextWidget(
             text: "Two-Factor Authentication",
             textColor: MyColorHelper.white,
             fontSize: 16,
@@ -26,7 +26,7 @@ class SecuritySection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible(
+              const Flexible(
                 child: CustomTextWidget(
                   text:
                       "Enable two factor authentication to add extra security to your account",

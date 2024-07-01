@@ -63,9 +63,9 @@ class SelectSongsScreen extends StatelessWidget {
             ),
             body: Obx(
               () => controller.userSoundPacks.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: EdgeInsets.all(12.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -79,7 +79,7 @@ class SelectSongsScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                               maxLines: 3,
                             ),
-                            const SizedBox(height: 20.0),
+                            SizedBox(height: 20.0),
                           ],
                         ),
                       ),

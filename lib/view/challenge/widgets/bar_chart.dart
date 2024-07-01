@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -6,6 +7,7 @@ import 'package:sound_app/helper/colors.dart';
 ///Bar Start
 class MyBarChart extends StatefulWidget {
   final bool showBlurBackground;
+
   MyBarChart({super.key, required this.showBlurBackground});
 
   final shadowColor = const Color(0xFFCCCCCC);
@@ -178,6 +180,7 @@ class _MyBarChartState extends State<MyBarChart> {
 
 class _BarData {
   const _BarData(this.color, this.value, this.shadowValue);
+
   final Color color;
   final double value;
   final double shadowValue;
@@ -224,47 +227,5 @@ class _IconWidgetState extends AnimatedWidgetBaseState<_IconWidget> {
         end: widget.isSelected ? 1.0 : 0.0,
       ),
     ) as Tween<double>?;
-  }
-}
-
-class _Badge extends StatelessWidget {
-  const _Badge(
-    this.svgAsset, {
-    required this.size,
-    required this.borderColor,
-  });
-  final String svgAsset;
-  final double size;
-  final Color borderColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: PieChart.defaultDuration,
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: borderColor,
-          width: 2,
-        ),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(3, 3),
-            blurRadius: 3,
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(size * .15),
-      child: const Center(
-        child: _IconWidget(
-          color: MyColorHelper.caribbeanCurrent,
-          isSelected: false,
-        ),
-      ),
-    );
   }
 }

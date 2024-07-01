@@ -6,10 +6,11 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final String? labelText;
   final Widget? suffixIcon;
-  bool obscureText;
+  final bool obscureText;
   final String? Function(String?)? validator;
-  TextEditingController? controller;
-  CustomTextField(
+  final TextEditingController? controller;
+
+  const CustomTextField(
       {super.key,
       required this.hintText,
       this.labelText,
@@ -43,7 +44,8 @@ class CustomTextField extends StatelessWidget {
             fontSize: 14.0,
             fontWeight: FontWeight.w300,
             color: Colors.grey.shade300),
-        errorStyle: const TextStyle(fontFamily: 'poppins'),
+        errorStyle:
+            const TextStyle(fontFamily: 'poppins', color: Colors.redAccent),
         enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: MyColorHelper.verdigris)),
         focusedBorder: const OutlineInputBorder(

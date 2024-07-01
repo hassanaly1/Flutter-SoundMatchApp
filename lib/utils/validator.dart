@@ -1,13 +1,13 @@
 class AppValidator {
   //validation for empty-fields
-  static String? validateEmptyText(String? fieldName, String? value) {
+  static String? validateEmptyText({String? fieldName, String? value}) {
     if (value == null || value.isEmpty) {
       return '$fieldName is required.';
     }
     return null;
   }
 
-  static String? validateEmail(String? value) {
+  static String? validateEmail({String? value}) {
     if (value == null || value.isEmpty) {
       return 'Email is required.';
     }
@@ -22,7 +22,7 @@ class AppValidator {
     return null;
   }
 
-  static String? validatePassword(String? value) {
+  static String? validatePassword({String? value}) {
     if (value == null || value.isEmpty) {
       return 'Password is required.';
     }
@@ -50,7 +50,7 @@ class AppValidator {
     return null;
   }
 
-  static String? validatePhoneNumber(String? value) {
+  static String? validatePhoneNumber({String? value}) {
     if (value == null || value.isEmpty) {
       return 'Phone number is required.';
     }
@@ -64,6 +64,4 @@ class AppValidator {
 
     return null;
   }
-
-// Add more custom validators as needed for your specific requirements.
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioPlayerService {
@@ -11,7 +12,7 @@ class AudioPlayerService {
     try {
       await _audioPlayer.setAsset(audioFilePath);
     } catch (e) {
-      print('Error initializing audio player: $e');
+      debugPrint('Error initializing audio player: $e');
     }
   }
 

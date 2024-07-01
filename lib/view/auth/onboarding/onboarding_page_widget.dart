@@ -48,7 +48,7 @@ class CustomOnboardingScreen extends StatelessWidget {
                 onPressed: () {
                   onBoardingController.skip();
                 },
-                child: CustomTextWidget(
+                child: const CustomTextWidget(
                   text: 'Skip',
                   fontSize: 14.0,
                   fontWeight: FontWeight.w500,
@@ -105,7 +105,6 @@ class CustomOnboardingScreen extends StatelessWidget {
                     onBoardingController.pages.length - 1) {
                   final storage = GetStorage();
                   storage.write('isFirstTime', false);
-                  print(storage.read('isFirstTime'));
                   Get.offAll(() => const LoginScreen(),
                       transition: Transition.rightToLeft);
                 } else {

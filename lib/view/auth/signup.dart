@@ -6,8 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
-import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
+import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/utils/validator.dart';
 import 'package:sound_app/view/auth/login.dart';
 
 class SignupScreen extends StatelessWidget {
@@ -49,7 +50,7 @@ class SignupScreen extends StatelessWidget {
                                   bottomLeft: Radius.circular(22.0),
                                 ),
                               ),
-                              child: Center(
+                              child: const Center(
                                   child: CustomTextWidget(
                                       text: 'Register',
                                       fontSize: 20.0,
@@ -72,32 +73,34 @@ class SignupScreen extends StatelessWidget {
                         children: [
                           CustomTextField(
                             controller: controller.firstNameController,
-                            // validator: (value) => AppValidator.validateEmptyText(
-                            //       'First Name', value),
+                            validator: (value) =>
+                                AppValidator.validateEmptyText(
+                                    fieldName: 'First Name', value: value),
                             hintText: ' First Name',
                           ),
 
                           SizedBox(height: context.height * 0.02),
                           CustomTextField(
                             controller: controller.lastNameController,
-                            // validator: (value) => AppValidator.validateEmptyText(
-                            //       'Last Name', value),
+                            validator: (value) =>
+                                AppValidator.validateEmptyText(
+                                    fieldName: 'Last Name', value: value),
                             hintText: ' Last Name',
                           ),
 
                           SizedBox(height: context.height * 0.02),
                           CustomTextField(
                             controller: controller.emailController,
-                            // validator: (value) =>
-                            //     AppValidator.validateEmail(value),
+                            validator: (value) =>
+                                AppValidator.validateEmail(value: value),
                             hintText: ' Email',
                           ),
                           SizedBox(height: context.height * 0.02),
                           Obx(
                             () => CustomTextField(
                               controller: controller.passwordController,
-                              // validator: (value) =>
-                              //     AppValidator.validatePassword(value),
+                              validator: (value) =>
+                                  AppValidator.validatePassword(value: value),
                               hintText: ' Password',
                               obscureText: !controller.showPassword.value,
                               suffixIcon: IconButton(
@@ -116,17 +119,18 @@ class SignupScreen extends StatelessWidget {
                           Obx(
                             () => CustomTextField(
                               controller: controller.confirmPasswordController,
-                              // validator: (value) =>
-                              //     AppValidator.validatePassword(value),
+                              validator: (value) =>
+                                  AppValidator.validatePassword(value: value),
                               hintText: 'Confirm Password',
-                              obscureText: !controller.showPassword.value,
+                              obscureText:
+                                  !controller.showConfirmPassword.value,
                               suffixIcon: IconButton(
                                   onPressed: () {
-                                    controller.showPassword.value =
-                                        !controller.showPassword.value;
+                                    controller.showConfirmPassword.value =
+                                        !controller.showConfirmPassword.value;
                                   },
                                   icon: Icon(
-                                      controller.showPassword.value
+                                      controller.showConfirmPassword.value
                                           ? CupertinoIcons.eye
                                           : CupertinoIcons.eye_slash,
                                       color: MyColorHelper.verdigris)),
@@ -142,7 +146,12 @@ class SignupScreen extends StatelessWidget {
                                   ))
                                 : CustomAuthButton(
                                     text: 'Register',
-                                    onTap: () => controller.registerUser(),
+                                    onTap: () {
+                                      if (controller.signupFormKey.currentState!
+                                          .validate()) {
+                                        controller.registerUser();
+                                      }
+                                    },
                                   ),
                           ),
                           SizedBox(height: context.height * 0.02),

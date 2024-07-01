@@ -43,7 +43,7 @@ class CustomNotificationCard extends StatelessWidget {
                   decoration: const BoxDecoration(shape: BoxShape.circle),
                 ),
                 SizedBox(width: context.width * 0.02),
-                Expanded(
+                const Expanded(
                     flex: 8,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +65,7 @@ class CustomNotificationCard extends StatelessWidget {
                         )
                       ],
                     )),
-                Expanded(
+                const Expanded(
                   flex: 1,
                   child: CustomTextWidget(
                     text: 'notification.time!',

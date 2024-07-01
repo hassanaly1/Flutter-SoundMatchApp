@@ -7,11 +7,12 @@ class CustomTextWidget extends StatelessWidget {
   final FontWeight? fontWeight;
   final Color? textColor;
   final TextAlign? textAlign;
-  String? fontFamily;
-  bool isShadow;
-  List<Shadow>? shadow;
-  int? maxLines;
-  CustomTextWidget(
+  final String? fontFamily;
+  final bool isShadow;
+  final List<Shadow>? shadow;
+  final int? maxLines;
+
+  const CustomTextWidget(
       {super.key,
       required this.text,
       this.textColor,
@@ -31,7 +32,7 @@ class CustomTextWidget extends StatelessWidget {
       maxLines: maxLines ?? 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        fontFamily: fontFamily,
+        fontFamily: fontFamily ?? 'Poppins',
         fontSize: fontSize ?? 12,
         fontWeight: fontWeight ?? FontWeight.w300,
         color: textColor ?? Colors.black,
