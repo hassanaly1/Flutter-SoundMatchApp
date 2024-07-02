@@ -72,6 +72,8 @@ class AuthController extends GetxController {
 
   //verifyEmail
   Future<void> verifyEmail() async {
+    debugPrint(verifyEmailController.text);
+    debugPrint(otpController.text);
     if (emailController.text.isNotEmpty && otpController.text.isNotEmpty) {
       isLoading.value = true;
 
@@ -84,7 +86,7 @@ class AuthController extends GetxController {
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
           Get.offAll(() => const LoginScreen());
-          clearAllControllers();
+          // clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -115,7 +117,7 @@ class AuthController extends GetxController {
           saveUserInfo(response['user']);
           Get.offAll(() => const HomeScreen(), transition: Transition.zoom);
 
-          clearAllControllers();
+          // clearAllControllers();
         } else {
           response['message'] == 'Please Verify Your Email First'
               ? Get.to(() => const VerifyEmailScreen(),
@@ -151,7 +153,7 @@ class AuthController extends GetxController {
                 email: emailController.text.trim(),
               ));
 
-          clearAllControllers();
+          // clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -179,7 +181,7 @@ class AuthController extends GetxController {
           _storage.write('token', response['data']['token']);
           Get.offAll(() => const ChangePasswordScreen());
 
-          clearAllControllers();
+          // clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -207,7 +209,7 @@ class AuthController extends GetxController {
           Fluttertoast.showToast(msg: response['message']);
           Get.offAll(() => const HomeScreen());
 
-          clearAllControllers();
+          // clearAllControllers();
         } else {
           Fluttertoast.showToast(msg: response['message']);
         }
@@ -220,14 +222,14 @@ class AuthController extends GetxController {
     }
   }
 
-  clearAllControllers() {
-    firstNameController.clear();
-    lastNameController.clear();
-    emailController.clear();
-    verifyEmailController.clear();
-    passwordController.clear();
-    confirmPasswordController.clear();
-  }
+  // clearAllControllers() {
+  //   firstNameController.clear();
+  //   lastNameController.clear();
+  //   emailController.clear();
+  //   verifyEmailController.clear();
+  //   passwordController.clear();
+  //   confirmPasswordController.clear();
+  // }
 
   @override
   void onClose() {

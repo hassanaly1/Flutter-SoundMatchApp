@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +27,9 @@ class DefaultMatchController extends GetxController {
   final FlutterSoundRecorder _audioRecorder = FlutterSoundRecorder();
   Timer? _recordingTimer;
   String? recordedFilePath;
+
+  // Add a variable to store the match percentage
+  RxInt matchPercentage = 0.obs;
 
   @override
   void onInit() {
@@ -58,6 +60,16 @@ class DefaultMatchController extends GetxController {
       isUserAudioPlaying.value = false;
       userAudioPosition.value = Duration.zero;
     });
+  }
+
+  @override
+  void dispose() {
+    _audioRecorder.closeRecorder();
+    _defaultAudioPlayer.dispose();
+    _userAudioPlayer.dispose();
+    _recordingTimer?.cancel();
+
+    super.dispose();
   }
 
   void resetValuesOnPlayAgain() {
@@ -101,7 +113,8 @@ class DefaultMatchController extends GetxController {
         // await _defaultAudioPlayer.play(AssetSource('music/music2.mp3'));
         await _defaultAudioPlayer.play(
           UrlSource(
-              'https://sounds-match-api-production.up.railway.app/uploads/sounds/1719814297666-640226552.mp3'),
+            'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3',
+          ),
         );
         isDefaultAudioPlaying.value = true;
       }
@@ -165,11 +178,5 @@ class DefaultMatchController extends GetxController {
   ///Stops Timer for Recording
   void _stopRecordingTimer() {
     _recordingTimer?.cancel();
-  }
-
-  Future<String> fileToBinaryString(String filePath) async {
-    final file = File(filePath);
-    final bytes = await file.readAsBytes();
-    return bytes.toString();
   }
 }

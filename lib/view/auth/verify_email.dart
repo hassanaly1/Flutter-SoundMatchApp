@@ -5,7 +5,6 @@ import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/view/auth/otp.dart';
 
 class VerifyEmailScreen extends StatelessWidget {
   const VerifyEmailScreen({super.key});
@@ -69,10 +68,10 @@ class VerifyEmailScreen extends StatelessWidget {
                           : CustomAuthButton(
                               text: 'Send OTP',
                               onTap: () {
-                                Get.off(() => OtpScreen(
-                                    verifyOtpForForgetPassword: false,
-                                    email: authController.emailController.text
-                                        .trim()));
+                                // Get.off(() => OtpScreen(
+                                //     verifyOtpForForgetPassword: false,
+                                //     email: authController.emailController.text
+                                //         .trim()));
                                 authController.sendOtp();
                               },
                             ),

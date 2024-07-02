@@ -12,9 +12,8 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
-import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class DefaultMatchScreen extends StatefulWidget {
@@ -37,7 +36,7 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
 
   void connectToSocket() {
     try {
-      debugPrint('Connecting to socket...');
+      debugPrint('Connecting to Socket...');
       socket = IO.io(ApiEndPoints.baseUrl, <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': true,
@@ -46,19 +45,27 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
       socket.onConnect((_) {
         debugPrint(
             'Connected to Socket Server ${ApiEndPoints.connectToDefaultMatch}');
-        socket.emit(ApiEndPoints.connectToDefaultMatch,
-            {'user_id': '6610d5301605a835f150583f'});
+        socket.emit(
+          ApiEndPoints.connectToDefaultMatch,
+          {
+            // 'user_id': storage.read('user_info')['_id'],
+            'user_id': "123",
+          },
+        );
       });
       socket.onDisconnect((_) {
         debugPrint(
             'Disconnected from Socket Server ${ApiEndPoints.connectToDefaultMatch}');
       });
 
-      socket.on('ApiEndPoints.connectToDefaultMatch', (data) {
-        debugPrint('Received calculation result: $data');
+      socket.on('show_test_match_result', (data) {
+        debugPrint('Received Calculation Result: $data');
+        controller.matchPercentage.value = data['percentage_matched'];
+        controller.isResultCalculating.value = false;
+        controller.isResultCalculated.value = true;
       });
     } catch (e) {
-      print('Socket initialization error: $e');
+      debugPrint('Socket initialization error: $e');
     }
   }
 
@@ -243,12 +250,73 @@ class CenterPart extends StatelessWidget {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  UserResultCard(
-                      index: 0,
-                      participant: Participant(
-                          name: 'You',
-                          imageUrl:
-                              'https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?size=626&ext=jpg&uid=R133237588&ga=GA1.2.1091155359.1700008188&semt=ais')),
+                  Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: context.height * 0.2,
+                          width: context.width * 0.6,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  MyAssetHelper.rankContainerBackground),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: ListTile(
+                                isThreeLine: true,
+                                leading: Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        'https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?size=626&ext=jpg&uid=R133237588&ga=GA1.2.1091155359.1700008188&semt=ais',
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                title: const CustomTextWidget(
+                                  text: 'You',
+                                  fontFamily: "Horta",
+                                  textColor: MyColorHelper.white,
+                                  fontSize: 18,
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomTextWidget(
+                                      text:
+                                          "Percentage: ${controller.matchPercentage.value}%",
+                                      fontFamily: "horta",
+                                      textColor: MyColorHelper.white,
+                                      fontSize: 18,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  CustomTextWidget(
+                    text:
+                        'Your Sound Matches ${controller.matchPercentage.value}% with the default sound',
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w400,
+                    maxLines: 2,
+                  ),
                   CustomAuthButton(
                     text: 'Back to Dashboard',
                     onTap: () {
@@ -270,163 +338,157 @@ class CenterPart extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Obx(
-                        () => CustomTextWidget(
-                          text: _formatDuration(
-                              controller.userRecordingDuration.value),
-                          textColor: Colors.white,
-                          fontSize: 26.0,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Visibility(
-                        visible: controller.isUserRecording.value,
-                        child: Lottie.asset(
-                          MyAssetHelper.musicLoading,
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      GestureDetector(
-                        onLongPress: controller.startRecording,
-                        onLongPressEnd: (details) => controller.stopRecording(),
-                        child: Container(
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.all(20),
-                          height: context.height * 0.2,
-                          width: context.width * 0.25,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 30.0,
-                                  spreadRadius: 8.0,
-                                  offset: Offset(5.0, 5.0))
-                            ],
-                            shape: BoxShape.circle,
-                          ),
-                          child: Image.asset(MyAssetHelper.mic),
-                        ),
-                      ),
-                      Visibility(
-                        visible: controller.isUserRecordingCompleted.value,
-                        child: Column(
-                          children: [
-                            const CustomTextWidget(
-                              text: 'Long Press to Record the Sound',
-                              textColor: Colors.white,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Poppins',
-                            ),
-                            Container(
-                              margin: const EdgeInsets.all(6),
-                              width: context.width * 0.7,
-                              decoration: BoxDecoration(
-                                  color: MyColorHelper.white,
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Obx(
-                                () => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 8.0),
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: InkWell(
-                                            onTap: controller.toggleUserAudio,
-                                            child: Icon(
-                                              controller
-                                                      .isUserAudioPlaying.value
-                                                  ? Icons.pause_circle
-                                                  : Icons.play_circle,
-                                              size: 30.0,
-                                            )),
-                                      ),
-                                      const SizedBox(width: 6.0),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Obx(
-                                              () => Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: CustomTextWidget(
-                                                  text:
-                                                      '${_formatDuration(controller.userAudioPosition.value)} / ${_formatDuration(controller.userAudioDuration.value)}',
-                                                  fontWeight: FontWeight.w600,
-                                                  textColor: Colors.black45,
-                                                ),
-                                              ),
-                                            ),
-                                            controller.isUserAudioPlaying.value
-                                                ? Lottie.asset(
-                                                    "assets/images/audioAnimation.json",
-                                                    fit: BoxFit.fill,
-                                                    height:
-                                                        context.height * 0.03)
-                                                : const Divider(
-                                                    thickness: 3.0,
-                                                    endIndent: 15.0),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: context.height * 0.03),
-                            CustomAuthButton(
-                              text: 'Calculate',
-                              onTap: () async {
-                                controller.isResultCalculating.value = true;
-
-                                if (controller.recordedFilePath != null) {
-                                  // final userAudioBinary =
-                                  //     await controller.fileToBinaryString(
-                                  //         controller.recordedFilePath!);
-                                  final file =
-                                      File(controller.recordedFilePath!);
-                                  final bytes = await file.readAsBytes();
-                                  print(
-                                      'User Recorded Audio in Binary: $bytes');
-                                  DefaultChallengeService().uploadUserRecording(
-                                      userRecordingInBytes: bytes,
-                                      soundId: '1');
-                                }
-
-                                controller.isResultCalculating.value = false;
-                                controller.isResultCalculated.value = true;
-
-                                // Timer(
-                                //   const Duration(seconds: 1),
-                                //   () => controller.isResultCalculated.value =
-                                //       true,
-                                // );
-                              },
-                            ),
-
-                            // CustomAuthButton(
-                            //   text: 'Calculate Result',
-                            //   onTap: () {
-                            //     controller.isResultCalculating.value = true;
-                            //     Timer(
-                            //         const Duration(seconds: 1),
-                            //         () => controller.isResultCalculated.value =
-                            //             true);
-                            //   },
-                            // ),
-                          ],
-                        ),
-                      )
+                      UserAudioDuration(),
+                      MyRecordingAnimation(),
+                      MyRecordAudioButton(controller: controller),
+                      UserRecordedSoundAndCalculateButton(context)
                     ],
                   ),
+      ),
+    );
+  }
+
+  Visibility UserRecordedSoundAndCalculateButton(BuildContext context) {
+    return Visibility(
+      visible: controller.isUserRecordingCompleted.value,
+      child: Column(
+        children: [
+          const CustomTextWidget(
+            text: 'Long Press to Record the Sound',
+            textColor: Colors.white,
+            fontSize: 14.0,
+            fontWeight: FontWeight.w400,
+            fontFamily: 'Poppins',
+          ),
+          Container(
+            margin: const EdgeInsets.all(6),
+            width: context.width * 0.7,
+            decoration: BoxDecoration(
+                color: MyColorHelper.white,
+                borderRadius: BorderRadius.circular(8)),
+            child: Obx(
+              () => Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                          onTap: controller.toggleUserAudio,
+                          child: Icon(
+                            controller.isUserAudioPlaying.value
+                                ? Icons.pause_circle
+                                : Icons.play_circle,
+                            size: 30.0,
+                          )),
+                    ),
+                    const SizedBox(width: 6.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Obx(
+                            () => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CustomTextWidget(
+                                text:
+                                    '${_formatDuration(controller.userAudioPosition.value)} / ${_formatDuration(controller.userAudioDuration.value)}',
+                                fontWeight: FontWeight.w600,
+                                textColor: Colors.black45,
+                              ),
+                            ),
+                          ),
+                          controller.isUserAudioPlaying.value
+                              ? Lottie.asset(
+                                  "assets/images/audioAnimation.json",
+                                  fit: BoxFit.fill,
+                                  height: context.height * 0.03)
+                              : const Divider(thickness: 3.0, endIndent: 15.0),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: context.height * 0.03),
+          CustomAuthButton(
+            text: 'Calculate',
+            onTap: () async {
+              controller.isResultCalculating.value = true;
+              if (controller.recordedFilePath != null) {
+                final file = File(controller.recordedFilePath!);
+                final bytes = await file.readAsBytes();
+                DefaultChallengeService().uploadUserRecording(
+                  userRecordingInBytes: bytes,
+                  soundId: '668278c2e67d38ed7866d163',
+                  userId: storage.read('user_info')['_id'],
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Visibility MyRecordingAnimation() {
+    return Visibility(
+      visible: controller.isUserRecording.value,
+      child: Lottie.asset(
+        MyAssetHelper.musicLoading,
+        width: 60,
+        height: 60,
+        fit: BoxFit.fill,
+      ),
+    );
+  }
+
+  Obx UserAudioDuration() {
+    return Obx(
+      () => CustomTextWidget(
+        text: _formatDuration(controller.userRecordingDuration.value),
+        textColor: Colors.white,
+        fontSize: 26.0,
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+}
+
+class MyRecordAudioButton extends StatelessWidget {
+  const MyRecordAudioButton({
+    super.key,
+    required this.controller,
+  });
+
+  final DefaultMatchController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onLongPress: controller.startRecording,
+      onLongPressEnd: (details) => controller.stopRecording(),
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(20),
+        height: context.height * 0.2,
+        width: context.width * 0.25,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey,
+                blurRadius: 30.0,
+                spreadRadius: 8.0,
+                offset: Offset(5.0, 5.0))
+          ],
+          shape: BoxShape.circle,
+        ),
+        child: Image.asset(MyAssetHelper.mic),
       ),
     );
   }

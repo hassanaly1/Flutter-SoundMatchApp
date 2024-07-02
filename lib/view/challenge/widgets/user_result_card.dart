@@ -8,11 +8,15 @@ import 'package:sound_app/models/participant_model.dart';
 class UserResultCard extends StatelessWidget {
   final Participant participant;
   final int index;
+  final int result;
+
   const UserResultCard({
     super.key,
     required this.index,
     required this.participant,
+    required this.result,
   });
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -54,11 +58,11 @@ class UserResultCard extends StatelessWidget {
                       textColor: MyColorHelper.white,
                       fontSize: 18,
                     ),
-                    subtitle: const Column(
+                    subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomTextWidget(
-                          text: "Avg Score: 50%",
+                          text: "Percentage: $result%",
                           fontFamily: "horta",
                           textColor: MyColorHelper.white,
                           fontSize: 18,

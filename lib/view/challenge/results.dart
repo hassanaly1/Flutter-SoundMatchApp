@@ -209,7 +209,11 @@ class _UserResultPreviewState extends State<UserResultPreview>
                 itemBuilder: (BuildContext context, int index, _) {
                   final participant =
                       widget.challengeModel.participants![index];
-                  return UserResultCard(index: index, participant: participant);
+                  return UserResultCard(
+                    index: index,
+                    participant: participant,
+                    result: 50,
+                  );
                 },
               ),
               buildCarouselControls(),
