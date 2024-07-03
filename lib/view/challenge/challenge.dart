@@ -17,6 +17,7 @@ import 'package:sound_app/view/challenge/sharing_screen.dart';
 
 class ChallengeScreen extends StatefulWidget {
   final ChallengeModel challengeModel;
+
   const ChallengeScreen({super.key, required this.challengeModel});
 
   @override
@@ -345,6 +346,7 @@ class CalculatingResultPopup extends StatelessWidget {
 class TopContainer extends StatelessWidget {
   final ChallengeModel challengeModel;
   final ChallengeController controller;
+
   const TopContainer(
       {super.key, required this.controller, required this.challengeModel});
 
@@ -495,7 +497,7 @@ class CustomUserCard extends StatelessWidget {
       child: Column(
         children: [
           CustomTextWidget(
-            text: participant.name ?? '',
+            text: participant.firstName ?? '',
             fontFamily: 'Poppins',
             fontSize: 10.0,
             fontWeight: FontWeight.w400,
@@ -516,7 +518,7 @@ class CustomUserCard extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: CircleAvatar(
                 radius: 30,
-                backgroundImage: NetworkImage(participant.imageUrl ?? ''),
+                backgroundImage: NetworkImage(participant.profile ?? ''),
               ),
             ),
           ),

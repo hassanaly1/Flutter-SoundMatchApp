@@ -7,8 +7,8 @@ import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 import 'package:sound_app/view/challenge/widgets/custom_soundpack_widget.dart';
+import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 
 class PurchaseSongsScreen extends StatefulWidget {
   const PurchaseSongsScreen({super.key});
@@ -155,25 +155,25 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                                                 children: [
                                                   InkWell(
                                                     onTap: () {
-                                                      controller.sounds
+                                                      controller.soundsById
                                                           .clear(); //To remove the previously added sounds.
                                                       controller
                                                           .fetchSoundsByPackId(
                                                               soundPack.id);
                                                       debugPrint(
-                                                          'SoundsLength: ${controller.sounds.length}');
+                                                          'SoundsLength: ${controller.soundsById.length}');
                                                       Get.to(
                                                           () => SoundPackList(
                                                               soundPackModel:
                                                                   soundPack,
                                                               sounds: controller
-                                                                  .sounds),
+                                                                  .soundsById),
                                                           transition:
                                                               Transition.zoom,
                                                           duration:
                                                               const Duration(
                                                                   milliseconds:
-                                                                      500));
+                                                                      200));
                                                     },
                                                     // onTap: () {
                                                     //   //   Get.to(

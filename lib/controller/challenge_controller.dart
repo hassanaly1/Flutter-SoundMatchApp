@@ -1,7 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
@@ -9,7 +10,7 @@ import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/results.dart';
 
 class ChallengeController extends GetxController {
-  final AddChallengeController addChallengeController = Get.find();
+  final CreateChallengeController addChallengeController = Get.find();
 
   RxBool isDefaultAudioPlaying = false.obs;
   RxBool isUserAudioPlaying = false.obs;
@@ -22,6 +23,7 @@ class ChallengeController extends GetxController {
   RxInt originalTurnDuration = 5.obs;
   RxBool timerCompleted = false.obs;
   RxBool isRoundCompleted = false.obs;
+
   // Track the current participant's turn
   RxInt currentTurnIndex = 0.obs;
   RxInt currentUserIndex = 0.obs;
@@ -39,7 +41,7 @@ class ChallengeController extends GetxController {
   void onInit() {
     super.onInit();
     debugPrint('ChallengeControllerInitialized');
-    totalParticipants = addChallengeController.selectedMembers;
+    totalParticipants = addChallengeController.selectedParticipants;
     soundForChallenge = addChallengeController.selectedSound;
     totalRounds = addChallengeController.numberOfRounds;
     update();
@@ -54,18 +56,18 @@ class ChallengeController extends GetxController {
     super.onClose();
   }
 
-  updateChallengeModel(ChallengeModel challengeModel) {
-    ChallengeModel updatedChallengeModel = ChallengeModel(
-      id: challengeModel.id,
-      challengeName: challengeModel.challengeName,
-      participants: challengeModel.participants
-          ?.where((p) => p.name == 'John Doe')
-          .toList(),
-      numberOfRounds: challengeModel.numberOfRounds,
-      song: challengeModel.song,
-    );
-    return updatedChallengeModel;
-  }
+  // updateChallengeModel(ChallengeModel challengeModel) {
+  //   ChallengeModel updatedChallengeModel = ChallengeModel(
+  //     id: challengeModel.id,
+  //     challengeName: challengeModel.challengeName,
+  //     participants: challengeModel.participants
+  //         ?.where((p) => p.firstName == 'John Doe')
+  //         .toList(),
+  //     numberOfRounds: challengeModel.numberOfRounds,
+  //     song: challengeModel.song,
+  //   );
+  //   return updatedChallengeModel;
+  // }
 
   void onGameStarts(ChallengeModel challengeModel) {
     challenge = challengeModel;

@@ -9,6 +9,7 @@ class CustomMatchCard extends StatelessWidget {
   final ChallengeModel challenge;
   final VoidCallback onTap;
   final int? index;
+
   const CustomMatchCard(
       {super.key, required this.challenge, required this.onTap, this.index});
 

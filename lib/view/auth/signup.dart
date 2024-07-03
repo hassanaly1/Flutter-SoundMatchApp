@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
@@ -164,19 +163,21 @@ class SignupScreen extends StatelessWidget {
                       Get.offAll(() => const LoginScreen(),
                           transition: Transition.rightToLeft);
                     },
-                    child: Text.rich(
+                    child: const Text.rich(
                       TextSpan(
                         text: 'Already have an Account? ',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: Colors.white70,
+                            fontFamily: 'poppins',
                             fontSize: 12.0),
                         children: [
                           TextSpan(
                             text: 'Login',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white,
+                                fontFamily: 'poppins',
                                 fontSize: 14.0),
                           ),
                         ],

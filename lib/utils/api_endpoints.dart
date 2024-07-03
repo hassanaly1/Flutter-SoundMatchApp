@@ -11,13 +11,18 @@ class ApiEndPoints {
   static String verifyOtpUrl = 'api/user/verify-reset-otp';
   static String changePasswordUrl = 'api/user/changepassword';
 
+  //Sound&SoundPacks
   static String listofsoundpacksUrl = 'api/soundpack/getlistofsoundpackages';
   static String listofsoundsByIdUrl = 'api/soundpack/getSoundPackageById';
+
+  //Participants
+  static String listOfParticipantsUrl = 'api/user/get-users-paginated-List';
 
   //Default Match
   static String defaultMatchUrl = 'show-test-match-result';
 
   static String connectToDefaultMatch = 'enter_to_test_room';
+  static String connectToCreateChallenge = 'create_challenge';
   static String showTestMatchResult = 'show_test_match_result';
 }
 

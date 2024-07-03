@@ -2,29 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/data/sounds_service.dart';
 import 'package:sound_app/models/challenge_model.dart';
+import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 
 class MyUniversalController extends GetxController {
   RxBool isGuestUser = false.obs;
-  // Reactive list for sounds based on sound pack ID
-  RxList<SoundModel> sounds = <SoundModel>[].obs;
-  // all sound pack list
+
+  RxList<SoundModel> soundsById = <SoundModel>[].obs;
+
   RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
-  // user sound pack list
   RxList<SoundPackModel> userSoundPacks = <SoundPackModel>[].obs;
 
-  @override
-  onInit() async {
-    // await fetchSoundPacks(1);
-    // debugPrint('SoundPacks: ${allSoundPacks.length}');
-    super.onInit();
-  }
+  RxList<Participant> participants = <Participant>[].obs;
 
   // Challenges
   RxList<ChallengeModel> challenges = <ChallengeModel>[
-    ChallengeModel(
-        challengeName: 'Free Sound Match', song: SoundModel(name: '', url: ''))
+    // ChallengeModel(
+    //   challengeName: 'Free Sound Match',
+    //   song: SoundModel(name: '', url: ''),
+    // )
   ].obs;
 
   // Add sound pack to the list
@@ -38,33 +35,44 @@ class MyUniversalController extends GetxController {
     }
   }
 
-  //ApiCalls
   Future<void> fetchSoundPacks(int page) async {
     try {
+      allSoundPacks.clear();
+
       final List<dynamic> fetchedSounds =
           await SoundServices().fetchSoundPacks(page);
-      // Convert fetchedSounds to SoundPackModel and add them to soundPacks list
-      for (var soundData in fetchedSounds) {
-        SoundPackModel soundPack = SoundPackModel.fromJson(soundData);
+      for (var soundPackData in fetchedSounds) {
+        SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
         allSoundPacks.add(soundPack);
       }
     } catch (e) {
-      debugPrint('Error fetching sounds: $e');
+      debugPrint('Error Fetching SoundPacks: $e');
     }
   }
 
-  // Method to fetch sounds of a particular sound pack
   Future<void> fetchSoundsByPackId(String soundPackId) async {
+    soundsById.clear();
     try {
       List<SoundModel> fetchedSounds =
           await SoundServices().fetchSoundsByPackId(soundPackId);
-      sounds.clear();
-      sounds.addAll(fetchedSounds);
-
+      soundsById.addAll(fetchedSounds);
       debugPrint(
-          'Fetched sounds for sound pack ID $soundPackId: ${sounds.length}');
+          'Fetched Sounds for SoundPack ID $soundPackId: ${soundsById.length}');
     } catch (e) {
-      debugPrint('Error fetching sounds for sound pack ID $soundPackId: $e');
+      debugPrint('Error Fetching Sounds for SoundPack ID $soundPackId: $e');
+    }
+  }
+
+  Future<void> fetchParticipants(
+      {int page = 1, String searchString = ""}) async {
+    participants.clear();
+    try {
+      List<Participant> fetchedParticipants =
+          await SoundServices().fetchParticipants(searchString: searchString);
+      debugPrint('Fetched Participants: ${fetchedParticipants.length}');
+      participants.addAll(fetchedParticipants);
+    } catch (e) {
+      debugPrint('Error Fetching Participants: $e');
     }
   }
 }

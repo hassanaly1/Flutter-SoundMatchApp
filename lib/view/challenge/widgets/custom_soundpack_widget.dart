@@ -7,6 +7,7 @@ import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 
 class CustomSoundPackWidget extends StatelessWidget {
   final SoundPackModel soundPackModel;
+
   // final bool? showAddIcon;
   // final bool showTickIcon;
 
@@ -25,12 +26,14 @@ class CustomSoundPackWidget extends StatelessWidget {
       padding: const EdgeInsets.all(4.0),
       child: InkWell(
         onTap: () {
-          controller.sounds.clear(); //To remove the previously added sounds.
+          controller.soundsById
+              .clear(); //To remove the previously added sounds.
           controller.fetchSoundsByPackId(soundPackModel.id);
-          debugPrint('SoundsLength: ${controller.sounds.length}');
+          debugPrint('SoundsLength: ${controller.soundsById.length}');
           Get.to(
               () => SoundPackList(
-                  soundPackModel: soundPackModel, sounds: controller.sounds),
+                  soundPackModel: soundPackModel,
+                  sounds: controller.soundsById),
               transition: Transition.zoom,
               duration: const Duration(milliseconds: 500));
           // showTickIcon == true

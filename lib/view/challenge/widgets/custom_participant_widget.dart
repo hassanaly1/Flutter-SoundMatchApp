@@ -1,31 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/controller/create_challenge_controller.dart';
+import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/participant_model.dart';
 
-class CustomParticipantWidget extends StatelessWidget {
-  final Participant member;
+class CustomParticipantWidget extends StatefulWidget {
+  final Participant participant;
   final bool? showAddIcon;
   final bool? showTickIcon;
 
   const CustomParticipantWidget({
     super.key,
-    required this.member,
+    required this.participant,
     this.showAddIcon = true,
     this.showTickIcon,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final AddChallengeController controller =
-        Get.find<AddChallengeController>();
+  State<CustomParticipantWidget> createState() =>
+      _CustomParticipantWidgetState();
+}
 
+class _CustomParticipantWidgetState extends State<CustomParticipantWidget> {
+  final CreateChallengeController _controller = Get.find();
+  final MyUniversalController _universalController = Get.find();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: InkWell(
         onTap: () {
-          controller.addMembers(member);
+          _controller.addMembers(widget.participant);
         },
         child: Container(
           color: Colors.transparent,
@@ -50,7 +57,7 @@ class CustomParticipantWidget extends StatelessWidget {
                       // ),
                     ),
                     child: Image.network(
-                      member.imageUrl.toString(),
+                      widget.participant.profile.toString(),
                       fit: BoxFit.cover,
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent? loadingProgress) {
@@ -74,7 +81,8 @@ class CustomParticipantWidget extends StatelessWidget {
                     ),
                   ),
                   CustomTextWidget(
-                    text: member.name.toString(),
+                    text:
+                        '${widget.participant.firstName} ${widget.participant.lastName}',
                     fontSize: 12.0,
                     fontWeight: FontWeight.w400,
                     fontFamily: 'poppins',
@@ -82,11 +90,12 @@ class CustomParticipantWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              showTickIcon == true
+              widget.showTickIcon == true
                   ? Obx(
                       () => Visibility(
-                        visible: controller.isMemberSelected.value &&
-                            controller.filteredMembers.contains(member),
+                        visible: _controller.isMemberSelected.value &&
+                            _universalController.participants
+                                .contains(widget.participant),
                         child: Positioned(
                           top: 0,
                           right: 0,
@@ -106,24 +115,25 @@ class CustomParticipantWidget extends StatelessWidget {
                     )
                   : Obx(
                       () => Visibility(
-                        visible: showAddIcon == true,
+                        visible: widget.showAddIcon == true,
                         child: Positioned(
                           top: 0,
                           right: 0,
                           child: InkWell(
                             onTap: () {
-                              controller.addMembers(member);
+                              _controller.addMembers(widget.participant);
                             },
                             child: Container(
                               padding: const EdgeInsets.all(4.0),
                               decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: controller.selectedMembers
-                                          .contains(member)
+                                  color: _controller.selectedParticipants
+                                          .contains(widget.participant)
                                       ? Colors.lightGreen
                                       : Colors.white70),
                               child: Icon(
-                                controller.selectedMembers.contains(member)
+                                _controller.selectedParticipants
+                                        .contains(widget.participant)
                                     ? Icons.done
                                     : Icons.add,
                                 size: 22,

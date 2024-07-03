@@ -14,7 +14,8 @@ class MyAssetHelper {
 
   static String addChallengeBackground = 'assets/images/add_challenge_bg.png';
   static String challengeContainer = 'assets/images/challenge_container.png';
-  static String startNow = 'assets/images/start-now.png';
+  static String startNow = 'assets/images/start_now.png';
+  static String next = 'assets/images/next.png';
   static String historyRank1 = "assets/images/rank1.png";
   static String backgroundImage = "assets/svgs/backgroundImage.svg";
   static String leaderBackground = "assets/images/leader_background.png";
@@ -47,6 +48,7 @@ class MyAssetHelper {
     "https://img.freepik.com/free-photo/bohemian-man-with-his-arms-crossed_1368-3542.jpg?size=626&ext=jpg&ga=GA1.1.28285361.1704840180&semt=sph",
     "https://img.freepik.com/free-photo/handsome-bearded-guy-posing-against-white-wall_273609-20597.jpg?size=626&ext=jpg&ga=GA1.1.28285361.1704840180&semt=sph"
   ];
+
   static String getDummyImage() {
     return dummyImages[Random().nextInt(dummyImages.length)];
   }

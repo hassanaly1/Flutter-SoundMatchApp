@@ -7,6 +7,7 @@ class ChallengeModel {
   int? id;
   int? numberOfRounds;
   List<Participant>? participants;
+
   // List<Participant>? leftProfiles;
   // List<Participant>? rightProfiles;
   // List<Participant>? bottomProfiles;

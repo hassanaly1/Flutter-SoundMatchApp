@@ -1,299 +1,111 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-// import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/create_account_popup.dart';
-import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
+import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/snackbars.dart';
-import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/participant_model.dart';
-// import 'package:sound_app/utils/api_endpoints.dart';
 import 'package:sound_app/view/auth/signup.dart';
-import 'package:sound_app/view/create_challenge/select_members.dart';
+import 'package:sound_app/view/create_challenge/select_participants.dart';
 import 'package:sound_app/view/create_challenge/select_song.dart';
 
-class CreateChallenge extends StatelessWidget {
+class CreateChallenge extends StatefulWidget {
   const CreateChallenge({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final MyUniversalController universalController = Get.find();
-    final AddChallengeController controller = Get.put(AddChallengeController());
+  State<CreateChallenge> createState() => _CreateChallengeState();
+}
 
-    return SafeArea(
-      child: GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+class _CreateChallengeState extends State<CreateChallenge> {
+  late CreateChallengeController controller;
+  final MyUniversalController universalController = Get.find();
+  late io.Socket socket;
+
+  @override
+  void initState() {
+    controller = Get.put(CreateChallengeController());
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    socket.dispose();
+    controller.dispose();
+    universalController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final PageController pageController = PageController(initialPage: 0);
+    RxInt currentPage = 0.obs;
+
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: SafeArea(
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 body: Padding(
                   padding:
-                      EdgeInsets.symmetric(vertical: context.height * 0.03),
+                      EdgeInsets.symmetric(horizontal: context.width * 0.05),
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const CustomAppbar(showNotificationsIcon: true),
-                        //Create New Challenge Image
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16.0),
+                          child: CustomAppbar(showNotificationsIcon: false),
+                        ),
                         const CreateChallengeImage(),
-                        //MainChallengeContainer
-                        Padding(
+                        Container(
+                          height: context.height * 0.7,
                           padding: EdgeInsets.symmetric(
-                              horizontal: context.width * 0.05),
-                          child: Stack(
+                            vertical: context.height * 0.15,
+                            horizontal: context.width * 0.07,
+                          ),
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                                  AssetImage(MyAssetHelper.challengeContainer),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          child: PageView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: pageController,
+                            onPageChanged: (value) {
+                              currentPage.value = value;
+                            },
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                child: SizedBox(
-                                    height: context.height * 0.6,
-                                    width: context.width,
-                                    child: Image.asset(
-                                        MyAssetHelper.challengeContainer,
-                                        fit: BoxFit.fill)),
+                              MyPageView1(
+                                context,
+                                controller,
+                                universalController,
+                                pageController,
                               ),
-                              Positioned.fill(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: context.height * 0.07,
-                                        width: context.width * 0.6,
-                                        child: CustomTextField(
-                                          hintText: 'Enter Challenge Name',
-                                          controller: controller
-                                              .challengeNameController,
-                                        ),
-                                      ),
-                                      SizedBox(height: context.height * 0.02),
-                                      Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12.0),
-                                          child: Obx(
-                                            () => Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  _buildIcon(
-                                                    icon: Icons.account_circle,
-                                                    color: controller
-                                                            .selectedMembers
-                                                            .isEmpty
-                                                        ? Colors
-                                                            .redAccent.shade100
-                                                            .withOpacity(0.6)
-                                                        : MyColorHelper.blue,
-                                                    context: context,
-                                                    onTap: () {
-                                                      showModalBottomSheet(
-                                                        backgroundColor:
-                                                            Colors.transparent,
-                                                        context: context,
-                                                        isScrollControlled:
-                                                            true,
-                                                        builder: (BuildContext
-                                                            context) {
-                                                          return SelectMemberScreen(
-                                                            selectedMembers:
-                                                                controller
-                                                                    .selectedMembers,
-                                                            filteredMembers:
-                                                                controller
-                                                                    .filteredMembers,
-                                                            onSearchChanged:
-                                                                controller
-                                                                    .filterMembers,
-                                                          );
-                                                        },
-                                                      );
-                                                    },
-                                                  ),
-                                                  Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      const CustomTextWidget(
-                                                        text: 'Select Rounds',
-                                                        fontFamily: 'poppins',
-                                                        textColor:
-                                                            MyColorHelper.blue,
-                                                        fontSize: 14.0,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                      ),
-                                                      SizedBox(
-                                                          height:
-                                                              context.height *
-                                                                  0.01),
-                                                      SizedBox(
-                                                          height: context
-                                                                  .height *
-                                                              0.08,
-                                                          width: context.width *
-                                                              0.15,
-                                                          child: TextFormField(
-                                                              controller: controller
-                                                                  .numberOfRoundsController,
-                                                              onChanged: controller
-                                                                  .updateGameRound, // controller: controller
-                                                              //     .numberOfRounds,
-                                                              // onChanged:
-                                                              //     (value) {
-                                                              //   controller
-                                                              //           .gameRound
-                                                              //           .value =
-                                                              //       value
-                                                              //           as int;
-                                                              // },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              style: GoogleFonts
-                                                                  .poppins(
-                                                                fontSize: 16.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: MyColorHelper
-                                                                    .verdigris,
-                                                              ),
-                                                              decoration:
-                                                                  InputDecoration(
-                                                                      hintText:
-                                                                          '1',
-                                                                      hintStyle:
-                                                                          GoogleFonts
-                                                                              .poppins(
-                                                                        fontSize:
-                                                                            16.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w400,
-                                                                        color: MyColorHelper
-                                                                            .verdigris,
-                                                                      ),
-                                                                      enabledBorder:
-                                                                          const OutlineInputBorder(
-                                                                        borderSide:
-                                                                            BorderSide(color: MyColorHelper.verdigris),
-                                                                      ),
-                                                                      focusedBorder:
-                                                                          const OutlineInputBorder(
-                                                                        borderSide:
-                                                                            BorderSide(color: MyColorHelper.blue),
-                                                                      )))),
-                                                      Row(
-                                                        children:
-                                                            _buildRadioButtons(
-                                                                controller),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  _buildIcon(
-                                                    icon: Icons.play_circle,
-                                                    color: controller
-                                                                .selectedSound
-                                                                .value ==
-                                                            null
-                                                        ? Colors
-                                                            .redAccent.shade100
-                                                            .withOpacity(0.6)
-                                                        : MyColorHelper.blue,
-                                                    context: context,
-                                                    onTap: () {
-                                                      if (universalController
-                                                          .userSoundPacks
-                                                          .isNotEmpty) {
-                                                        universalController
-                                                            .fetchSoundsByPackId(
-                                                          universalController
-                                                              .userSoundPacks[0]
-                                                              .id,
-                                                        );
-                                                      }
-                                                      showModalBottomSheet(
-                                                        backgroundColor:
-                                                            Colors.transparent,
-                                                        context: context,
-                                                        isScrollControlled:
-                                                            true,
-                                                        builder: (BuildContext
-                                                            context) {
-                                                          return const SelectSongsScreen();
-                                                        },
-                                                      );
-                                                    },
-                                                  )
-                                                ]),
-                                          )),
-                                      SizedBox(height: context.height * 0.02),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: InkWell(
-                                          onTap: () {
-                                            createChallenge(
-                                                universalController:
-                                                    universalController,
-                                                controller: controller,
-                                                context: context);
-                                            // print('TAPPED');
-                                            // IO.Socket socket = IO.io(
-                                            //   ApiEndPoints.baseUrl,
-                                            //   IO.OptionBuilder().setTransports(
-                                            //       ['websocket']).build(),
-                                            // );
-                                            // socket.on('connect', (_) {
-                                            //   print('connect');
-                                            //   socket.emit('create_challenge', {
-                                            //     'name': controller
-                                            //         .challengeNameController
-                                            //         .text
-                                            //         .trim(),
-                                            //     'number_of_challenges':
-                                            //         controller.gameRound.value,
-                                            //   });
-                                            // });
-                                            // socket.onConnect((_) {
-                                            //   print('connect');
-                                            // });
-                                            // socket.onConnectError((_) {
-                                            //   print('connect error');
-                                            // });
-                                            // socket.onDisconnect(
-                                            //     (_) => print('disconnect'));
-                                          },
-                                          child: Image.asset(
-                                              MyAssetHelper.startNow,
-                                              height: context.height * 0.05),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                              MyPageView2(
+                                context,
+                                controller,
+                                universalController,
+                                pageController,
                               )
                             ],
                           ),
@@ -301,6 +113,216 @@ class CreateChallenge extends StatelessWidget {
                       ],
                     ),
                   ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget MyPageView1(
+    BuildContext context,
+    CreateChallengeController controller,
+    MyUniversalController universalController,
+    PageController pageController,
+  ) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CustomTextWidget(
+            text: 'Enter Challenge Name',
+            fontFamily: 'Horta',
+            textColor: MyColorHelper.blue,
+            fontSize: 22.0,
+            fontWeight: FontWeight.w400,
+          ),
+          SizedBox(height: context.height * 0.01),
+          SizedBox(
+            height: context.height * 0.07,
+            width: context.width * 0.6,
+            child: CustomTextField(
+              hintText: 'Challenge Name',
+              controller: controller.challengeNameController,
+            ),
+          ),
+          SizedBox(height: context.height * 0.02),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Obx(
+                () => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildIcon(
+                        icon: Icons.account_circle,
+                        color: controller.selectedParticipants.isEmpty
+                            ? Colors.redAccent.shade100.withOpacity(0.6)
+                            : MyColorHelper.blue,
+                        context: context,
+                        onTap: () {
+                          showModalBottomSheet(
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (BuildContext context) {
+                              return const SelectParticipantsScreen();
+                            },
+                          );
+                        },
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const CustomTextWidget(
+                            text: 'Select Rounds',
+                            fontFamily: 'Horta',
+                            textColor: MyColorHelper.blue,
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          SizedBox(height: context.height * 0.01),
+                          SizedBox(
+                            height: context.height * 0.08,
+                            width: context.width * 0.15,
+                            child: TextFormField(
+                              readOnly: true,
+                              onChanged: controller.updateGameRound,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                                color: MyColorHelper.verdigris,
+                                fontFamily: 'poppins',
+                              ),
+                              decoration: InputDecoration(
+                                hintText:
+                                    controller.numberOfRounds.value.toString(),
+                                hintStyle: const TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: MyColorHelper.verdigris,
+                                  fontFamily: 'poppins',
+                                ),
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: MyColorHelper.verdigris,
+                                  ),
+                                ),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: MyColorHelper.blue,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Row(children: _buildRadioButtons(controller)),
+                        ],
+                      ),
+                      _buildIcon(
+                        icon: Icons.play_circle,
+                        color: controller.selectedSound.value == null
+                            ? Colors.redAccent.shade100.withOpacity(0.6)
+                            : MyColorHelper.blue,
+                        context: context,
+                        onTap: () {
+                          if (universalController.userSoundPacks.isNotEmpty) {
+                            universalController.fetchSoundsByPackId(
+                              universalController.userSoundPacks[0].id,
+                            );
+                          }
+                          showModalBottomSheet(
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (BuildContext context) {
+                              return const SelectSongsScreen();
+                            },
+                          );
+                        },
+                      )
+                    ]),
+              )),
+          SizedBox(height: context.height * 0.01),
+          InkWell(
+            onTap: () {
+              pageController.nextPage(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOutCubicEmphasized,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                MyAssetHelper.next,
+                height: 50,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget MyPageView2(
+    BuildContext context,
+    CreateChallengeController controller,
+    MyUniversalController universalController,
+    PageController pageController,
+  ) {
+    return Obx(
+      () => SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: InkWell(
+                onTap: () => pageController.previousPage(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOutCubicEmphasized,
+                ),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const CustomTextWidget(
+              text: 'Enter Passing Criteria',
+              fontSize: 22.0,
+              fontFamily: 'Horta',
+              textColor: MyColorHelper.verdigris,
+            ),
+            ...List.generate(
+              controller.numberOfRounds.value,
+              (index) => SizedBox(
+                width: 100,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomTextField(
+                    hintText: 'Round ${index + 1}',
+                    controller: controller.passingCriteriaControllers[index],
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: context.height * 0.01),
+            InkWell(
+              onTap: () {
+                // connectToSocket();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  MyAssetHelper.startNow,
+                  height: 50,
                 ),
               ),
             )
@@ -312,8 +334,7 @@ class CreateChallenge extends StatelessWidget {
 
   void createChallenge(
       {required MyUniversalController universalController,
-      required AddChallengeController controller,
-      // required MyNewChallengeController myNewChallengeController,
+      required CreateChallengeController controller,
       required BuildContext context}) {
     if (universalController.isGuestUser.value) {
       showDialog(
@@ -340,58 +361,18 @@ class CreateChallenge extends StatelessWidget {
     } else {
       if (controller.challengeNameController.text.isNotEmpty &&
           controller.selectedSound.value != null &&
-          controller.selectedMembers.isNotEmpty) {
-        List<Participant> participants = controller.selectedMembers;
+          controller.selectedParticipants.isNotEmpty) {
+        List<Participant> participants = controller.selectedParticipants;
 
-        controller.createChallenge(
-          ChallengeModel(
-            id: Random().nextInt(50),
-            challengeName: controller.challengeNameController.text,
-            participants: participants,
-            song: controller.selectedSound.value!,
-            numberOfRounds: controller.numberOfRounds.value,
-          ),
-        );
-
-        // List<Participant> leftProfiles = participants.length >= 3
-        //     ? participants.sublist(0, 3)
-        //     : participants.sublist(0, min(participants.length, 3));
-        // List<Participant> rightProfiles = participants.length >= 6
-        //     ? participants.sublist(3, 6)
-        //     : participants.length >= 3
-        //         ? participants.sublist(3)
-        //         : [];
-        // List<Participant> bottomProfiles =
-        //     participants.length >= 6 ? participants.sublist(6) : [];
-        //
         // controller.createChallenge(
         //   ChallengeModel(
         //     id: Random().nextInt(50),
         //     challengeName: controller.challengeNameController.text,
         //     participants: participants,
         //     song: controller.selectedSound.value!,
-        //     leftProfiles: leftProfiles,
-        //     rightProfiles: rightProfiles,
-        //     bottomProfiles: bottomProfiles,
-        //     roundsCount: controller.gameRound.value,
+        //     numberOfRounds: controller.numberOfRounds.value,
         //   ),
         // );
-
-        // myNewChallengeController.roundValueOne();
-        // Get.off(
-        //   MainChallengeScreen(
-        //     challengeModel: ChallengeModel(
-        //       id: Random().nextInt(50),
-        //       challengeName: controller.challengeNameController.text,
-        //       participants: participants,
-        //       song: controller.selectedSong.value!,
-        //       leftProfiles: leftProfiles,
-        //       rightProfiles: rightProfiles,
-        //       bottomProfiles: bottomProfiles,
-        //       roundsCount: controller.gameRound.value,
-        //     ),
-        //   ),
-        // )!
 
         MySnackBarsHelper.showMessage(
           "Successfully ",
@@ -412,7 +393,7 @@ class CreateChallenge extends StatelessWidget {
             "Please Select Sound ",
             Icons.music_note,
           );
-        } else if (controller.selectedMembers.isEmpty) {
+        } else if (controller.selectedParticipants.isEmpty) {
           MySnackBarsHelper.showMessage(
             "To create the challenge.",
             "Please Select Participants ",
@@ -422,6 +403,8 @@ class CreateChallenge extends StatelessWidget {
       }
     }
   }
+
+  ///todo: ConnectToSocket
 
   Widget _buildIcon(
       {required IconData icon,
@@ -439,7 +422,7 @@ class CreateChallenge extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildRadioButtons(AddChallengeController controller) {
+  List<Widget> _buildRadioButtons(CreateChallengeController controller) {
     const List<int> radioValues = [1, 2, 3];
 
     return radioValues.map((value) {
@@ -447,20 +430,20 @@ class CreateChallenge extends StatelessWidget {
         autofocus: true,
         splashRadius: 20.0,
         fillColor: WidgetStateProperty.resolveWith((states) {
-          // active
           if (states.contains(WidgetState.selected)) {
             return MyColorHelper.blue;
           }
           // inactive
           return Colors.white60;
         }),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         activeColor: MyColorHelper.blue,
         value: value,
         groupValue: controller.numberOfRounds.value,
         onChanged: (int? selectedValue) {
           if (selectedValue != null) {
             controller.numberOfRounds.value = selectedValue;
-            controller.numberOfRoundsController.text = selectedValue.toString();
+            controller.updateNumberOfRounds(controller.numberOfRounds.value);
           }
         },
       );

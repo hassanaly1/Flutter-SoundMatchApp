@@ -12,9 +12,7 @@ import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/challenge_model.dart';
-import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/widgets/bar_chart.dart';
-import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -167,11 +165,11 @@ class _UserResultPreviewState extends State<UserResultPreview>
           timerCompleted = true;
           controller.countdownForNextRound.value = 60;
 
-          Get.off(
-            () => ChallengeScreen(
-                challengeModel:
-                    controller.updateChallengeModel(widget.challengeModel)),
-          );
+          // Get.off(
+          //   () => ChallengeScreen(
+          //       challengeModel:
+          //           controller.updateChallengeModel(widget.challengeModel)),
+          // );
           controller.resetControllerValues();
         }
       });
@@ -196,26 +194,26 @@ class _UserResultPreviewState extends State<UserResultPreview>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CarouselSlider.builder(
-                carouselController: carouselController,
-                options: CarouselOptions(
-                  height: MediaQuery.of(context).size.height * 0.25,
-                  enlargeCenterPage: false,
-                  viewportFraction: 0.7,
-                  initialPage: 0,
-                  onPageChanged: onPageChanged,
-                ),
-                itemCount: widget.challengeModel.participants?.length,
-                itemBuilder: (BuildContext context, int index, _) {
-                  final participant =
-                      widget.challengeModel.participants![index];
-                  return UserResultCard(
-                    index: index,
-                    participant: participant,
-                    result: 50,
-                  );
-                },
-              ),
+              // CarouselSlider.builder(
+              //   carouselController: carouselController,
+              //   options: CarouselOptions(
+              //     height: MediaQuery.of(context).size.height * 0.25,
+              //     enlargeCenterPage: false,
+              //     viewportFraction: 0.7,
+              //     initialPage: 0,
+              //     onPageChanged: onPageChanged,
+              //   ),
+              //   itemCount: widget.challengeModel.participants?.length,
+              //   itemBuilder: (BuildContext context, int index, _) {
+              //     final participant =
+              //         widget.challengeModel.participants![index];
+              //     return UserResultCard(
+              //       index: index,
+              //       participant: participant,
+              //       result: 50,
+              //     );
+              //   },
+              // ),
               buildCarouselControls(),
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
               Visibility(

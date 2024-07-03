@@ -3,19 +3,20 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
-import 'package:sound_app/view/challenge/widgets/custom_sound_avatar.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/view/challenge/widgets/custom_sound_avatar.dart';
 
 class SelectSongsScreen extends StatelessWidget {
   const SelectSongsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final MyUniversalController controller = Get.find();
-    final AddChallengeController addChallengeController = Get.find();
+    final CreateChallengeController addChallengeController = Get.find();
     return SafeArea(
         child: Stack(fit: StackFit.expand, children: [
       SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
@@ -30,7 +31,7 @@ class SelectSongsScreen extends StatelessWidget {
                   onPressed: () {
                     // ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     Get.back();
-                    controller.sounds.clear();
+                    controller.soundsById.clear();
                   },
                   icon: Obx(
                     () => Container(
@@ -94,7 +95,7 @@ class SelectSongsScreen extends StatelessWidget {
                             color: Colors.transparent,
                             child: TabBar(
                               onTap: (value) {
-                                controller.sounds.clear();
+                                controller.soundsById.clear();
                                 controller.fetchSoundsByPackId(
                                     controller.userSoundPacks[value].id);
                               },
@@ -119,6 +120,7 @@ class SelectSongsScreen extends StatelessWidget {
                           ),
                           Expanded(
                             child: TabBarView(
+                              physics: const NeverScrollableScrollPhysics(),
                               children: [
                                 for (int i = 0;
                                     i < controller.userSoundPacks.length;
@@ -129,13 +131,13 @@ class SelectSongsScreen extends StatelessWidget {
                                       CustomTextWidget(
                                         text: controller
                                             .userSoundPacks[i].packName,
-                                        fontSize: 14.0,
+                                        fontSize: 16.0,
                                         textAlign: TextAlign.center,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w500,
                                         fontFamily: 'poppins',
                                         textColor: Colors.white,
                                       ),
-                                      controller.sounds.isEmpty
+                                      controller.soundsById.isEmpty
                                           ? const Center(
                                               heightFactor: 10,
                                               child: CircularProgressIndicator(
@@ -147,8 +149,8 @@ class SelectSongsScreen extends StatelessWidget {
                                                 shrinkWrap: true,
                                                 physics:
                                                     const NeverScrollableScrollPhysics(),
-                                                itemCount:
-                                                    controller.sounds.length,
+                                                itemCount: controller
+                                                    .soundsById.length,
                                                 itemBuilder: (context, index) {
                                                   return Padding(
                                                     padding:
@@ -159,25 +161,27 @@ class SelectSongsScreen extends StatelessWidget {
                                                           decoration:
                                                               BoxDecoration(
                                                             border: Border.all(
-                                                                color: addChallengeController
-                                                                            .selectedSound
-                                                                            .value
-                                                                            ?.id ==
-                                                                        controller
-                                                                            .sounds[
-                                                                                index]
-                                                                            .id
-                                                                    ? Colors
-                                                                        .white54
-                                                                    : Colors
-                                                                        .transparent),
+                                                              color: addChallengeController
+                                                                          .selectedSound
+                                                                          .value
+                                                                          ?.id ==
+                                                                      controller
+                                                                          .soundsById[
+                                                                              index]
+                                                                          .id
+                                                                  ? Colors
+                                                                      .white54
+                                                                  : Colors
+                                                                      .transparent,
+                                                              width: 3.0,
+                                                            ),
                                                           ),
                                                           child: ListTile(
                                                             onTap: () {
                                                               addChallengeController
                                                                   .selectSound(
                                                                       controller
-                                                                              .sounds[
+                                                                              .soundsById[
                                                                           index]);
                                                             },
                                                             leading:
@@ -195,19 +199,20 @@ class SelectSongsScreen extends StatelessWidget {
                                                             ),
                                                             title: CustomTextWidget(
                                                                 text: controller
-                                                                        .sounds[
+                                                                        .soundsById[
                                                                             index]
                                                                         .name ??
                                                                     '',
-                                                                fontSize: 14.0,
-                                                                textColor: Colors
-                                                                    .white70,
+                                                                fontSize: 16.0,
+                                                                textColor:
+                                                                    Colors
+                                                                        .white,
                                                                 fontFamily:
                                                                     'poppins',
                                                                 fontWeight: (addChallengeController
                                                                             .selectedSound
                                                                             .value ==
-                                                                        controller.sounds[
+                                                                        controller.soundsById[
                                                                             index]
                                                                     ? FontWeight
                                                                         .w500
@@ -219,7 +224,7 @@ class SelectSongsScreen extends StatelessWidget {
                                                                       .value
                                                                       ?.id ==
                                                                   controller
-                                                                      .sounds[
+                                                                      .soundsById[
                                                                           index]
                                                                       .id,
                                                               onChanged:
@@ -227,7 +232,7 @@ class SelectSongsScreen extends StatelessWidget {
                                                                 addChallengeController
                                                                     .selectSound(
                                                                         controller
-                                                                            .sounds[index]);
+                                                                            .soundsById[index]);
                                                               },
                                                               activeColor:
                                                                   Colors

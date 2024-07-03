@@ -4,6 +4,7 @@ import 'package:sound_app/view/notifications/notification_screen.dart';
 
 class CustomAppbar extends StatelessWidget {
   final bool showNotificationsIcon;
+
   const CustomAppbar({
     super.key,
     required this.showNotificationsIcon,
@@ -12,7 +13,7 @@ class CustomAppbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      padding: const EdgeInsets.all(12.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -20,7 +21,7 @@ class CustomAppbar extends StatelessWidget {
             onTap: () => Get.back(),
             child: const Icon(
               Icons.arrow_back_rounded,
-              color: Colors.white70,
+              color: Colors.white,
             ),
           ),
           InkWell(

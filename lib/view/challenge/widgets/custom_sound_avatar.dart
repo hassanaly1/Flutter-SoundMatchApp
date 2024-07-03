@@ -5,6 +5,7 @@ import 'package:sound_app/models/sound_pack_model.dart';
 
 class CustomSoundAvatar extends StatelessWidget {
   final SoundPackModel soundPackModel;
+
   const CustomSoundAvatar({
     super.key,
     required this.soundPackModel,
@@ -18,14 +19,16 @@ class CustomSoundAvatar extends StatelessWidget {
         children: [
           CircleAvatar(
             backgroundColor: Colors.grey.shade400,
-            // backgroundImage: NetworkImage(soundPackModel.packImage),
+            backgroundImage: NetworkImage(soundPackModel.packImage),
             radius: 40,
           ),
           CustomTextWidget(
             text: soundPackModel.packName,
             textColor: Colors.white,
-            fontSize: 12.0,
+            fontSize: 14.0,
             fontFamily: 'poppins',
+            maxLines: 2,
+            textAlign: TextAlign.center,
             fontWeight: FontWeight.w500,
           )
         ],

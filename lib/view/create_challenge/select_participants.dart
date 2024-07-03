@@ -3,27 +3,36 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:sound_app/controller/add_challenge_controller.dart';
+import 'package:sound_app/controller/create_challenge_controller.dart';
+import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
-import 'package:sound_app/view/challenge/widgets/custom_participant_widget.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/searchbar.dart';
-import 'package:sound_app/models/participant_model.dart';
+import 'package:sound_app/view/challenge/widgets/custom_participant_widget.dart';
 
-class SelectMemberScreen extends StatelessWidget {
-  final RxList<Participant> selectedMembers;
-  final RxList<Participant> filteredMembers;
-  final Function(String) onSearchChanged;
-  const SelectMemberScreen(
-      {super.key,
-      required this.selectedMembers,
-      required this.filteredMembers,
-      required this.onSearchChanged});
+class SelectParticipantsScreen extends StatefulWidget {
+  const SelectParticipantsScreen({
+    super.key,
+  });
+
+  @override
+  State<SelectParticipantsScreen> createState() =>
+      _SelectParticipantsScreenState();
+}
+
+class _SelectParticipantsScreenState extends State<SelectParticipantsScreen> {
+  final CreateChallengeController _controller = Get.find();
+  final MyUniversalController _universalController = Get.find();
+
+  @override
+  void initState() {
+    _universalController.fetchParticipants();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AddChallengeController controller = Get.find();
     return SafeArea(
       child: Stack(fit: StackFit.expand, children: [
         SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
@@ -43,11 +52,11 @@ class SelectMemberScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(4.0),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: controller.selectedMembers.isNotEmpty
+                              color: _controller.selectedParticipants.isNotEmpty
                                   ? Colors.lightGreen
                                   : Colors.redAccent),
                           child: Icon(
-                            controller.selectedMembers.isNotEmpty
+                            _controller.selectedParticipants.isNotEmpty
                                 ? Icons.done
                                 : Icons.close,
                             color: Colors.white,
@@ -119,19 +128,22 @@ class SelectMemberScreen extends StatelessWidget {
                         ),
                         SizedBox(height: context.height * 0.01),
                         CustomSearchBar(
-                          onChanged: onSearchChanged,
+                          onChanged: (value) {
+                            _universalController.fetchParticipants(
+                                searchString: value);
+                          },
                         ),
                         const Divider(
                             color: Colors.grey, indent: 15.0, endIndent: 15.0),
                         SizedBox(height: context.height * 0.01),
                         Obx(
-                          () => filteredMembers.isEmpty
+                          () => _universalController.participants.isEmpty
                               ? const Center(
                                   child: Padding(
                                     padding: EdgeInsets.all(12.0),
                                     child: CustomTextWidget(
-                                      text: 'No Match found',
-                                      fontSize: 12.0,
+                                      text: 'No Participants found',
+                                      fontSize: 14.0,
                                       fontWeight: FontWeight.w600,
                                       textColor: Colors.white70,
                                       fontFamily: 'poppins',
@@ -143,16 +155,18 @@ class SelectMemberScreen extends StatelessWidget {
                               : GridView.builder(
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
-                                  itemCount: filteredMembers.length,
+                                  itemCount:
+                                      _universalController.participants.length,
                                   gridDelegate:
                                       const SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 4,
                                     childAspectRatio: 0.7,
                                   ),
                                   itemBuilder: (context, index) {
-                                    final member = filteredMembers[index];
+                                    final participant = _universalController
+                                        .participants[index];
                                     return CustomParticipantWidget(
-                                      member: member,
+                                      participant: participant,
                                     );
                                   },
                                 ),

@@ -46,14 +46,14 @@ class UserResultCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           image: NetworkImage(
-                            participant.imageUrl ?? '',
+                            participant.profile ?? '',
                           ),
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     title: CustomTextWidget(
-                      text: participant.name ?? '',
+                      text: '${participant.firstName} ${participant.lastName}',
                       fontFamily: "Horta",
                       textColor: MyColorHelper.white,
                       fontSize: 18,

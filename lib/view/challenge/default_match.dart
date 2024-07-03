@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/default_match_controller.dart';
 import 'package:sound_app/data/default_challenge_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
@@ -25,7 +25,7 @@ class DefaultMatchScreen extends StatefulWidget {
 
 class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
   late DefaultMatchController controller;
-  late IO.Socket socket;
+  late io.Socket socket;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
   void connectToSocket() {
     try {
       debugPrint('Connecting to Socket...');
-      socket = IO.io(ApiEndPoints.baseUrl, <String, dynamic>{
+      socket = io.io(ApiEndPoints.baseUrl, <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': true,
       });

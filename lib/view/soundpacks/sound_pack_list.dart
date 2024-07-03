@@ -13,8 +13,10 @@ import 'package:sound_app/models/sound_pack_model.dart';
 class SoundPackList extends StatelessWidget {
   final SoundPackModel soundPackModel;
   final List<SoundModel> sounds;
+
   const SoundPackList(
       {super.key, required this.soundPackModel, required this.sounds});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -108,7 +110,7 @@ class SoundPackList extends StatelessWidget {
                                   ))
                               : ListView.builder(
                                   shrinkWrap: true,
-                                  itemCount: 10,
+                                  itemCount: sounds.length,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     return ListTile(
