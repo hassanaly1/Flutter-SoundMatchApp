@@ -6,12 +6,15 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/challenge_model.dart';
 
 class CustomMatchCard extends StatelessWidget {
-  final ChallengeModel challenge;
+  final ChallengeModel challengeModel;
   final VoidCallback onTap;
   final int? index;
 
   const CustomMatchCard(
-      {super.key, required this.challenge, required this.onTap, this.index});
+      {super.key,
+      required this.challengeModel,
+      required this.onTap,
+      this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,7 @@ class CustomMatchCard extends StatelessWidget {
                         offset: Offset(0, 0),
                       ),
                     ],
-                    text: challenge.challengeName!,
+                    text: challengeModel.challenge.name,
                     fontWeight: FontWeight.w700,
                     fontSize: 30.0,
                     textColor: Colors.white,

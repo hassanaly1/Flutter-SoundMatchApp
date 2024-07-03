@@ -24,6 +24,8 @@ class ApiEndPoints {
   static String connectToDefaultMatch = 'enter_to_test_room';
   static String connectToCreateChallenge = 'create_challenge';
   static String showTestMatchResult = 'show_test_match_result';
+  static String connectToRoom = 'connect_to_room';
+  static String getInvitations = 'get_invitations';
 }
 
 //------------------------------------------------------------------------------

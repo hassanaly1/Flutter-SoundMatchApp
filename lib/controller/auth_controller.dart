@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:sound_app/data/auth_service.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/change_password.dart';
 import 'package:sound_app/view/auth/login.dart';
 import 'package:sound_app/view/auth/otp.dart';
@@ -29,10 +29,8 @@ class AuthController extends GetxController {
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController otpController = TextEditingController();
 
-  final _storage = GetStorage();
-
   void saveUserInfo(Map<String, dynamic> userInfo) {
-    _storage.write('user_info', userInfo);
+    MyAppStorage.storage.write('user_info', userInfo);
   }
 
   //Calling Apis Methods.
@@ -112,7 +110,7 @@ class AuthController extends GetxController {
 
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
-          _storage.write('token', response['token']);
+          MyAppStorage.storage.write('token', response['token']);
 
           saveUserInfo(response['user']);
           Get.offAll(() => const HomeScreen(), transition: Transition.zoom);
@@ -178,7 +176,7 @@ class AuthController extends GetxController {
 
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);
-          _storage.write('token', response['data']['token']);
+          MyAppStorage.storage.write('token', response['data']['token']);
           Get.offAll(() => const ChangePasswordScreen());
 
           // clearAllControllers();
@@ -203,7 +201,7 @@ class AuthController extends GetxController {
         Map<String, dynamic> response = await AuthService().changePassword(
             password: passwordController.text.trim(),
             confirmPassword: confirmPasswordController.text.trim(),
-            token: _storage.read('token'));
+            token: MyAppStorage.token);
 
         if (response['status'] == 'success') {
           Fluttertoast.showToast(msg: response['message']);

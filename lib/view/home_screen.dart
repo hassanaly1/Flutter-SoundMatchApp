@@ -1,14 +1,19 @@
 import 'package:animations/animations.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
+import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/utils/api_endpoints.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/default_match.dart';
 import 'package:sound_app/view/challenge/widgets/custom_match_card.dart';
 import 'package:sound_app/view/create_challenge/create_challenge.dart';
@@ -31,7 +36,89 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     controller = Get.put(MyUniversalController());
     carouselController = Get.put(CarouselSliderController());
+    connectToRoomAndWaitingToGetInvitations(context);
     super.initState();
+  }
+
+  void connectToRoomAndWaitingToGetInvitations(BuildContext context) {
+    io.Socket socket = SocketService().getSocket();
+
+    try {
+      final data = {
+        'user_id': MyAppStorage.userId,
+      };
+      //Connect to their Room
+      socket.emit(ApiEndPoints.connectToRoom, data);
+      //Get the Invitations if Received Any.
+      socket.on(ApiEndPoints.getInvitations, (data) {
+        debugPrint('Received Challenge Invitation: $data');
+        Flushbar(
+          flushbarPosition: FlushbarPosition.TOP,
+          flushbarStyle: FlushbarStyle.GROUNDED,
+          reverseAnimationCurve: Curves.decelerate,
+          forwardAnimationCurve: Curves.elasticOut,
+          boxShadows: const [
+            BoxShadow(
+                color: Colors.blueGrey,
+                offset: Offset(0.0, 2.0),
+                blurRadius: 3.0)
+          ],
+          margin: const EdgeInsets.all(12.0),
+          borderRadius: BorderRadius.circular(12.0),
+          backgroundGradient: const LinearGradient(
+              colors: [Color(0XFF00B4B2), Color(0XFF03827B)]),
+          isDismissible: false,
+          duration: const Duration(seconds: 10),
+          icon: const Icon(Icons.gamepad, color: Colors.black54),
+          mainButton: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    padding: const EdgeInsets.all(4.0),
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.lightGreen),
+                    child: const Icon(
+                      Icons.done,
+                      color: Colors.white,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    padding: const EdgeInsets.all(4.0),
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.redAccent),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    )),
+              ),
+            ],
+          ),
+          dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+          showProgressIndicator: true,
+          progressIndicatorValueColor:
+              const AlwaysStoppedAnimation<Color>(Colors.white),
+          progressIndicatorBackgroundColor: MyColorHelper.caribbeanCurrent,
+          titleText: Text(
+            "Hello ${MyAppStorage.fullName}",
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18.0,
+                color: MyColorHelper.caribbeanCurrent,
+                fontFamily: "Poppins"),
+          ),
+          messageText: const Text(
+            "Faizan Khan has invited you to the Challenge",
+            style: TextStyle(
+                fontSize: 14.0, color: Colors.black54, fontFamily: "Poppins"),
+          ),
+        ).show(context);
+      });
+    } catch (e) {
+      debugPrint('Error sending challenge data: $e');
+    }
   }
 
   @override
@@ -219,7 +306,7 @@ class ChallengesList extends StatelessWidget {
                   return CustomMatchCard(
                     index: index,
                     onTap: action,
-                    challenge: challenge,
+                    challengeModel: challenge,
                   );
                 },
                 openBuilder: (context, action) {

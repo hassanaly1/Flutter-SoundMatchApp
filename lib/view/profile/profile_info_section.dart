@@ -22,12 +22,12 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CustomTextField(
-              hintText: storage.read('user_info')['first_name'],
+              hintText: MyAppStorage.fullName,
               labelText: "Username",
             ),
             SizedBox(height: context.height * 0.02),
             CustomTextField(
-              hintText: storage.read('user_info')['email'],
+              hintText: MyAppStorage.userEmail,
               labelText: "Email",
             ),
             SizedBox(height: context.height * 0.02),

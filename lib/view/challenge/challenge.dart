@@ -368,7 +368,7 @@ class TopContainer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             CustomTextWidget(
-                text: challengeModel.challengeName ?? '',
+                text: challengeModel.challenge.name,
                 fontFamily: "Horta",
                 textColor: MyColorHelper.white,
                 fontSize: 32),

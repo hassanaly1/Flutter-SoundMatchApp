@@ -5,6 +5,7 @@ import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 
 class MyUniversalController extends GetxController {
   RxBool isGuestUser = false.obs;
@@ -18,10 +19,28 @@ class MyUniversalController extends GetxController {
 
   // Challenges
   RxList<ChallengeModel> challenges = <ChallengeModel>[
-    // ChallengeModel(
-    //   challengeName: 'Free Sound Match',
-    //   song: SoundModel(name: '', url: ''),
-    // )
+    ChallengeModel(
+      challenge: Challenge(
+        name: 'Free Sound Match',
+        numberOfChallenges: '1',
+        user: MyAppStorage.userId,
+        sound: "",
+        createdBy: MyAppStorage.userId,
+      ),
+      passingCriteria: [],
+      challengeRoom: ChallengeRoom(
+        users: [MyAppStorage.userId],
+        totalMembers: 1,
+        currentTurnHolder: MyAppStorage.userId,
+      ),
+      invitation: Invitation(
+        type: 'challenge',
+        recipients: [
+          MyAppStorage.userId,
+        ],
+        createdBy: MyAppStorage.userId,
+      ),
+    )
   ].obs;
 
   // Add sound pack to the list
@@ -71,6 +90,9 @@ class MyUniversalController extends GetxController {
           await SoundServices().fetchParticipants(searchString: searchString);
       debugPrint('Fetched Participants: ${fetchedParticipants.length}');
       participants.addAll(fetchedParticipants);
+      // Removing the current user from the participants list
+      participants
+          .removeWhere((participant) => participant.id == MyAppStorage.userId);
     } catch (e) {
       debugPrint('Error Fetching Participants: $e');
     }

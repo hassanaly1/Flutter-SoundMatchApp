@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/login.dart';
@@ -10,6 +11,9 @@ import 'package:sound_app/view/home_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  // Initialize the socket service
+  SocketService(); // This will call the constructor and initialize the socket
+  // connectToRoomAndWaitingToGetInvitations(context);
   runApp(const MyApp());
 }
 
@@ -18,7 +22,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isFirstTime = storage.read('isFirstTime') ?? true;
+    bool isFirstTime = MyAppStorage.storage.read('isFirstTime') ?? true;
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -27,7 +31,7 @@ class MyApp extends StatelessWidget {
       ),
       home: isFirstTime == true
           ? const OnBoardingScreen()
-          : storage.read('token') != null
+          : MyAppStorage.token != null
               ? const HomeScreen()
               : const LoginScreen(),
     );

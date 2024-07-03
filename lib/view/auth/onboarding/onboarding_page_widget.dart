@@ -103,7 +103,7 @@ class CustomOnboardingScreen extends StatelessWidget {
               onTap: () {
                 if (onBoardingController.currentPage.value ==
                     onBoardingController.pages.length - 1) {
-                  storage.write('isFirstTime', false);
+                  MyAppStorage.storage.write('isFirstTime', false);
                   Get.offAll(() => const LoginScreen(),
                       transition: Transition.rightToLeft);
                   Get.delete<OnBoardingController>();

@@ -58,7 +58,7 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
             'Disconnected from Socket Server ${ApiEndPoints.connectToDefaultMatch}');
       });
 
-      socket.on('show_test_match_result', (data) {
+      socket.on(ApiEndPoints.showTestMatchResult, (data) {
         debugPrint('Received Calculation Result: $data');
         controller.matchPercentage.value = data['percentage_matched'];
         controller.isResultCalculating.value = false;
@@ -424,7 +424,8 @@ class CenterPart extends StatelessWidget {
                 DefaultChallengeService().uploadUserRecording(
                   userRecordingInBytes: bytes,
                   soundId: '668278c2e67d38ed7866d163',
-                  userId: storage.read('user_info')['_id'],
+                  userId: MyAppStorage.userId,
+                  // userId: storage.read('user_info')['_id'],
                 );
               }
             },

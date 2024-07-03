@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
+import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -14,7 +15,9 @@ import 'package:sound_app/helper/create_account_popup.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/snackbars.dart';
-import 'package:sound_app/models/participant_model.dart';
+import 'package:sound_app/models/challenge_model.dart';
+import 'package:sound_app/utils/api_endpoints.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/signup.dart';
 import 'package:sound_app/view/create_challenge/select_participants.dart';
 import 'package:sound_app/view/create_challenge/select_song.dart';
@@ -29,7 +32,6 @@ class CreateChallenge extends StatefulWidget {
 class _CreateChallengeState extends State<CreateChallenge> {
   late CreateChallengeController controller;
   final MyUniversalController universalController = Get.find();
-  late io.Socket socket;
 
   @override
   void initState() {
@@ -40,7 +42,6 @@ class _CreateChallengeState extends State<CreateChallenge> {
 
   @override
   void dispose() {
-    socket.dispose();
     controller.dispose();
     universalController.dispose();
     super.dispose();
@@ -281,18 +282,17 @@ class _CreateChallengeState extends State<CreateChallenge> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Align(
-              alignment: Alignment.topLeft,
-              child: InkWell(
-                onTap: () => pageController.previousPage(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOutCubicEmphasized,
-                ),
-                child: const Icon(
-                  Icons.arrow_back_rounded,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  onPressed: () => pageController.previousPage(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOutCubicEmphasized,
+                  ),
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: MyColorHelper.verdigris,
+                  ),
+                )),
             const CustomTextWidget(
               text: 'Enter Passing Criteria',
               fontSize: 22.0,
@@ -316,7 +316,11 @@ class _CreateChallengeState extends State<CreateChallenge> {
             SizedBox(height: context.height * 0.01),
             InkWell(
               onTap: () {
-                // connectToSocket();
+                createChallenge(
+                  universalController: universalController,
+                  controller: controller,
+                  context: context,
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -362,24 +366,13 @@ class _CreateChallengeState extends State<CreateChallenge> {
       if (controller.challengeNameController.text.isNotEmpty &&
           controller.selectedSound.value != null &&
           controller.selectedParticipants.isNotEmpty) {
-        List<Participant> participants = controller.selectedParticipants;
-
-        // controller.createChallenge(
-        //   ChallengeModel(
-        //     id: Random().nextInt(50),
-        //     challengeName: controller.challengeNameController.text,
-        //     participants: participants,
-        //     song: controller.selectedSound.value!,
-        //     numberOfRounds: controller.numberOfRounds.value,
-        //   ),
-        // );
-
+        callChallengeSocket();
         MySnackBarsHelper.showMessage(
           "Successfully ",
           "Challenge Created",
           CupertinoIcons.check_mark_circled,
         );
-        controller.challengeNameController.clear();
+        // controller.challengeNameController.clear();
       } else {
         if (controller.challengeNameController.text.isEmpty) {
           MySnackBarsHelper.showMessage(
@@ -404,13 +397,53 @@ class _CreateChallengeState extends State<CreateChallenge> {
     }
   }
 
-  ///todo: ConnectToSocket
+  void callChallengeSocket() {
+    io.Socket socket = SocketService().getSocket();
+    ChallengeModel challengeModel = ChallengeModel(
+      challenge: Challenge(
+        name: controller.challengeNameController.text,
+        numberOfChallenges: controller.numberOfRounds.value.toString(),
+        user: MyAppStorage.userId,
+        sound: controller.selectedSound.value!.id.toString(),
+        createdBy: MyAppStorage.userId,
+      ),
+      passingCriteria: List.generate(
+        controller.numberOfRounds.value,
+        (index) => PassingCriteria(
+          percentage: int.parse(
+              controller.passingCriteriaControllers[index].text.trim()),
+          room: index + 1,
+        ),
+      ),
+      challengeRoom: ChallengeRoom(
+        users: [MyAppStorage.userId],
+        totalMembers: 1,
+        currentTurnHolder: MyAppStorage.userId,
+      ),
+      invitation: Invitation(
+        type: 'challenge',
+        recipients: [
+          MyAppStorage.userId,
+          ...controller.selectedParticipants.map((e) => e.id.toString()),
+        ],
+        createdBy: MyAppStorage.userId,
+      ),
+    );
 
-  Widget _buildIcon(
-      {required IconData icon,
-      required Color? color,
-      required BuildContext context,
-      void Function()? onTap}) {
+    try {
+      final data = challengeModel.toJson();
+      socket.emit(ApiEndPoints.connectToCreateChallenge, data);
+    } catch (e) {
+      debugPrint('Error sending challenge data: $e');
+    }
+  }
+
+  Widget _buildIcon({
+    required IconData icon,
+    required Color? color,
+    required BuildContext context,
+    void Function()? onTap,
+  }) {
     return InkWell(
       excludeFromSemantics: true,
       onTap: onTap,
