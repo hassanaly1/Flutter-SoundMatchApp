@@ -19,6 +19,7 @@ import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/signup.dart';
+import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/create_challenge/select_participants.dart';
 import 'package:sound_app/view/create_challenge/select_song.dart';
 
@@ -42,7 +43,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
 
   @override
   void dispose() {
-    controller.dispose();
+    // controller.dispose();
     universalController.dispose();
     super.dispose();
   }
@@ -164,6 +165,9 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             : MyColorHelper.blue,
                         context: context,
                         onTap: () {
+                          if (controller.participants.isEmpty) {
+                            controller.fetchParticipants();
+                          }
                           showModalBottomSheet(
                             backgroundColor: Colors.transparent,
                             context: context,
@@ -423,7 +427,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
       invitation: Invitation(
         type: 'challenge',
         recipients: [
-          MyAppStorage.userId,
+          // MyAppStorage.userId,
           ...controller.selectedParticipants.map((e) => e.id.toString()),
         ],
         createdBy: MyAppStorage.userId,
@@ -433,6 +437,18 @@ class _CreateChallengeState extends State<CreateChallenge> {
     try {
       final data = challengeModel.toJson();
       socket.emit(ApiEndPoints.connectToCreateChallenge, data);
+      // socket.on(
+      //   'challenge_room',
+      //   (data) {
+      //     print('Challenge Room: $data');
+      //     ChallengeRoomModel challengeRoomModel =
+      //         ChallengeRoomModel.fromJson(data['challenge_room']);
+      //     print('Challenge Room Model: ${challengeRoomModel.toJson()}');
+      Get.off(
+        () => const ChallengeRoomScreen(),
+      );
+      //   },
+      // );
     } catch (e) {
       debugPrint('Error sending challenge data: $e');
     }

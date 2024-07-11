@@ -23,14 +23,9 @@ class _SplashScreenState extends State<SplashScreen> {
     String? token = widget.storage.read('token');
 
     Timer(const Duration(seconds: 2), () {
-      if (token == null) {
-        Get.offAll(() => const OnBoardingScreen(),
-            transition: Transition.rightToLeft);
-      } else {
-        Get.offAll(() => const HomeScreen(),
-            transition: Transition.rightToLeft);
-      }
-    });
+      Get.offAll(() => const HomeScreen(),
+          transition: Transition.rightToLeft);
+        });
   }
 
   @override

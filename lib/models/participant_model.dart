@@ -17,8 +17,6 @@ class Participant {
   bool isEmailVerified;
   bool isAdmin;
   bool isOnline;
-  DateTime createdAt;
-  DateTime updatedAt;
   String profile;
 
   Participant({
@@ -29,8 +27,6 @@ class Participant {
     required this.isEmailVerified,
     required this.isAdmin,
     required this.isOnline,
-    required this.createdAt,
-    required this.updatedAt,
     required this.profile,
   });
 
@@ -42,8 +38,6 @@ class Participant {
         isEmailVerified: json["is_email_verified"],
         isAdmin: json["is_admin"],
         isOnline: json["is_online"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
         profile: json["profile"],
       );
 
@@ -55,8 +49,6 @@ class Participant {
         "is_email_verified": isEmailVerified,
         "is_admin": isAdmin,
         "is_online": isOnline,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
         "profile": profile,
       };
 }

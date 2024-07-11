@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/login.dart';
@@ -11,9 +10,6 @@ import 'package:sound_app/view/home_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-  // Initialize the socket service
-  SocketService(); // This will call the constructor and initialize the socket
-  // connectToRoomAndWaitingToGetInvitations(context);
   runApp(const MyApp());
 }
 

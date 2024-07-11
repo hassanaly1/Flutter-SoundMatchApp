@@ -51,6 +51,8 @@ class CustomOnboardingScreen extends StatelessWidget {
                 child: const CustomTextWidget(
                   text: 'Skip',
                   fontSize: 14.0,
+                  fontFamily: 'poppins',
+                  textColor: Colors.black,
                   fontWeight: FontWeight.w500,
                 ),
               ),

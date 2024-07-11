@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/data/sounds_service.dart';
 import 'package:sound_app/models/challenge_model.dart';
-import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/utils/storage_helper.dart';
@@ -15,7 +14,7 @@ class MyUniversalController extends GetxController {
   RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
   RxList<SoundPackModel> userSoundPacks = <SoundPackModel>[].obs;
 
-  RxList<Participant> participants = <Participant>[].obs;
+  // RxList<Participant> participants = <Participant>[].obs;
 
   // Challenges
   RxList<ChallengeModel> challenges = <ChallengeModel>[
@@ -82,19 +81,19 @@ class MyUniversalController extends GetxController {
     }
   }
 
-  Future<void> fetchParticipants(
-      {int page = 1, String searchString = ""}) async {
-    participants.clear();
-    try {
-      List<Participant> fetchedParticipants =
-          await SoundServices().fetchParticipants(searchString: searchString);
-      debugPrint('Fetched Participants: ${fetchedParticipants.length}');
-      participants.addAll(fetchedParticipants);
-      // Removing the current user from the participants list
-      participants
-          .removeWhere((participant) => participant.id == MyAppStorage.userId);
-    } catch (e) {
-      debugPrint('Error Fetching Participants: $e');
-    }
-  }
+// Future<void> fetchParticipants(
+//     {int page = 1, String searchString = ""}) async {
+//   participants.clear();
+//   try {
+//     List<Participant> fetchedParticipants =
+//         await SoundServices().fetchParticipants(searchString: searchString);
+//     debugPrint('Fetched Participants: ${fetchedParticipants.length}');
+//     participants.addAll(fetchedParticipants);
+//     // Removing the current user from the participants list
+//     participants
+//         .removeWhere((participant) => participant.id == MyAppStorage.userId);
+//   } catch (e) {
+//     debugPrint('Error Fetching Participants: $e');
+//   }
+// }
 }

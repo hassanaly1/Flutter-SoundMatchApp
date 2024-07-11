@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sound_app/data/sounds_service.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 
 class CreateChallengeController extends GetxController {
   // RxBool isSoundPackSelected = false.obs;
@@ -16,6 +18,7 @@ class CreateChallengeController extends GetxController {
   TextEditingController challengeNameController = TextEditingController();
 
   //ParticipantsList
+  var participants = <Participant>[].obs;
   RxList<Participant> selectedParticipants = <Participant>[].obs;
 
   //the sound user selects while creating the challenge
@@ -44,6 +47,22 @@ class CreateChallengeController extends GetxController {
       controller.dispose();
     }
     super.onClose();
+  }
+
+  Future<void> fetchParticipants(
+      {int page = 1, String searchString = ""}) async {
+    participants.clear();
+    try {
+      List<Participant> fetchedParticipants =
+          await SoundServices().fetchParticipants(searchString: searchString);
+      debugPrint('Fetched Participants: ${fetchedParticipants.length}');
+      participants.addAll(fetchedParticipants);
+      // Removing the current user from the participants list
+      participants
+          .removeWhere((participant) => participant.id == MyAppStorage.userId);
+    } catch (e) {
+      debugPrint('Error Fetching Participants: $e');
+    }
   }
 
   void updateGameRound(String value) {

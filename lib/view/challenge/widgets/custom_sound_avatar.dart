@@ -22,6 +22,7 @@ class CustomSoundAvatar extends StatelessWidget {
             backgroundImage: NetworkImage(soundPackModel.packImage),
             radius: 40,
           ),
+          const SizedBox(height: 6.0),
           CustomTextWidget(
             text: soundPackModel.packName,
             textColor: Colors.white,

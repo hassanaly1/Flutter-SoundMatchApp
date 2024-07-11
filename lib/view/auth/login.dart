@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Get.to(() => const SignupScreen(),
                             transition: Transition.rightToLeft);
                       },
-                      child: Text.rich(
+                      child: const Text.rich(
                         TextSpan(
                           text: 'Don\'t have an Account? ',
                           style: TextStyle(

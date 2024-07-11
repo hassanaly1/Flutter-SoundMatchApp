@@ -14,6 +14,7 @@ import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
 import 'package:sound_app/utils/storage_helper.dart';
+import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/default_match.dart';
 import 'package:sound_app/view/challenge/widgets/custom_match_card.dart';
 import 'package:sound_app/view/create_challenge/create_challenge.dart';
@@ -36,6 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     controller = Get.put(MyUniversalController());
     carouselController = Get.put(CarouselSliderController());
+    // Initialize the socket service
+    SocketService(); // This will call the constructor and initialize the socket
     connectToRoomAndWaitingToGetInvitations(context);
     super.initState();
   }
@@ -49,75 +52,103 @@ class _HomeScreenState extends State<HomeScreen> {
       };
       //Connect to their Room
       socket.emit(ApiEndPoints.connectToRoom, data);
-      //Get the Invitations if Received Any.
+      //Get the Invitations of Challenge if Received Any.
       socket.on(ApiEndPoints.getInvitations, (data) {
-        debugPrint('Received Challenge Invitation: $data');
+        debugPrint(
+            '<------------------Received Challenge Invitation------------------>\nData: $data');
+        var challengeRoomId = data['challenge_room']['_id'];
+        var challengeRoomName =
+            data['challenge_room']['challenge_group']['name'];
+        var challengeCreatedBy = data['created_by']['first_name'] +
+            ' ' +
+            data['created_by']['last_name'];
+        debugPrint('Challenge Room Id: $challengeRoomId');
         Flushbar(
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.GROUNDED,
-          reverseAnimationCurve: Curves.decelerate,
-          forwardAnimationCurve: Curves.elasticOut,
-          boxShadows: const [
-            BoxShadow(
-                color: Colors.blueGrey,
-                offset: Offset(0.0, 2.0),
-                blurRadius: 3.0)
-          ],
-          margin: const EdgeInsets.all(12.0),
-          borderRadius: BorderRadius.circular(12.0),
-          backgroundGradient: const LinearGradient(
-              colors: [Color(0XFF00B4B2), Color(0XFF03827B)]),
-          isDismissible: false,
-          duration: const Duration(seconds: 10),
-          icon: const Icon(Icons.gamepad, color: Colors.black54),
-          mainButton: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                    padding: const EdgeInsets.all(4.0),
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.lightGreen),
-                    child: const Icon(
-                      Icons.done,
-                      color: Colors.white,
-                    )),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
+            flushbarPosition: FlushbarPosition.TOP,
+            flushbarStyle: FlushbarStyle.GROUNDED,
+            reverseAnimationCurve: Curves.decelerate,
+            forwardAnimationCurve: Curves.elasticOut,
+            boxShadows: const [
+              BoxShadow(
+                  color: Colors.blueGrey,
+                  offset: Offset(0.0, 2.0),
+                  blurRadius: 3.0)
+            ],
+            margin: const EdgeInsets.all(12.0),
+            borderRadius: BorderRadius.circular(12.0),
+            backgroundGradient: const LinearGradient(
+                colors: [Color(0XFF00B4B2), Color(0XFF03827B)]),
+            isDismissible: false,
+            duration: const Duration(seconds: 10),
+            icon: const Icon(Icons.gamepad, color: Colors.black54),
+            mainButton: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: InkWell(
+                    onTap: () {
+                      debugPrint(
+                          'Challenge Accepted for Room : $challengeRoomId');
+                      socket.emit(
+                        'entry_to_challenge_room',
+                        {
+                          'user_id': MyAppStorage.userId,
+                          'room_id': challengeRoomId,
+                        },
+                      );
+                      Get.to(
+                        () => const ChallengeRoomScreen(),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4.0),
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.lightGreen),
+                      child: const Icon(
+                        Icons.done,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
                     padding: const EdgeInsets.all(4.0),
                     decoration: const BoxDecoration(
                         shape: BoxShape.circle, color: Colors.redAccent),
                     child: const Icon(
                       Icons.close,
                       color: Colors.white,
-                    )),
-              ),
-            ],
-          ),
-          dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-          showProgressIndicator: true,
-          progressIndicatorValueColor:
-              const AlwaysStoppedAnimation<Color>(Colors.white),
-          progressIndicatorBackgroundColor: MyColorHelper.caribbeanCurrent,
-          titleText: Text(
-            "Hello ${MyAppStorage.fullName}",
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
-                color: MyColorHelper.caribbeanCurrent,
-                fontFamily: "Poppins"),
-          ),
-          messageText: const Text(
-            "Faizan Khan has invited you to the Challenge",
-            style: TextStyle(
-                fontSize: 14.0, color: Colors.black54, fontFamily: "Poppins"),
-          ),
-        ).show(context);
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+            showProgressIndicator: true,
+            progressIndicatorValueColor:
+                const AlwaysStoppedAnimation<Color>(Colors.white),
+            progressIndicatorBackgroundColor: MyColorHelper.caribbeanCurrent,
+            titleText: CustomTextWidget(
+              text: "Hello ${MyAppStorage.fullName}",
+              fontSize: 16.0,
+              fontFamily: 'poppins',
+              fontWeight: FontWeight.w700,
+              textColor: Colors.white,
+            ),
+            messageText: CustomTextWidget(
+              text:
+                  "$challengeCreatedBy has invited you to the Challenge Room: $challengeRoomName",
+              fontSize: 14.0,
+              fontFamily: 'poppins',
+              fontWeight: FontWeight.w500,
+              maxLines: 3,
+              textColor: Colors.white,
+            )).show(context);
       });
     } catch (e) {
-      debugPrint('Error sending challenge data: $e');
+      debugPrint('Error Sending Challenge Data: $e');
     }
   }
 

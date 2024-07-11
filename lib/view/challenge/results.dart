@@ -11,14 +11,14 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/challenge_model.dart';
+import 'package:sound_app/models/challenge_room_model.dart';
 import 'package:sound_app/view/challenge/widgets/bar_chart.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class ResultScreen extends StatelessWidget {
-  final ChallengeModel challengeModel;
+  final ChallengeRoomModel model;
 
-  const ResultScreen({super.key, required this.challengeModel});
+  const ResultScreen({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -97,19 +97,14 @@ class ResultScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      Expanded(
-                          flex: 2,
-                          child: UserResultPreview(
-                              challengeModel: challengeModel)),
+                      Expanded(flex: 2, child: UserResultPreview(model: model)),
                       // const Expanded(
                       //     child: MyRadarChart(showBlurBackground: true)),
                     ],
                   ),
                   Column(
                     children: [
-                      Expanded(
-                          child: UserResultPreview(
-                              challengeModel: challengeModel)),
+                      Expanded(child: UserResultPreview(model: model)),
                       Expanded(child: MyBarChart(showBlurBackground: true)),
                     ],
                   ),
@@ -124,11 +119,11 @@ class ResultScreen extends StatelessWidget {
 }
 
 class UserResultPreview extends StatefulWidget {
-  final ChallengeModel challengeModel;
+  final ChallengeRoomModel model;
 
   const UserResultPreview({
     super.key,
-    required this.challengeModel,
+    required this.model,
   });
 
   @override
