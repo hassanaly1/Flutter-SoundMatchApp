@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sound_app/data/challenge_service.dart';
 import 'package:sound_app/models/challenge_room_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/results.dart';
 
@@ -22,18 +24,15 @@ class ChallengeController extends GetxController {
   Timer? _timer;
 
   // Track the current round
-  RxInt currentRound = 1.obs;
-  RxInt eachTurnDuration = 60.obs;
-  RxInt originalTurnDuration = 5.obs;
-  RxBool isRoundCompleted = false.obs;
+  RxInt eachTurnDuration = 15.obs;
+  RxInt originalTurnDuration = 15.obs;
 
   // Track the current participant's turn
-  RxInt currentTurnIndex = 0.obs;
-  RxInt currentUserIndex = 0.obs;
-  RxBool isCurrentTurn = false.obs;
+  RxString currentTurnParticipantId = ''.obs;
 
-  // Track if the challenge is completed
+  RxBool hasChallengeStarted = false.obs;
   RxBool isChallengeStarts = false.obs;
+  RxBool isRoundCompleted = false.obs;
   RxBool isChallengeCompleted = false.obs;
   RxInt countdownForNextRound = 60.obs;
 
@@ -100,22 +99,33 @@ class ChallengeController extends GetxController {
     }
   }
 
-  void onGameStarts() {
+  void onGameStarts({required String userId, required String roomId}) {
     // Start the timer only if it's not already running
     if (_timer == null || !_timer!.isActive) {
-      _startTimer();
+      debugPrint('StartTimerCalled');
+      startTimer(userId: userId, roomId: roomId);
     }
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  void startTimer({required String userId, required String roomId}) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (eachTurnDuration.value > 0) {
         eachTurnDuration.value--;
       } else {
+        // _timer?.cancel();
+        // eachTurnDuration.value = 5;
+        if (userId == MyAppStorage.userId) {
+          bool isSuccess = await ChallengeService().uploadUserSound(
+              userRecordingInBytes: null, userId: userId, roomId: roomId);
+          if (isSuccess) {
+            print('Recording Uploaded Successfully of User $userId');
+            // _timer?.cancel();
+            // eachTurnDuration.value = originalTurnDuration.value;
+          }
+        }
+        // isUserRecording.value = false;
         _timer?.cancel();
-        eachTurnDuration.value = 60;
-        currentTurnIndex.value++;
-        isUserRecording.value = false;
+        eachTurnDuration.value = originalTurnDuration.value;
         update();
       }
     });
@@ -150,13 +160,15 @@ class ChallengeController extends GetxController {
   //   });
   // }
   //
-  // void _restartTimer() {
-  //   if (_timer != null && _timer!.isActive) {
-  //     _timer!.cancel();
-  //   }
-  //   _startTimer();
-  // }
+  void _restartTimer(String roomId) {
+    if (_timer != null && _timer!.isActive) {
+      _timer!.cancel();
+    }
+    startTimer(userId: MyAppStorage.userId, roomId: roomId);
+  }
+
   //
+
   // void onLongPressedStart() {
   //   isUserRecording.value = true;
   //   // Start the timer only if it's not already running
@@ -178,31 +190,29 @@ class ChallengeController extends GetxController {
   // }
 
   void showCalculatingResultPopup(ChallengeRoomModel model) {
-    if (currentTurnIndex.value >= totalParticipants.length) {
-      Get.dialog(
-        const AlertDialog(
-          backgroundColor: Colors.transparent,
-          content: CalculatingResultPopup(),
-        ),
-      );
-      // Navigate to the ResultScreen when the results are calculated.
-      Future.delayed(const Duration(seconds: 5), () {
-        Get.off(() => ResultScreen(model: model));
-      });
-      if (currentRound.value == totalRounds.value) {
-        isChallengeCompleted.value = true;
-      }
-    }
+    debugPrint('ShowCalculatingResultPopupCalled');
+    _timer?.cancel();
+    eachTurnDuration.value = originalTurnDuration.value;
+
+    Get.dialog(
+      const AlertDialog(
+        backgroundColor: Colors.transparent,
+        content: CalculatingResultPopup(),
+      ),
+    );
+    // Navigate to the ResultScreen when the results are calculated.
+    Future.delayed(const Duration(seconds: 5), () {
+      Get.off(() => ResultScreen(model: model));
+    });
+    // if (currentRound.value == totalRounds.value) {
+    //   isChallengeCompleted.value = true;
+    // }
   }
 
   void resetControllerValues() {
     debugPrint('ResetControllerValuesCalled');
-    currentRound.value++;
-    eachTurnDuration.value = 60;
-    originalTurnDuration.value = 5;
+    eachTurnDuration.value = 15;
+    originalTurnDuration.value = 15;
     isRoundCompleted.value = false;
-    currentTurnIndex.value = 0;
-    currentUserIndex.value = 0;
-    isCurrentTurn.value = false;
   }
 }

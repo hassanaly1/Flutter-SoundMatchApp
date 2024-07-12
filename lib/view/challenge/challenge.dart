@@ -30,11 +30,6 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
   @override
   void initState() {
     callSockets();
-    // controller.totalParticipants = widget.model.users!;
-    // Future.delayed(const Duration(milliseconds: 1), () {
-    //   showRoundStartedPopup(controller: controller, context: context);
-    // });
-
     super.initState();
   }
 
@@ -51,22 +46,57 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
         'challenge_room',
         (data) {
           debugPrint(
-              '<-------------------Challenge Room------------------->\nData: $data');
+              '<-------------------New Data Received from Challenge Room------------------->');
           ChallengeRoomModel challengeRoomModel =
               ChallengeRoomModel.fromJson(data['challenge_room']);
           // print('Challenge Room Model: ${challengeRoomModel.toJson()}');
           model = challengeRoomModel;
           controller.totalParticipants.value = model!.users!;
           controller.isChallengeStarts.value = model!.isStarted!;
-          if (controller.isChallengeStarts.value) {
-            showRoundStartedPopup(controller: controller, context: context);
-          }
-          debugPrint(
-              'isChallengeStarts: ${controller.isChallengeStarts.value}');
+          controller.currentTurnParticipantId.value =
+              model!.currentTurnHolder!.id;
+          controller.isRoundCompleted.value = model!.isFinished!;
+          // if (controller.isChallengeStarts.value) {
+          //   debugPrint(
+          //       'isChallengeStarts: ${controller.isChallengeStarts.value}');
+          //   showRoundStartedPopup(
+          //     model: model!,
+          //     controller: controller,
+          //     context: context,
+          //   );
+          // }
           debugPrint(
               'Total Participants: ${controller.totalParticipants.length}');
           debugPrint(
-              'Created By: ${model!.createdBy?.firstName} ${model!.createdBy?.lastName} with Id: ${model!.createdBy?.id} and profile: ${model!.createdBy?.profile}');
+              'Current Turn: ${controller.currentTurnParticipantId.value}');
+          if (controller.hasChallengeStarted.value) {
+            debugPrint(
+                'hasChallengeStarted: ${controller.hasChallengeStarted.value}');
+
+            controller.onGameStarts(
+                userId: controller.currentTurnParticipantId.value,
+                roomId: model!.id!);
+          }
+          if (controller.isChallengeStarts.value &&
+              !controller.hasChallengeStarted.value) {
+            controller.hasChallengeStarted.value = true;
+            debugPrint(
+                'isChallengeStarts: ${controller.isChallengeStarts.value}');
+            showRoundStartedPopup(
+              model: model!,
+              controller: controller,
+              context: context,
+            );
+          }
+
+          if (controller.isRoundCompleted.value) {
+            debugPrint(
+                'isChallengeCompleted: ${controller.isRoundCompleted.value}');
+            controller.showCalculatingResultPopup(model!);
+          }
+
+          // debugPrint(
+          //     'Created By: ${model!.createdBy?.firstName} ${model!.createdBy?.lastName} with Id: ${model!.createdBy?.id} and profile: ${model!.createdBy?.profile}');
         },
       );
     } catch (e) {
@@ -117,14 +147,12 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                       itemBuilder: (context, index) {
                                         final participant =
                                             controller.totalParticipants[index];
-                                        controller.isCurrentTurn.value =
-                                            (index ==
-                                                controller
-                                                    .currentTurnIndex.value);
                                         return CustomUserCard(
                                           participant: participant,
-                                          isCurrentTurn:
-                                              controller.isCurrentTurn.value,
+                                          isCurrentTurn: controller
+                                                  .currentTurnParticipantId
+                                                  .value ==
+                                              participant.id,
                                           index: index,
                                         );
                                       },
@@ -183,6 +211,8 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                           ),
                                         ),
                                       ),
+
+                                      /// Countdown Timer
                                       Container(
                                         height: 80,
                                         margin: const EdgeInsets.all(10),
@@ -232,6 +262,34 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                           ),
                                         ),
                                       ),
+                                      // InkWell(
+                                      //   onTap: () {
+                                      //     ChallengeService().uploadUserSound(
+                                      //       userRecordingInBytes: null,
+                                      //       userId: MyAppStorage.userId,
+                                      //       roomId: model?.id ?? '',
+                                      //     );
+                                      //   },
+                                      //   child: Container(
+                                      //     height: 80,
+                                      //     margin: const EdgeInsets.all(10),
+                                      //     padding: const EdgeInsets.all(20),
+                                      //     decoration: BoxDecoration(
+                                      //         color: Colors.grey.shade300,
+                                      //         boxShadow: const [
+                                      //           BoxShadow(
+                                      //             color: Colors.black26,
+                                      //             blurRadius: 15.0,
+                                      //             spreadRadius: 4.0,
+                                      //             offset: Offset(5.0, 5.0),
+                                      //           )
+                                      //         ],
+                                      //         shape: BoxShape.circle),
+                                      //     child: Center(
+                                      //       child: Icon(Icons.add_circle),
+                                      //     ),
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -257,9 +315,11 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
     ));
   }
 
-  void showRoundStartedPopup(
-      {required BuildContext context,
-      required ChallengeController controller}) {
+  void showRoundStartedPopup({
+    required BuildContext context,
+    required ChallengeController controller,
+    required ChallengeRoomModel model,
+  }) {
     // Show the dialog
     showGeneralDialog(
       context: context,
@@ -348,7 +408,10 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
     // Close the dialog after 3 seconds
     Future.delayed(const Duration(seconds: 5), () {
       Navigator.of(context).pop();
-      controller.onGameStarts();
+      controller.onGameStarts(
+        userId: model.currentTurnHolder?.id ?? '',
+        roomId: model.id ?? '',
+      );
     });
   }
 }
@@ -550,7 +613,7 @@ class TopContainer extends StatelessWidget {
                         'start_challenge',
                         model.id,
                       );
-                      controller.currentTurnIndex.value = 0;
+
                       // controller.onGameStarts(model);
                     },
                     child: Padding(
@@ -613,7 +676,7 @@ class CustomUserCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
               border: isCurrentTurn
-                  ? Border.all(color: Colors.white, width: 2.0)
+                  ? Border.all(color: Colors.white, width: 3.0)
                   : null,
               image: DecorationImage(
                 fit: BoxFit.cover,

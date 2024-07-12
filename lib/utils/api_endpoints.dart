@@ -21,6 +21,9 @@ class ApiEndPoints {
   //Default Match
   static String defaultMatchUrl = 'show-test-match-result';
 
+  //Main Match
+  static String uploadSounds = 'uploadsounds';
+
   static String connectToDefaultMatch = 'enter_to_test_room';
   static String connectToCreateChallenge = 'create_challenge';
   static String showTestMatchResult = 'show_test_match_result';
