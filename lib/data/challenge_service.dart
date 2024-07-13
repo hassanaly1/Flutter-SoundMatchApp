@@ -12,8 +12,7 @@ class ChallengeService {
     required String userId,
     required String roomId,
   }) async {
-    debugPrint(
-        '================Uploading Sound for User $userId================');
+    debugPrint('Uploading Sound for User $userId in Room $roomId');
     var headers = {
       'Content-Type': 'multipart/form-data',
     };
@@ -36,10 +35,10 @@ class ChallengeService {
       request.fields['users_sounds'] = 'null';
     }
 
-    print(jsonEncode({
-      'user_id': userId,
-      'room_id': roomId,
-    }));
+    // print(jsonEncode({
+    //   'user_id': userId,
+    //   'room_id': roomId,
+    // }));
 
     // Add the user info as fields
     request.fields['parsedUser'] = jsonEncode({
@@ -56,7 +55,7 @@ class ChallengeService {
 
       // Print the status code, reason phrase, and response body
       debugPrint(
-          'StatusCode: ${response.statusCode} ReasonPhrase: ${response.reasonPhrase} Message: ${jsonResponse['message']} Response: $responseBody');
+          'StatusCode: ${response.statusCode} ReasonPhrase: ${response.reasonPhrase} Message: ${jsonResponse['message']}');
 
       if (response.statusCode == 200) {
         return true;

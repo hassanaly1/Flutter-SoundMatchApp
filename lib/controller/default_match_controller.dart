@@ -22,9 +22,10 @@ class DefaultMatchController extends GetxController {
   Rx<Duration> userAudioDuration = Duration.zero.obs;
   Rx<Duration> userAudioPosition = Duration.zero.obs;
 
-  final AudioPlayer _defaultAudioPlayer = AudioPlayer();
-  final AudioPlayer _userAudioPlayer = AudioPlayer();
-  final FlutterSoundRecorder _audioRecorder = FlutterSoundRecorder();
+  final AudioPlayer _defaultAudioPlayer = AudioPlayer(); //AudioPlayer
+  final AudioPlayer _userAudioPlayer = AudioPlayer(); //AudioPlayer
+  final FlutterSoundRecorder _audioRecorder =
+      FlutterSoundRecorder(); // AudioRecorder
   Timer? _recordingTimer;
   String? recordedFilePath;
 
@@ -92,7 +93,7 @@ class DefaultMatchController extends GetxController {
       await _audioRecorder.openRecorder();
       _audioRecorder.setSubscriptionDuration(const Duration(milliseconds: 500));
     } catch (e) {
-      debugPrint('Error initializing recorder: $e');
+      debugPrint('Error Initializing Recorder: $e');
     }
   }
 
@@ -149,7 +150,7 @@ class DefaultMatchController extends GetxController {
       isUserRecording.value = true;
       _startRecordingTimer();
     } catch (e) {
-      debugPrint('Error starting recording: $e');
+      debugPrint('Error Starting Recording: $e');
     }
   }
 
@@ -162,7 +163,7 @@ class DefaultMatchController extends GetxController {
       _stopRecordingTimer();
       debugPrint('RecordedAudioPath: $recordedFilePath');
     } catch (e) {
-      debugPrint('Error stopping recording: $e');
+      debugPrint('Error Stopping Recording: $e');
     }
   }
 

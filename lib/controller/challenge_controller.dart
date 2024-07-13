@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sound_app/data/challenge_service.dart';
 import 'package:sound_app/models/challenge_room_model.dart';
@@ -14,22 +16,26 @@ import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/results.dart';
 
 class ChallengeController extends GetxController {
+  ///AudioPlaying
   RxBool isDefaultAudioPlaying = false.obs;
   Rx<Duration> defaultAudioDuration = Duration.zero.obs;
   Rx<Duration> defaultAudioPosition = Duration.zero.obs;
-  final AudioPlayer _defaultAudioPlayer = AudioPlayer();
-  final FlutterSoundRecorder _audioRecorder = FlutterSoundRecorder();
+  final AudioPlayer _defaultAudioPlayer = AudioPlayer(); //AudioPlayer
   RxBool isUserAudioPlaying = false.obs;
   RxBool isUserRecording = false.obs;
-  Timer? _timer;
+  Timer? recordingTimer;
 
-  // Track the current round
-  RxInt eachTurnDuration = 15.obs;
-  RxInt originalTurnDuration = 15.obs;
+  ///Audio Recording
+  String? recordedFilePath;
+  final FlutterSoundRecorder _audioRecorder =
+      FlutterSoundRecorder(); //AudioRecorder
 
-  // Track the current participant's turn
+  /// Track the current participant's turn
   RxString currentTurnParticipantId = ''.obs;
 
+  /// Track the current round status
+  RxInt eachTurnDuration = 15.obs;
+  RxInt originalTurnDuration = 15.obs;
   RxBool hasChallengeStarted = false.obs;
   RxBool isChallengeStarts = false.obs;
   RxBool isRoundCompleted = false.obs;
@@ -74,7 +80,8 @@ class ChallengeController extends GetxController {
   void onClose() {
     debugPrint('ChallengeControllerOnClosedCalled');
     _audioRecorder.closeRecorder();
-    _timer?.cancel();
+    recordingTimer?.cancel();
+    recordingTimer = null;
     super.onClose();
   }
 
@@ -99,101 +106,94 @@ class ChallengeController extends GetxController {
     }
   }
 
-  void onGameStarts({required String userId, required String roomId}) {
+  void onGameStarts({required String currentUserId, required String roomId}) {
+    debugPrint('onGameStarts');
     // Start the timer only if it's not already running
-    if (_timer == null || !_timer!.isActive) {
+    if (recordingTimer == null || !recordingTimer!.isActive) {
       debugPrint('StartTimerCalled');
-      startTimer(userId: userId, roomId: roomId);
+      startTimer(currentUserId: currentUserId, roomId: roomId);
     }
   }
 
-  void startTimer({required String userId, required String roomId}) {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+  void startTimer({required String currentUserId, required String roomId}) {
+    recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (eachTurnDuration.value > 0) {
         eachTurnDuration.value--;
       } else {
-        // _timer?.cancel();
-        // eachTurnDuration.value = 5;
-        if (userId == MyAppStorage.userId) {
+        if (currentUserId == MyAppStorage.userId) {
           bool isSuccess = await ChallengeService().uploadUserSound(
-              userRecordingInBytes: null, userId: userId, roomId: roomId);
+              userRecordingInBytes: null,
+              userId: currentUserId,
+              roomId: roomId);
           if (isSuccess) {
-            print('Recording Uploaded Successfully of User $userId');
-            // _timer?.cancel();
-            // eachTurnDuration.value = originalTurnDuration.value;
+            debugPrint(
+                'Recording Uploaded Successfully of User $currentUserId in Room $roomId');
           }
         }
-        // isUserRecording.value = false;
-        _timer?.cancel();
-        eachTurnDuration.value = originalTurnDuration.value;
         update();
       }
     });
   }
 
-  // void _startTimer() {
-  //   _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-  //     if (eachTurnDuration.value > 0) {
-  //       eachTurnDuration.value--;
-  //     } else {
-  //       _timer?.cancel();
-  //       eachTurnDuration.value = 60;
-  //       currentTurnIndex.value++;
-  //       isUserRecording.value = false;
-  //       timerCompleted.value = true;
-  //       update();
-  //       if (currentTurnIndex.value < totalParticipants.length) {
-  //         _restartTimer();
-  //       }
-  //       if (currentTurnIndex.value == totalParticipants.length) {
-  //         if (challenge != null) {
-  //           showCalculatingResultPopup(challenge!);
-  //         }
-  //
-  //         isRoundCompleted.value = true;
-  //         if (currentRound.value == totalRounds.value) {
-  //           isChallengeCompleted.value = true;
-  //         }
-  //         update();
-  //       }
-  //     }
-  //   });
-  // }
-  //
-  void _restartTimer(String roomId) {
-    if (_timer != null && _timer!.isActive) {
-      _timer!.cancel();
-    }
-    startTimer(userId: MyAppStorage.userId, roomId: roomId);
+  Future<void> onLongPressedStart() async {
+    isUserRecording.value = true;
+    await startRecording();
   }
 
-  //
+  Future<void> onLongPressedEnd(
+      {required String userId, required String roomId}) async {
+    await stopRecording();
+    if (userId == MyAppStorage.userId) {
+      if (recordedFilePath != null) {
+        final file = File(recordedFilePath!);
+        final bytes = await file.readAsBytes();
+        bool isSuccess = await ChallengeService().uploadUserSound(
+            userRecordingInBytes: bytes, userId: userId, roomId: roomId);
+        if (isSuccess) {
+          debugPrint(
+              'Recording Uploaded Successfully of User $userId  in Room $roomId');
+        }
+      }
+    }
+    update();
+  }
 
-  // void onLongPressedStart() {
-  //   isUserRecording.value = true;
-  //   // Start the timer only if it's not already running
-  //   if (_timer == null || !_timer!.isActive) {
-  //     _startTimer();
-  //   }
-  // }
-  //
-  // void onLongPressedEnd() {
-  //   isUserRecording.value = false;
-  //   if (!timerCompleted.value) {
-  //     currentTurnIndex.value++;
-  //     _restartTimer(); // Restart the timer
-  //   }
-  //   timerCompleted.value = false;
-  //   eachTurnDuration.value = 5;
-  //   update();
-  //   // showCalculatingResultPopup();
-  // }
+  ///Starts Recording
+  Future<void> startRecording() async {
+    // isUserRecordingCompleted.value = false;
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      recordedFilePath = '${directory.path}/recording.aac';
+      await _audioRecorder.startRecorder(toFile: recordedFilePath);
+      isUserRecording.value = true;
+      // _startRecordingTimer();
+    } catch (e) {
+      debugPrint('Error Starting Recording: $e');
+    }
+  }
+
+  ///Stops Recording
+  Future<void> stopRecording() async {
+    try {
+      print('StoppingRecording');
+      await _audioRecorder.stopRecorder();
+      print('StoppedRecording');
+      isUserRecording.value = false;
+      // isUserRecordingCompleted.value = true;
+      // _stopRecordingTimer();
+      debugPrint('RecordedAudioPath: $recordedFilePath');
+    } catch (e) {
+      debugPrint('Error Stopping Recording: $e');
+    }
+  }
 
   void showCalculatingResultPopup(ChallengeRoomModel model) {
     debugPrint('ShowCalculatingResultPopupCalled');
-    _timer?.cancel();
-    eachTurnDuration.value = originalTurnDuration.value;
 
+    recordingTimer?.cancel();
+    isUserRecording.value = false;
+    hasChallengeStarted.value = false;
+    eachTurnDuration.value = originalTurnDuration.value;
     Get.dialog(
       const AlertDialog(
         backgroundColor: Colors.transparent,
@@ -204,9 +204,6 @@ class ChallengeController extends GetxController {
     Future.delayed(const Duration(seconds: 5), () {
       Get.off(() => ResultScreen(model: model));
     });
-    // if (currentRound.value == totalRounds.value) {
-    //   isChallengeCompleted.value = true;
-    // }
   }
 
   void resetControllerValues() {

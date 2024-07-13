@@ -37,7 +37,7 @@ class ResultScreen extends StatelessWidget {
                 automaticallyImplyLeading: false,
                 centerTitle: true,
                 title: const CustomTextWidget(
-                  text: "Final Results",
+                  text: "Results",
                   textColor: MyColorHelper.white,
                   fontFamily: "Horta",
                   fontSize: 40,
@@ -259,12 +259,13 @@ class _UserResultPreviewState extends State<UserResultPreview>
               visible: !controller.isChallengeCompleted.value,
               child: Container(
                 height: 80,
+                margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                    color: Colors.white60,
-                    boxShadow: [
+                decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    boxShadow: const [
                       BoxShadow(
-                        color: Colors.grey,
+                        color: Colors.black26,
                         blurRadius: 15.0,
                         spreadRadius: 4.0,
                         offset: Offset(5.0, 5.0),
@@ -280,14 +281,15 @@ class _UserResultPreviewState extends State<UserResultPreview>
                           value: controller.countdownForNextRound.value / 60,
                           strokeWidth: 4.0,
                           valueColor: const AlwaysStoppedAnimation<Color>(
-                              MyColorHelper.primaryColor),
+                              MyColorHelper.caribbeanCurrent),
                         ),
                         CustomTextWidget(
                           text:
                               controller.countdownForNextRound.value.toString(),
-                          fontSize: 24.0,
+                          fontSize: 18.0,
                           fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
+                          textColor: MyColorHelper.caribbeanCurrent,
                         ),
                       ],
                     ),

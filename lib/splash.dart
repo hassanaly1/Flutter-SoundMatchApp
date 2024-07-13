@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:sound_app/view/auth/onboarding/onboarding_screen.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {

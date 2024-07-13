@@ -56,29 +56,31 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
           controller.currentTurnParticipantId.value =
               model!.currentTurnHolder!.id;
           controller.isRoundCompleted.value = model!.isFinished!;
-          // if (controller.isChallengeStarts.value) {
-          //   debugPrint(
-          //       'isChallengeStarts: ${controller.isChallengeStarts.value}');
-          //   showRoundStartedPopup(
-          //     model: model!,
-          //     controller: controller,
-          //     context: context,
-          //   );
-          // }
+
           debugPrint(
               'Total Participants: ${controller.totalParticipants.length}');
           debugPrint(
               'Current Turn: ${controller.currentTurnParticipantId.value}');
-          if (controller.hasChallengeStarted.value) {
+
+          ///Start the Timer Again when the Match is already started.
+          if (controller.isRoundCompleted.value == false &&
+              controller.hasChallengeStarted.value) {
             debugPrint(
                 'hasChallengeStarted: ${controller.hasChallengeStarted.value}');
-
+            controller.recordingTimer?.cancel();
+            controller.recordingTimer = null;
+            controller.isUserRecording.value = false;
+            controller.eachTurnDuration.value =
+                controller.originalTurnDuration.value;
             controller.onGameStarts(
-                userId: controller.currentTurnParticipantId.value,
-                roomId: model!.id!);
+              currentUserId: controller.currentTurnParticipantId.value,
+              roomId: model!.id!,
+            );
           }
+
+          ///Display the Round Started Popup only when the game is started for the very first time
           if (controller.isChallengeStarts.value &&
-              !controller.hasChallengeStarted.value) {
+              controller.hasChallengeStarted.value == false) {
             controller.hasChallengeStarted.value = true;
             debugPrint(
                 'isChallengeStarts: ${controller.isChallengeStarts.value}');
@@ -89,12 +91,12 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
             );
           }
 
+          ///Display Showing Result Popup when the round is completed
           if (controller.isRoundCompleted.value) {
             debugPrint(
-                'isChallengeCompleted: ${controller.isRoundCompleted.value}');
+                'isRoundCompleted: ${controller.isRoundCompleted.value}');
             controller.showCalculatingResultPopup(model!);
           }
-
           // debugPrint(
           //     'Created By: ${model!.createdBy?.firstName} ${model!.createdBy?.lastName} with Id: ${model!.createdBy?.id} and profile: ${model!.createdBy?.profile}');
         },
@@ -154,6 +156,8 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                                   .value ==
                                               participant.id,
                                           index: index,
+                                          hasChallengeStarted: controller
+                                              .hasChallengeStarted.value,
                                         );
                                       },
                                     ),
@@ -185,12 +189,18 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                         //         .currentTurnIndex.value ==
                                         //     controller.currentUserIndex.value,
                                         visible: model!.currentTurnHolder?.id ==
-                                            MyAppStorage.userId,
+                                                MyAppStorage.userId &&
+                                            controller
+                                                .hasChallengeStarted.value,
                                         child: GestureDetector(
-                                          // onLongPress:
-                                          //     controller.onLongPressedStart,
-                                          // onLongPressEnd: (details) =>
-                                          //     controller.onLongPressedEnd(),
+                                          onLongPress:
+                                              controller.onLongPressedStart,
+                                          onLongPressEnd: (details) =>
+                                              controller.onLongPressedEnd(
+                                            userId: controller
+                                                .currentTurnParticipantId.value,
+                                            roomId: model!.id!,
+                                          ),
                                           child: Container(
                                             height: 80,
                                             margin: const EdgeInsets.all(10),
@@ -294,15 +304,19 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                   ),
                                 ),
                               ),
-                              // Obx(
-                              //   () => BackdropFilter(
-                              //     filter: ImageFilter.blur(
-                              //       sigmaX: controller.isRoundCompleted.value ? 5 : 0,
-                              //       sigmaY: controller.isRoundCompleted.value ? 5 : 0,
-                              //     ),
-                              //     child: const SizedBox(),
-                              //   ),
-                              // )
+                              Obx(
+                                () => BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: controller.isRoundCompleted.value
+                                        ? 5
+                                        : 0,
+                                    sigmaY: controller.isRoundCompleted.value
+                                        ? 5
+                                        : 0,
+                                  ),
+                                  child: const SizedBox(),
+                                ),
+                              )
                             ],
                           );
                         },
@@ -409,7 +423,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
     Future.delayed(const Duration(seconds: 5), () {
       Navigator.of(context).pop();
       controller.onGameStarts(
-        userId: model.currentTurnHolder?.id ?? '',
+        currentUserId: model.currentTurnHolder?.id ?? '',
         roomId: model.id ?? '',
       );
     });
@@ -651,13 +665,16 @@ class TopContainer extends StatelessWidget {
 class CustomUserCard extends StatelessWidget {
   final Participant participant;
   final bool isCurrentTurn;
+  final bool hasChallengeStarted;
   final int? index;
 
-  const CustomUserCard(
-      {super.key,
-      required this.isCurrentTurn,
-      this.index,
-      required this.participant});
+  const CustomUserCard({
+    super.key,
+    required this.isCurrentTurn,
+    this.index,
+    required this.participant,
+    required this.hasChallengeStarted,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -675,7 +692,7 @@ class CustomUserCard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
-              border: isCurrentTurn
+              border: isCurrentTurn && hasChallengeStarted
                   ? Border.all(color: Colors.white, width: 3.0)
                   : null,
               image: DecorationImage(
