@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: MyColorHelper.blue),
         useMaterial3: true,
       ),
-      home: isFirstTime == true
+      home: isFirstTime
           ? const OnBoardingScreen()
           : MyAppStorage.token != null
               ? const HomeScreen()

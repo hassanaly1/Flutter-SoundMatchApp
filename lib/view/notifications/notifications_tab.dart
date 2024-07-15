@@ -5,6 +5,7 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 
 class NotificationsTab extends StatelessWidget {
   const NotificationsTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -54,14 +55,12 @@ class CustomNotificationCard extends StatelessWidget {
                           fontSize: 17,
                           maxLines: 2,
                           textColor: MyColorHelper.white,
-                          fontFamily: "Poppins",
                         ),
                         CustomTextWidget(
                           text: 'notification.subtitle!',
                           fontSize: 13,
                           maxLines: 3,
                           textColor: MyColorHelper.white,
-                          fontFamily: "Poppins",
                         )
                       ],
                     )),
@@ -72,7 +71,6 @@ class CustomNotificationCard extends StatelessWidget {
                     fontSize: 10,
                     textColor: MyColorHelper.white,
                     fontWeight: FontWeight.w300,
-                    fontFamily: "Poppins",
                   ),
                 )
               ],

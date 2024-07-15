@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sound_app/utils/api_endpoints.dart';
@@ -131,7 +132,7 @@ class AuthService {
   }
 
   //ForgetPassword || SendOtp
-  Future<Map<String, dynamic>> sendOtp({required String email}) async {
+  Future<bool> sendOtp({required String email}) async {
     final Uri apiUrl =
         Uri.parse(ApiEndPoints.baseUrl + ApiEndPoints.sendOtpUrl);
 
@@ -147,23 +148,16 @@ class AuthService {
       if (response.statusCode == 200) {
         debugPrint('StatusCode: ${response.statusCode}');
         debugPrint('ResponseBody: ${response.body}');
-        return jsonDecode(response.body);
+        return true;
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(response.body);
         debugPrint('StatusCodeIfError: ${response.statusCode}');
         debugPrint('StatusCodeIfError: ${response.body}');
 
-        return {
-          'status': 'error',
-          'message': errorResponse['message'],
-          'code': response.statusCode,
-        };
+        return false;
       }
     } catch (e) {
-      return {
-        'status': 'error',
-        'message': 'Network error: $e',
-      };
+      return false;
     }
   }
 

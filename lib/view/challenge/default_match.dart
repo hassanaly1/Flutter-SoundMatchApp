@@ -318,6 +318,7 @@ class CenterPart extends StatelessWidget {
                     maxLines: 2,
                   ),
                   CustomAuthButton(
+                    isLoading: false,
                     text: 'Back to Dashboard',
                     onTap: () {
                       Get.delete<DefaultMatchController>();
@@ -325,6 +326,7 @@ class CenterPart extends StatelessWidget {
                     },
                   ),
                   CustomAuthButton(
+                    isLoading: false,
                     text: 'Play Again',
                     onTap: () => controller.resetValuesOnPlayAgain(),
                   ),
@@ -415,6 +417,7 @@ class CenterPart extends StatelessWidget {
           ),
           SizedBox(height: context.height * 0.03),
           CustomAuthButton(
+            isLoading: false,
             text: 'Calculate',
             onTap: () async {
               controller.isResultCalculating.value = true;
@@ -467,7 +470,7 @@ class MyRecordAudioButton extends StatelessWidget {
   });
 
   final DefaultMatchController controller;
- 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

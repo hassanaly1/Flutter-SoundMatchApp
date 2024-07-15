@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/challenge_controller.dart';
+import 'package:sound_app/data/challenge_service.dart';
 import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -40,13 +41,13 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
   callChallengeRoomSocket() {
     io.Socket socket = SocketService().getSocket();
     debugPrint(
-        '<-------------------Connecting to Challenge Room------------------->');
+        '<============================ Connecting to Challenge Room ============================>');
     try {
       socket.on(
         'challenge_room',
         (data) {
           debugPrint(
-              '<-------------------New Data Received from Challenge Room------------------->');
+              '<================================== New Data Received In The Challenge Room ==================================>');
           ChallengeRoomModel challengeRoomModel =
               ChallengeRoomModel.fromJson(data['challenge_room']);
           // print('Challenge Room Model: ${challengeRoomModel.toJson()}');
@@ -304,19 +305,19 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                   ),
                                 ),
                               ),
-                              Obx(
-                                () => BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: controller.isRoundCompleted.value
-                                        ? 5
-                                        : 0,
-                                    sigmaY: controller.isRoundCompleted.value
-                                        ? 5
-                                        : 0,
-                                  ),
-                                  child: const SizedBox(),
-                                ),
-                              )
+                              // Obx(
+                              //   () => BackdropFilter(
+                              //     filter: ImageFilter.blur(
+                              //       sigmaX: controller.isRoundCompleted.value
+                              //           ? 5
+                              //           : 0,
+                              //       sigmaY: controller.isRoundCompleted.value
+                              //           ? 5
+                              //           : 0,
+                              //     ),
+                              //     child: const SizedBox(),
+                              //   ),
+                              // )
                             ],
                           );
                         },
@@ -598,7 +599,6 @@ class TopContainer extends StatelessWidget {
               // text: 'Round # ${controller.currentRound.toString()}',
               text:
                   ' Passing Criteria for Round # ${model.challengeRoomNumber.toString()}: ${model.passingCriteria?.percentage}',
-              fontFamily: "Poppins",
               fontWeight: FontWeight.w500,
               textColor: MyColorHelper.white,
               fontSize: 14,
@@ -611,7 +611,6 @@ class TopContainer extends StatelessWidget {
                   // text: 'Round # ${controller.currentRound.toString()}',
                   text:
                       'Round # ${model.challengeRoomNumber.toString()} / ${model.challengeGroup?.numberOfChallenges.toString()}',
-                  fontFamily: "Poppins",
                   fontWeight: FontWeight.w600,
                   textColor: MyColorHelper.white,
                   fontSize: 16,
@@ -643,10 +642,68 @@ class TopContainer extends StatelessWidget {
                           child: CustomTextWidget(
                             text: "Start Match",
                             textColor: MyColorHelper.white,
-                            fontFamily: "Poppins",
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    io.Socket socket = SocketService().getSocket();
+                    socket.emit(
+                      'room_challenge_completed',
+                      {
+                        'data': {
+                          'room_id': model.id,
+                        }
+                      },
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      // width: 100,
+                      decoration: BoxDecoration(
+                          color: MyColorHelper.primaryColor,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: const Center(
+                        child: CustomTextWidget(
+                          text: "Test",
+                          textColor: MyColorHelper.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    ChallengeService().uploadUserSound(
+                        userRecordingInBytes: null,
+                        userId: MyAppStorage.userId,
+                        roomId: model.id ?? '');
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      // width: 100,
+                      decoration: BoxDecoration(
+                          color: MyColorHelper.primaryColor,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: const Center(
+                        child: CustomTextWidget(
+                          text: "Test Sound",
+                          textColor: MyColorHelper.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),

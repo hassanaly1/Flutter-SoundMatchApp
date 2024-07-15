@@ -33,7 +33,7 @@ class CustomTextField extends StatelessWidget {
       style: const TextStyle(
         fontSize: 14.0,
         fontWeight: FontWeight.w400,
-        color: MyColorHelper.verdigris,
+        color: Colors.white,
         fontFamily: 'Poppins',
       ),
       decoration: InputDecoration(
@@ -56,7 +56,7 @@ class CustomTextField extends StatelessWidget {
         enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: MyColorHelper.verdigris)),
         focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: MyColorHelper.verdigris)),
+            borderSide: BorderSide(color: Colors.white)),
       ),
     );
   }

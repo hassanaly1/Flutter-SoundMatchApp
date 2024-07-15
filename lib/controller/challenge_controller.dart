@@ -7,9 +7,12 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/data/challenge_service.dart';
+import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/models/challenge_room_model.dart';
 import 'package:sound_app/models/participant_model.dart';
+import 'package:sound_app/models/result_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/challenge.dart';
@@ -75,6 +78,7 @@ class ChallengeController extends GetxController {
   }
 
   ChallengeRoomModel? challenge;
+  ResultModel? resultModel;
 
   @override
   void onClose() {
@@ -120,16 +124,20 @@ class ChallengeController extends GetxController {
       if (eachTurnDuration.value > 0) {
         eachTurnDuration.value--;
       } else {
+        recordingTimer?.cancel();
         if (currentUserId == MyAppStorage.userId) {
+          debugPrint('A-StopTimerCalledOnUser$currentUserId');
           bool isSuccess = await ChallengeService().uploadUserSound(
-              userRecordingInBytes: null,
-              userId: currentUserId,
-              roomId: roomId);
+            userRecordingInBytes: null,
+            userId: currentUserId,
+            roomId: roomId,
+          );
           if (isSuccess) {
             debugPrint(
                 'Recording Uploaded Successfully of User $currentUserId in Room $roomId');
           }
         }
+
         update();
       }
     });
@@ -145,6 +153,7 @@ class ChallengeController extends GetxController {
     await stopRecording();
     if (userId == MyAppStorage.userId) {
       if (recordedFilePath != null) {
+        debugPrint('B-StopTimerCalledOnUser$userId');
         final file = File(recordedFilePath!);
         final bytes = await file.readAsBytes();
         bool isSuccess = await ChallengeService().uploadUserSound(
@@ -175,13 +184,13 @@ class ChallengeController extends GetxController {
   ///Stops Recording
   Future<void> stopRecording() async {
     try {
-      print('StoppingRecording');
+      // print('StoppingRecording');
       await _audioRecorder.stopRecorder();
-      print('StoppedRecording');
+      // print('StoppedRecording');
       isUserRecording.value = false;
       // isUserRecordingCompleted.value = true;
       // _stopRecordingTimer();
-      debugPrint('RecordedAudioPath: $recordedFilePath');
+      // debugPrint('RecordedAudioPath: $recordedFilePath');
     } catch (e) {
       debugPrint('Error Stopping Recording: $e');
     }
@@ -189,7 +198,22 @@ class ChallengeController extends GetxController {
 
   void showCalculatingResultPopup(ChallengeRoomModel model) {
     debugPrint('ShowCalculatingResultPopupCalled');
+    io.Socket socket = SocketService().getSocket();
+    print('ChallengeRoomId: ${model.id}');
+    socket.emit(
+      'room_challenge_completed',
+      {
+        'data': {
+          'room_id': model.id,
+        }
+      },
+    );
 
+    socket.on('challenge_result', (data) {
+      resultModel = ResultModel.fromJson(data);
+      debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers}');
+      debugPrint('UserResult:  ${resultModel?.usersResult}');
+    });
     recordingTimer?.cancel();
     isUserRecording.value = false;
     hasChallengeStarted.value = false;
@@ -200,9 +224,9 @@ class ChallengeController extends GetxController {
         content: CalculatingResultPopup(),
       ),
     );
-    // Navigate to the ResultScreen when the results are calculated.
+    // // Navigate to the ResultScreen when the results are calculated.
     Future.delayed(const Duration(seconds: 5), () {
-      Get.off(() => ResultScreen(model: model));
+      Get.off(() => ResultScreen(model: resultModel!));
     });
   }
 

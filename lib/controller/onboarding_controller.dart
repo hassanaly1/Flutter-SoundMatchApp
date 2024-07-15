@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:sound_app/helper/asset_helper.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/login.dart';
 import 'package:sound_app/view/auth/onboarding/onboarding_page_widget.dart';
 
@@ -53,7 +54,9 @@ class OnBoardingController extends GetxController {
   ];
 
   skip() {
-    controller.jumpToPage(page: pages.length - 1);
+    MyAppStorage.storage.write('isFirstTime', false);
+    Get.offAll(() => const LoginScreen(), transition: Transition.rightToLeft);
+    // controller.jumpToPage(page: pages.length - 1);
   }
 
   animateToNextSlide() {
@@ -61,7 +64,7 @@ class OnBoardingController extends GetxController {
     if (nextPage < pages.length) {
       controller.animateToPage(page: nextPage);
     } else {
-      Get.offAll(const LoginScreen(), transition: Transition.rightToLeft);
+      Get.offAll(() => const LoginScreen(), transition: Transition.rightToLeft);
     }
   }
 

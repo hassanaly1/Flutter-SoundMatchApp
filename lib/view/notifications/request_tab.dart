@@ -45,7 +45,6 @@ class RequestTab extends StatelessWidget {
                           SizedBox(width: context.width * 0.02),
                           const CustomTextWidget(
                               text: 'participantName!',
-                              fontFamily: "Poppins",
                               textColor: MyColorHelper.white,
                               maxLines: 2,
                               fontWeight: FontWeight.w600,

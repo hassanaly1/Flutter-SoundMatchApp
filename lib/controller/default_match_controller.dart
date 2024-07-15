@@ -87,6 +87,59 @@ class DefaultMatchController extends GetxController {
     _stopRecordingTimer();
   }
 
+  // Future<void> _initializeRecorder() async {
+  //   try {
+  //     PermissionStatus status = await Permission.microphone.request();
+  //
+  //     if (status.isGranted) {
+  //       await _audioRecorder.openRecorder();
+  //       _audioRecorder
+  //           .setSubscriptionDuration(const Duration(milliseconds: 500));
+  //     } else if (status.isDenied) {
+  //       // Show a dialog to explain why the permission is needed
+  //       showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) {
+  //           return AlertDialog(
+  //             title: const Text('Audio Recording Permission'),
+  //             content: const Text(
+  //                 'This app needs access to your microphone to record audio.'),
+  //             actions: [
+  //               TextButton(
+  //                 child: const Text('Cancel'),
+  //                 onPressed: () {
+  //                   openAppSettings();
+  //                   Navigator.of(context).pop();
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: const Text('Allow'),
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                   _initializeRecorder(); // Request permission again
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     } else if (status.isPermanentlyDenied) {
+  //       // Open app settings automatically
+  //       bool opened = await openAppSettings();
+  //       if (!opened) {
+  //         // If settings could not be opened, show a message to the user
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(
+  //               content: Text(
+  //                   'Could not open app settings. Please grant permission manually.')),
+  //         );
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error Initializing Recorder: $e');
+  //   }
+  // }
+
   Future<void> _initializeRecorder() async {
     try {
       await Permission.microphone.request();

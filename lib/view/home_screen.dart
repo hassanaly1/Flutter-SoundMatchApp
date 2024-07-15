@@ -443,7 +443,7 @@ class HomeAppbar extends StatelessWidget {
               InkWell(
                   onTap: () {
                     Get.to(
-                        const NotificationScreen(
+                        () => const NotificationScreen(
                             //  challengeModel: challengeModel,
                             ),
                         transition: Transition.upToDown);

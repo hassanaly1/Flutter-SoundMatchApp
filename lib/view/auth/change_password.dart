@@ -3,8 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
-import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
+import 'package:sound_app/helper/custom_text_widget.dart';
 
 class ChangePasswordScreen extends StatelessWidget {
   const ChangePasswordScreen({super.key});
@@ -65,17 +65,13 @@ class ChangePasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20.0),
                     Obx(
-                      () => authController.isLoading.value
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                  color: Colors.white70),
-                            )
-                          : CustomAuthButton(
-                              text: 'Change Password',
-                              onTap: () {
-                                authController.changePassword();
-                              },
-                            ),
+                      () => CustomAuthButton(
+                        isLoading: authController.isLoading.value,
+                        text: 'Change Password',
+                        onTap: () {
+                          authController.changePassword();
+                        },
+                      ),
                     ),
                     const SizedBox(height: 20.0),
                   ],

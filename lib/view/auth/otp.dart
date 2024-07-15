@@ -206,27 +206,23 @@ class _OtpScreenState extends State<OtpScreen> {
                   SizedBox(height: context.height * 0.03),
                   //Button
                   Obx(
-                    () => controller.isLoading.value
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                            color: Colors.white70,
-                          ))
-                        : CustomAuthButton(
-                            text: 'Verify OTP',
-                            onTap: () {
-                              if (controller.otpController.text.isEmpty) {
-                                ToastMessage.showToastMessage(
-                                    message: 'Please Enter OTP',
-                                    backgroundColor: Colors.red);
-                              } else {
-                                debugPrint(widget.verifyOtpForForgetPassword
-                                    .toString());
-                                widget.verifyOtpForForgetPassword
-                                    ? controller.verifyOtp()
-                                    : controller.verifyEmail();
-                              }
-                            },
-                          ),
+                    () => CustomAuthButton(
+                      isLoading: controller.isLoading.value,
+                      text: 'Verify OTP',
+                      onTap: () {
+                        if (controller.otpController.text.isEmpty) {
+                          ToastMessage.showToastMessage(
+                              message: 'Please Enter OTP',
+                              backgroundColor: Colors.red);
+                        } else {
+                          debugPrint(
+                              widget.verifyOtpForForgetPassword.toString());
+                          widget.verifyOtpForForgetPassword
+                              ? controller.verifyOtp()
+                              : controller.verifyEmail();
+                        }
+                      },
+                    ),
                   ),
                   SizedBox(height: context.height * 0.02),
                 ],

@@ -27,7 +27,7 @@ class CustomAppbar extends StatelessWidget {
           InkWell(
               onTap: () {
                 showNotificationsIcon
-                    ? Get.to(const NotificationScreen(),
+                    ? Get.to(() => const NotificationScreen(),
                         transition: Transition.upToDown)
                     : null;
               },

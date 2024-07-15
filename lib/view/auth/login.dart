@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -106,23 +107,36 @@ class _LoginScreenState extends State<LoginScreen> {
                                   AppValidator.validateEmail(value: val),
                             ),
                             SizedBox(height: context.height * 0.02),
-                            CustomTextField(
-                              controller: authController.passwordController,
-                              hintText: 'Enter your Password',
+                            Obx(
+                              () => CustomTextField(
+                                controller: authController.passwordController,
+                                validator: (value) =>
+                                    AppValidator.validatePassword(value: value),
+                                hintText: ' Password',
+                                obscureText: !authController.showPassword.value,
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      authController.showPassword.value =
+                                          !authController.showPassword.value;
+                                    },
+                                    icon: Icon(
+                                        authController.showPassword.value
+                                            ? CupertinoIcons.eye
+                                            : CupertinoIcons.eye_slash,
+                                        color: MyColorHelper.verdigris)),
+                              ),
                             ),
-                            Visibility(
-                              child: TextButton(
-                                  isSemanticButton: true,
-                                  onPressed: () {
-                                    Get.to(() => const ForgetPasswordScreen(),
-                                        transition: Transition.rightToLeft);
-                                  },
-                                  child: const CustomTextWidget(
-                                    text: 'Forget Password?',
-                                    textColor: Colors.white60,
-                                    fontFamily: 'poppins',
-                                  )),
-                            ),
+                            TextButton(
+                                isSemanticButton: true,
+                                onPressed: () {
+                                  Get.to(() => const ForgetPasswordScreen(),
+                                      transition: Transition.rightToLeft);
+                                },
+                                child: const CustomTextWidget(
+                                  text: 'Forget Password?',
+                                  textColor: Colors.white60,
+                                  fontFamily: 'poppins',
+                                )),
                           ],
                         ),
                       ),
@@ -130,20 +144,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     //Button
                     Obx(
-                      () => authController.isLoading.value
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                  color: Colors.white70),
-                            )
-                          : CustomAuthButton(
-                              text: 'Login',
-                              onTap: () {
-                                if (authController.loginFormKey.currentState!
-                                    .validate()) {
-                                  authController.loginUser();
-                                }
-                              },
-                            ),
+                      () => CustomAuthButton(
+                        isLoading: authController.isLoading.value,
+                        text: 'Login',
+                        onTap: () {
+                          print('Login');
+                          if (authController.loginFormKey.currentState!
+                              .validate()) {
+                            authController.loginUser();
+                          }
+                        },
+                      ),
                     ),
                     SizedBox(height: context.height * 0.02),
 

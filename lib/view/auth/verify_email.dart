@@ -60,21 +60,17 @@ class VerifyEmailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20.0),
                     Obx(
-                      () => authController.isLoading.value
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                  color: Colors.white70),
-                            )
-                          : CustomAuthButton(
-                              text: 'Send OTP',
-                              onTap: () {
-                                // Get.off(() => OtpScreen(
-                                //     verifyOtpForForgetPassword: false,
-                                //     email: authController.emailController.text
-                                //         .trim()));
-                                authController.sendOtp();
-                              },
-                            ),
+                      () => CustomAuthButton(
+                        isLoading: authController.isLoading.value,
+                        text: 'Send OTP',
+                        onTap: () {
+                          // Get.off(() => OtpScreen(
+                          //     verifyOtpForForgetPassword: false,
+                          //     email: authController.emailController.text
+                          //         .trim()));
+                          authController.sendOtp();
+                        },
+                      ),
                     ),
                     const SizedBox(height: 20.0),
                   ],

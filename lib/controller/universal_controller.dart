@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:sound_app/data/sounds_service.dart';
 import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/sound_model.dart';
@@ -8,13 +11,40 @@ import 'package:sound_app/utils/storage_helper.dart';
 
 class MyUniversalController extends GetxController {
   RxBool isGuestUser = false.obs;
-
+  RxBool isConnectedToInternet = false.obs;
+  StreamSubscription? _internetConnectionStreamSubscription;
   RxList<SoundModel> soundsById = <SoundModel>[].obs;
 
   RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
   RxList<SoundPackModel> userSoundPacks = <SoundPackModel>[].obs;
 
-  // RxList<Participant> participants = <Participant>[].obs;
+  @override
+  void onInit() {
+    _internetConnectionStreamSubscription =
+        InternetConnection().onStatusChange.listen(
+      (event) {
+        debugPrint('Internet Status: $event');
+        switch (event) {
+          case InternetStatus.connected:
+            isConnectedToInternet.value = true;
+            break;
+          case InternetStatus.disconnected:
+            isConnectedToInternet.value = false;
+            break;
+          default:
+            isConnectedToInternet.value = false;
+            break;
+        }
+      },
+    );
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    _internetConnectionStreamSubscription?.cancel();
+    super.onClose();
+  }
 
   // Challenges
   RxList<ChallengeModel> challenges = <ChallengeModel>[
@@ -80,20 +110,4 @@ class MyUniversalController extends GetxController {
       debugPrint('Error Fetching Sounds for SoundPack ID $soundPackId: $e');
     }
   }
-
-// Future<void> fetchParticipants(
-//     {int page = 1, String searchString = ""}) async {
-//   participants.clear();
-//   try {
-//     List<Participant> fetchedParticipants =
-//         await SoundServices().fetchParticipants(searchString: searchString);
-//     debugPrint('Fetched Participants: ${fetchedParticipants.length}');
-//     participants.addAll(fetchedParticipants);
-//     // Removing the current user from the participants list
-//     participants
-//         .removeWhere((participant) => participant.id == MyAppStorage.userId);
-//   } catch (e) {
-//     debugPrint('Error Fetching Participants: $e');
-//   }
-// }
 }

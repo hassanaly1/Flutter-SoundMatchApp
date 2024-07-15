@@ -43,25 +43,28 @@ class AuthController extends GetxController {
       try {
         // Call the registerUser method in AuthService and handle the response
         Map<String, dynamic> response = await AuthService().registerUser(
-            firstName: firstNameController.text.trim(),
-            lastName: lastNameController.text.trim(),
-            email: emailController.text.trim(),
-            password: passwordController.text.trim(),
-            confirmPassword: confirmPasswordController.text.trim());
+          firstName: firstNameController.text.trim(),
+          lastName: lastNameController.text.trim(),
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+          confirmPassword: confirmPasswordController.text.trim(),
+        );
 
         // Handle registration success and failure
         if (response['status'] == 'success') {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(
+              msg: 'Account Created Successfully, Please Verify your Email');
           Get.to(() => OtpScreen(
                 verifyOtpForForgetPassword: false,
                 email: emailController.text.trim(),
               ));
-          // if response['status'] == 'error'
         } else {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(
+              msg: 'Something went wrong, please try again.');
         }
       } catch (e) {
-        Fluttertoast.showToast(msg: 'An error occurred during registration');
+        Fluttertoast.showToast(
+            msg: 'Something went wrong during Registration, please try again.');
       } finally {
         isLoading.value = false;
       }
@@ -82,15 +85,16 @@ class AuthController extends GetxController {
         );
 
         if (response['status'] == 'success') {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(msg: 'Email Verified Successfully');
           Get.offAll(() => const LoginScreen());
-          // clearAllControllers();
+          clearAllControllers();
         } else {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(
+              msg: 'Something went wrong, please try again.');
         }
       } catch (e) {
         Fluttertoast.showToast(
-            msg: 'An error occurred during email verification');
+            msg: 'Something went wrong during Email Verification');
       } finally {
         isLoading.value = false;
       }
@@ -109,13 +113,13 @@ class AuthController extends GetxController {
         );
 
         if (response['status'] == 'success') {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(msg: 'Login Successfully.');
           MyAppStorage.storage.write('token', response['token']);
 
           saveUserInfo(response['user']);
           Get.offAll(() => const HomeScreen(), transition: Transition.zoom);
 
-          // clearAllControllers();
+          clearAllControllers();
         } else {
           response['message'] == 'Please Verify Your Email First'
               ? Get.to(() => const VerifyEmailScreen(),
@@ -138,13 +142,13 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       try {
-        Map<String, dynamic> response = await AuthService().sendOtp(
+        final bool isSuccess = await AuthService().sendOtp(
           email: emailController.text.trim(),
         );
 
-        if (response['status'] == 'success') {
-          Fluttertoast.showToast(msg: response['message']);
-          print(response['message']);
+        if (isSuccess) {
+          Fluttertoast.showToast(
+              msg: 'Otp Sent Successfully, Check your Email');
 
           Get.to(() => OtpScreen(
                 verifyOtpForForgetPassword: true,
@@ -153,7 +157,8 @@ class AuthController extends GetxController {
 
           // clearAllControllers();
         } else {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(
+              msg: 'Something went wrong, please try again.');
         }
       } catch (e) {
         Fluttertoast.showToast(msg: 'Something went wrong, please try again.');
@@ -167,6 +172,8 @@ class AuthController extends GetxController {
   Future<void> verifyOtp() async {
     if (emailController.text.isNotEmpty && otpController.text.isNotEmpty) {
       isLoading.value = true;
+      print(emailController.text.trim());
+      print(otpController.text.trim());
 
       try {
         Map<String, dynamic> response = await AuthService().verifyOtp(
@@ -175,16 +182,18 @@ class AuthController extends GetxController {
         );
 
         if (response['status'] == 'success') {
-          Fluttertoast.showToast(msg: response['message']);
-          MyAppStorage.storage.write('token', response['data']['token']);
+          Fluttertoast.showToast(msg: 'Otp Verified Successfully');
+          // Accessing the token correctly
+          String token = response['data'][0]['token'];
+          MyAppStorage.storage.write('token', token);
           Get.offAll(() => const ChangePasswordScreen());
 
-          // clearAllControllers();
+          clearAllControllers();
         } else {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(msg: 'Invalid Otp');
         }
       } catch (e) {
-        Fluttertoast.showToast(msg: e.toString());
+        Fluttertoast.showToast(msg: 'Something went wrong, please try again.');
       } finally {
         isLoading.value = false;
       }
@@ -204,30 +213,33 @@ class AuthController extends GetxController {
             token: MyAppStorage.token);
 
         if (response['status'] == 'success') {
-          Fluttertoast.showToast(msg: response['message']);
-          Get.offAll(() => const HomeScreen());
+          Fluttertoast.showToast(
+              msg: 'Password Changed Successfully, Please Login Again');
+          Get.offAll(() => const LoginScreen());
 
-          // clearAllControllers();
+          clearAllControllers();
         } else {
-          Fluttertoast.showToast(msg: response['message']);
+          Fluttertoast.showToast(
+              msg: 'Something went wrong, please try again.');
         }
       } catch (e) {
         Fluttertoast.showToast(
-            msg: 'An error occurred during changing password');
+            msg:
+                'Something went wrong during Changing Password, please try again.');
       } finally {
         isLoading.value = false;
       }
     }
   }
 
-  // clearAllControllers() {
-  //   firstNameController.clear();
-  //   lastNameController.clear();
-  //   emailController.clear();
-  //   verifyEmailController.clear();
-  //   passwordController.clear();
-  //   confirmPasswordController.clear();
-  // }
+  clearAllControllers() {
+    firstNameController.clear();
+    lastNameController.clear();
+    emailController.clear();
+    verifyEmailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+  }
 
   @override
   void onClose() {

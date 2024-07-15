@@ -4,19 +4,21 @@ import 'dart:ui';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/challenge_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/challenge_room_model.dart';
+import 'package:sound_app/models/result_model.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/widgets/bar_chart.dart';
+import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class ResultScreen extends StatelessWidget {
-  final ChallengeRoomModel model;
+  final ResultModel model;
 
   const ResultScreen({super.key, required this.model});
 
@@ -97,14 +99,23 @@ class ResultScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      Expanded(flex: 2, child: UserResultPreview(model: model)),
+                      Expanded(
+                          flex: 2,
+                          child: UserResultPreview(
+                            model: model,
+                            isOverAllResult: false,
+                          )),
                       // const Expanded(
                       //     child: MyRadarChart(showBlurBackground: true)),
                     ],
                   ),
                   Column(
                     children: [
-                      Expanded(child: UserResultPreview(model: model)),
+                      Expanded(
+                          child: UserResultPreview(
+                        model: model,
+                        isOverAllResult: true,
+                      )),
                       Expanded(child: MyBarChart(showBlurBackground: true)),
                     ],
                   ),
@@ -119,11 +130,13 @@ class ResultScreen extends StatelessWidget {
 }
 
 class UserResultPreview extends StatefulWidget {
-  final ChallengeRoomModel model;
+  final ResultModel model;
+  final bool isOverAllResult;
 
   const UserResultPreview({
     super.key,
     required this.model,
+    required this.isOverAllResult,
   });
 
   @override
@@ -138,6 +151,7 @@ class _UserResultPreviewState extends State<UserResultPreview>
   final RxBool isFirstIndex = true.obs;
   Timer? _timer;
   bool timerCompleted = false;
+  RxInt currentIndex = 0.obs;
 
   @override
   void initState() {
@@ -160,11 +174,6 @@ class _UserResultPreviewState extends State<UserResultPreview>
           timerCompleted = true;
           controller.countdownForNextRound.value = 60;
 
-          // Get.off(
-          //   () => ChallengeScreen(
-          //       challengeModel:
-          //           controller.updateChallengeModel(widget.challengeModel)),
-          // );
           controller.resetControllerValues();
         }
       });
@@ -184,54 +193,50 @@ class _UserResultPreviewState extends State<UserResultPreview>
     return Stack(
       alignment: Alignment.topCenter,
       children: [
-        Container(
-          color: Colors.transparent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // CarouselSlider.builder(
-              //   carouselController: carouselController,
-              //   options: CarouselOptions(
-              //     height: MediaQuery.of(context).size.height * 0.25,
-              //     enlargeCenterPage: false,
-              //     viewportFraction: 0.7,
-              //     initialPage: 0,
-              //     onPageChanged: onPageChanged,
-              //   ),
-              //   itemCount: widget.challengeModel.participants?.length,
-              //   itemBuilder: (BuildContext context, int index, _) {
-              //     final participant =
-              //         widget.challengeModel.participants![index];
-              //     return UserResultCard(
-              //       index: index,
-              //       participant: participant,
-              //       result: 50,
-              //     );
-              //   },
-              // ),
-              buildCarouselControls(),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-              Visibility(
-                visible: !controller.isChallengeCompleted.value,
-                child: CustomAuthButton(
-                  text: 'Next Round',
-                  onTap: () {},
-                ),
-              )
-            ],
-          ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            widget.isOverAllResult
+                ? const SizedBox()
+                : SizedBox(height: context.height * 0.1),
+            CarouselSlider.builder(
+              carouselController: carouselController,
+              options: CarouselOptions(
+                enlargeCenterPage: true,
+                viewportFraction: 0.6,
+                enableInfiniteScroll: false,
+                initialPage: 0,
+                onPageChanged: (index, reason) {
+                  currentIndex.value = index;
+                },
+              ),
+              itemCount: widget.model.usersResult!.length,
+              itemBuilder: (BuildContext context, int index, _) {
+                return UserResultCard(
+                  index: index,
+                  resultModel: widget.model,
+                );
+              },
+            ),
+            buildCarouselControls(),
+            widget.isOverAllResult
+                ? const SizedBox()
+                : Obx(
+                    () => CustomAuthButton(
+                      isLoading: false,
+                      text: MyAppStorage.userId ==
+                              widget.model.usersResult
+                                  ?.map((e) => e.participant?.id)
+                          ? 'Next Round'
+                          : 'Exit',
+                      onTap: () {},
+                    ),
+                  ),
+            widget.isOverAllResult
+                ? const SizedBox()
+                : SizedBox(height: context.height * 0.1),
+          ],
         ),
-        // Obx(() {
-        //   return isFirstIndex.value
-        //       ? ConfettiWidget(
-        //           confettiController: confettiController,
-        //           shouldLoop: true,
-        //           blastDirectionality: BlastDirectionality.explosive,
-        //           numberOfParticles: 30,
-        //           colors: const [Colors.green, Colors.blue, Colors.pink],
-        //         )
-        //       : const SizedBox();
-        // }),
       ],
     );
   }
@@ -247,60 +252,54 @@ class _UserResultPreviewState extends State<UserResultPreview>
   }
 
   Widget buildCarouselControls() {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        const SizedBox(height: 14),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildCarouselControl(
-                MyAssetHelper.rankLeft, carouselController.previousPage),
-            Visibility(
-              visible: !controller.isChallengeCompleted.value,
-              child: Container(
-                height: 80,
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 15.0,
-                        spreadRadius: 4.0,
-                        offset: Offset(5.0, 5.0),
-                      )
-                    ],
-                    shape: BoxShape.circle),
-                child: Center(
-                  child: Obx(
-                    () => Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          value: controller.countdownForNextRound.value / 60,
-                          strokeWidth: 4.0,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              MyColorHelper.caribbeanCurrent),
-                        ),
-                        CustomTextWidget(
-                          text:
-                              controller.countdownForNextRound.value.toString(),
-                          fontSize: 18.0,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                          textColor: MyColorHelper.caribbeanCurrent,
-                        ),
-                      ],
+        buildCarouselControl(
+            MyAssetHelper.rankLeft, carouselController.previousPage),
+        Visibility(
+          visible: !controller.isChallengeCompleted.value,
+          child: Container(
+            height: 80,
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 15.0,
+                    spreadRadius: 4.0,
+                    offset: Offset(5.0, 5.0),
+                  )
+                ],
+                shape: BoxShape.circle),
+            child: Center(
+              child: Obx(
+                () => Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: controller.countdownForNextRound.value / 60,
+                      strokeWidth: 4.0,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                          MyColorHelper.caribbeanCurrent),
                     ),
-                  ),
+                    CustomTextWidget(
+                      text: controller.countdownForNextRound.value.toString(),
+                      fontSize: 18.0,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                      textColor: MyColorHelper.caribbeanCurrent,
+                    ),
+                  ],
                 ),
               ),
             ),
-            buildCarouselControl(
-                MyAssetHelper.rankRight, carouselController.nextPage),
-          ],
+          ),
         ),
+        buildCarouselControl(
+            MyAssetHelper.rankRight, carouselController.nextPage),
       ],
     );
   }

@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/profile/challenges_section.dart';
 import 'package:sound_app/view/profile/profile_info_section.dart';
 import 'package:sound_app/view/profile/security_section.dart';
@@ -18,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final storage = GetStorage();
+    /// Check weather the keyboard is open or not
     final isKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
     double height = MediaQuery.of(context).size.height;
     return SafeArea(
@@ -66,21 +66,16 @@ class ProfileScreen extends StatelessWidget {
 
                                   //name and email
                                   CustomTextWidget(
-                                    text: storage
-                                            .read('user_info')['first_name'] +
-                                        " " +
-                                        storage.read('user_info')['last_name'],
+                                    text: MyAppStorage.fullName,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 22,
                                     textColor: MyColorHelper.white,
-                                    fontFamily: "poppins",
                                   ),
                                   CustomTextWidget(
-                                    text: storage.read('user_info')['email'],
+                                    text: MyAppStorage.userEmail,
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
                                     textColor: MyColorHelper.white,
-                                    fontFamily: "poppins",
                                   )
                                 ],
                               ),

@@ -3,19 +3,14 @@ import 'package:get/get.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/participant_model.dart';
+import 'package:sound_app/models/result_model.dart';
 
 class UserResultCard extends StatelessWidget {
-  final Participant participant;
+  final ResultModel resultModel;
   final int index;
-  final int result;
 
-  const UserResultCard({
-    super.key,
-    required this.index,
-    required this.participant,
-    required this.result,
-  });
+  const UserResultCard(
+      {super.key, required this.index, required this.resultModel});
 
   @override
   Widget build(BuildContext context) {
@@ -23,59 +18,59 @@ class UserResultCard extends StatelessWidget {
       padding: const EdgeInsets.all(6.0),
       child: Stack(
         children: [
-          // Background image
           Image.asset(
             MyAssetHelper.rankContainerBackground,
             fit: BoxFit.fill,
             height: context.height * 0.2,
             width: context.width * 0.6,
           ),
-          // Positioned widget to center the Row
           Positioned.fill(
             child: Padding(
-              padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ListTile(
-                    isThreeLine: true,
-                    leading: Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            participant.profile ?? '',
-                          ),
-                          fit: BoxFit.cover,
-                        ),
+              padding:
+                  const EdgeInsets.only(top: 35.0, bottom: 20.0, left: 10.0),
+              child: ListTile(
+                isThreeLine: true,
+                leading: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        resultModel.usersResult?[index].participant?.profile ??
+                            '',
                       ),
+                      fit: BoxFit.cover,
                     ),
-                    title: CustomTextWidget(
-                      text: '${participant.firstName} ${participant.lastName}',
-                      fontFamily: "Horta",
+                  ),
+                ),
+                title: CustomTextWidget(
+                  text:
+                      '${resultModel.usersResult?[index].participant?.firstName} ${resultModel.usersResult?[index].participant?.lastName}',
+                  fontFamily: "Horta",
+                  textColor: MyColorHelper.white,
+                  fontSize: 18,
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomTextWidget(
+                      text:
+                          "Percentage: ${resultModel.usersResult?[index].achievedPercentage}%",
+                      fontFamily: "horta",
                       textColor: MyColorHelper.white,
                       fontSize: 18,
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomTextWidget(
-                          text: "Percentage: $result%",
-                          fontFamily: "horta",
-                          textColor: MyColorHelper.white,
-                          fontSize: 18,
-                        ),
-                        // CustomTextWidget(
-                        //   text: getOrdinalSuffix(index + 1),
-                        //   fontFamily: "Horta",
-                        //   textColor: MyColorHelper.white,
-                        //   fontSize: 30,
-                        // ),
-                      ],
-                    ),
-                  )),
+                    // CustomTextWidget(
+                    //   text: getOrdinalSuffix(index + 1),
+                    //   fontFamily: "Horta",
+                    //   textColor: MyColorHelper.white,
+                    //   fontSize: 30,
+                    // ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
