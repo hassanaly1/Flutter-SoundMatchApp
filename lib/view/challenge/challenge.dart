@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/challenge_controller.dart';
-import 'package:sound_app/data/challenge_service.dart';
 import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -26,12 +25,13 @@ class ChallengeRoomScreen extends StatefulWidget {
 
 class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
   ChallengeRoomModel? model;
-  final ChallengeController controller = Get.put(ChallengeController());
+  late ChallengeController controller;
 
   @override
   void initState() {
-    callSockets();
     super.initState();
+    controller = Get.put(ChallengeController());
+    callSockets();
   }
 
   callSockets() async {
@@ -85,11 +85,12 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
             controller.hasChallengeStarted.value = true;
             debugPrint(
                 'isChallengeStarts: ${controller.isChallengeStarts.value}');
-            showRoundStartedPopup(
-              model: model!,
-              controller: controller,
-              context: context,
-            );
+            if (mounted) {
+              showRoundStartedPopup(
+                model: model!,
+                controller: controller,
+              );
+            }
           }
 
           ///Display Showing Result Popup when the round is completed
@@ -103,8 +104,112 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
         },
       );
     } catch (e) {
-      debugPrint('Error sending challenge data: $e');
+      debugPrint('Error Getting Challenge Data: $e');
     }
+  }
+
+  void showRoundStartedPopup({
+    required ChallengeController controller,
+    required ChallengeRoomModel model,
+  }) {
+    if (!context.mounted)
+      return; // Ensure the widget is mounted before showing the dialog
+
+    // Show the dialog
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierLabel: 'Dismiss',
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) => Container(),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return PopScope(
+          canPop: false,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+            child: FadeTransition(
+              opacity: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: AlertDialog(
+                scrollable: true,
+                backgroundColor: Colors.transparent,
+                content: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: context.height * 0.02,
+                  ),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        MyColorHelper.blue,
+                        MyColorHelper.caribbeanCurrent
+                      ],
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 5.0,
+                        spreadRadius: 5.0,
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: Offset(0.0, 0.0),
+                        blurRadius: 0.0,
+                        spreadRadius: 0.0,
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Lottie.asset(
+                        MyAssetHelper.roundAnimation,
+                        height: 120,
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: DefaultTextStyle(
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 30.0,
+                            fontFamily: 'Horta',
+                            color: MyColorHelper.white,
+                          ),
+                          child: AnimatedTextKit(
+                            animatedTexts: [
+                              TypewriterAnimatedText(
+                                textAlign: TextAlign.center,
+                                'Round ${model.challengeRoomNumber.toString()} Started',
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // Close the dialog after 3 seconds
+    Future.delayed(const Duration(seconds: 5), () {
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        controller.onGameStarts(
+          currentUserId: model.currentTurnHolder?.id ?? '',
+          roomId: model.id ?? '',
+        );
+      }
+    });
   }
 
   @override
@@ -305,19 +410,19 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                   ),
                                 ),
                               ),
-                              // Obx(
-                              //   () => BackdropFilter(
-                              //     filter: ImageFilter.blur(
-                              //       sigmaX: controller.isRoundCompleted.value
-                              //           ? 5
-                              //           : 0,
-                              //       sigmaY: controller.isRoundCompleted.value
-                              //           ? 5
-                              //           : 0,
-                              //     ),
-                              //     child: const SizedBox(),
-                              //   ),
-                              // )
+                              Obx(
+                                () => BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: controller.isRoundCompleted.value
+                                        ? 5
+                                        : 0,
+                                    sigmaY: controller.isRoundCompleted.value
+                                        ? 5
+                                        : 0,
+                                  ),
+                                  child: const SizedBox(),
+                                ),
+                              )
                             ],
                           );
                         },
@@ -328,106 +433,6 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
         )
       ],
     ));
-  }
-
-  void showRoundStartedPopup({
-    required BuildContext context,
-    required ChallengeController controller,
-    required ChallengeRoomModel model,
-  }) {
-    // Show the dialog
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierLabel: 'Dismiss',
-      transitionDuration: const Duration(milliseconds: 400),
-      pageBuilder: (context, animation, secondaryAnimation) => Container(),
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return PopScope(
-          canPop: false,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-            child: FadeTransition(
-              opacity: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: AlertDialog(
-                scrollable: true,
-                backgroundColor: Colors.transparent,
-                content: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: context.height * 0.02,
-                  ),
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        MyColorHelper.blue,
-                        MyColorHelper.caribbeanCurrent
-                      ],
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 5.0,
-                        spreadRadius: 5.0,
-                      ),
-                      BoxShadow(
-                        color: Colors.white,
-                        offset: Offset(0.0, 0.0),
-                        blurRadius: 0.0,
-                        spreadRadius: 0.0,
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Lottie.asset(
-                        MyAssetHelper.roundAnimation,
-                        height: 120,
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: DefaultTextStyle(
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 30.0,
-                            fontFamily: 'Horta',
-                            color: MyColorHelper.white,
-                          ),
-                          child: AnimatedTextKit(
-                            animatedTexts: [
-                              TypewriterAnimatedText(
-                                textAlign: TextAlign.center,
-                                'Round 1 Started',
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-
-    // Close the dialog after 3 seconds
-    Future.delayed(const Duration(seconds: 5), () {
-      Navigator.of(context).pop();
-      controller.onGameStarts(
-        currentUserId: model.currentTurnHolder?.id ?? '',
-        roomId: model.id ?? '',
-      );
-    });
   }
 }
 
@@ -650,65 +655,65 @@ class TopContainer extends StatelessWidget {
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    io.Socket socket = SocketService().getSocket();
-                    socket.emit(
-                      'room_challenge_completed',
-                      {
-                        'data': {
-                          'room_id': model.id,
-                        }
-                      },
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      // width: 100,
-                      decoration: BoxDecoration(
-                          color: MyColorHelper.primaryColor,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: const Center(
-                        child: CustomTextWidget(
-                          text: "Test",
-                          textColor: MyColorHelper.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    ChallengeService().uploadUserSound(
-                        userRecordingInBytes: null,
-                        userId: MyAppStorage.userId,
-                        roomId: model.id ?? '');
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      // width: 100,
-                      decoration: BoxDecoration(
-                          color: MyColorHelper.primaryColor,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: const Center(
-                        child: CustomTextWidget(
-                          text: "Test Sound",
-                          textColor: MyColorHelper.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // GestureDetector(
+                //   onTap: () {
+                //     io.Socket socket = SocketService().getSocket();
+                //     socket.emit(
+                //       'room_challenge_completed',
+                //       {
+                //         'data': {
+                //           'room_id': model.id,
+                //         }
+                //       },
+                //     );
+                //   },
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(8.0),
+                //     child: Container(
+                //       height: 40,
+                //       padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                //       // width: 100,
+                //       decoration: BoxDecoration(
+                //           color: MyColorHelper.primaryColor,
+                //           borderRadius: BorderRadius.circular(12)),
+                //       child: const Center(
+                //         child: CustomTextWidget(
+                //           text: "Test",
+                //           textColor: MyColorHelper.white,
+                //           fontSize: 14,
+                //           fontWeight: FontWeight.w600,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // GestureDetector(
+                //   onTap: () {
+                //     ChallengeService().uploadUserSound(
+                //         userRecordingInBytes: null,
+                //         userId: MyAppStorage.userId,
+                //         roomId: model.id ?? '');
+                //   },
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(8.0),
+                //     child: Container(
+                //       height: 40,
+                //       padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                //       // width: 100,
+                //       decoration: BoxDecoration(
+                //           color: MyColorHelper.primaryColor,
+                //           borderRadius: BorderRadius.circular(12)),
+                //       child: const Center(
+                //         child: CustomTextWidget(
+                //           text: "Test Sound",
+                //           textColor: MyColorHelper.white,
+                //           fontSize: 14,
+                //           fontWeight: FontWeight.w600,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             const SizedBox(height: 8.0)

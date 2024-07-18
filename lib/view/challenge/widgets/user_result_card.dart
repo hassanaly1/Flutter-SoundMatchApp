@@ -8,9 +8,14 @@ import 'package:sound_app/models/result_model.dart';
 class UserResultCard extends StatelessWidget {
   final ResultModel resultModel;
   final int index;
+  final bool isQualified;
 
-  const UserResultCard(
-      {super.key, required this.index, required this.resultModel});
+  const UserResultCard({
+    super.key,
+    required this.index,
+    required this.resultModel,
+    required this.isQualified,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +26,8 @@ class UserResultCard extends StatelessWidget {
           Image.asset(
             MyAssetHelper.rankContainerBackground,
             fit: BoxFit.fill,
-            height: context.height * 0.2,
-            width: context.width * 0.6,
+            height: context.height * 0.22,
+            // width: context.width * 0.8,
           ),
           Positioned.fill(
             child: Padding(
@@ -47,7 +52,7 @@ class UserResultCard extends StatelessWidget {
                 ),
                 title: CustomTextWidget(
                   text:
-                      '${resultModel.usersResult?[index].participant?.firstName} ${resultModel.usersResult?[index].participant?.lastName}',
+                      '${resultModel.usersResult?[index].participant?.firstName} ${resultModel.usersResult?[index].participant?.lastName} ',
                   fontFamily: "Horta",
                   textColor: MyColorHelper.white,
                   fontSize: 18,
@@ -59,6 +64,12 @@ class UserResultCard extends StatelessWidget {
                       text:
                           "Percentage: ${resultModel.usersResult?[index].achievedPercentage}%",
                       fontFamily: "horta",
+                      textColor: MyColorHelper.white,
+                      fontSize: 18,
+                    ),
+                    CustomTextWidget(
+                      text: isQualified ? "Qualified" : "Not Qualified",
+                      fontFamily: "Horta",
                       textColor: MyColorHelper.white,
                       fontSize: 18,
                     ),
@@ -79,19 +90,19 @@ class UserResultCard extends StatelessWidget {
   }
 }
 
-String getOrdinalSuffix(int number) {
-  if (number % 100 >= 11 && number % 100 <= 13) {
-    return '$number' 'th';
-  } else {
-    switch (number % 10) {
-      case 1:
-        return '$number' 'st';
-      case 2:
-        return '$number' 'nd';
-      case 3:
-        return '$number' 'rd';
-      default:
-        return '$number' 'th';
-    }
-  }
-}
+// String getOrdinalSuffix(int number) {
+//   if (number % 100 >= 11 && number % 100 <= 13) {
+//     return '$number' 'th';
+//   } else {
+//     switch (number % 10) {
+//       case 1:
+//         return '$number' 'st';
+//       case 2:
+//         return '$number' 'nd';
+//       case 3:
+//         return '$number' 'rd';
+//       default:
+//         return '$number' 'th';
+//     }
+//   }
+// }

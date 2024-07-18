@@ -13,7 +13,6 @@ import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/models/challenge_room_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/result_model.dart';
-import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/results.dart';
@@ -42,12 +41,14 @@ class ChallengeController extends GetxController {
   RxBool hasChallengeStarted = false.obs;
   RxBool isChallengeStarts = false.obs;
   RxBool isRoundCompleted = false.obs;
+
   RxBool isChallengeCompleted = false.obs;
   RxInt countdownForNextRound = 60.obs;
 
   var totalParticipants = <Participant>[].obs;
-  late Rx<SoundModel?> soundForChallenge;
-  late RxInt totalRounds;
+
+  // late Rx<SoundModel?> soundForChallenge;
+  // late RxInt totalRounds;
 
   @override
   void onInit() {
@@ -77,12 +78,14 @@ class ChallengeController extends GetxController {
     }
   }
 
-  ChallengeRoomModel? challenge;
   ResultModel? resultModel;
 
   @override
   void onClose() {
     debugPrint('ChallengeControllerOnClosedCalled');
+    _defaultAudioPlayer.stop();
+    _defaultAudioPlayer.dispose();
+    _audioRecorder.stopRecorder();
     _audioRecorder.closeRecorder();
     recordingTimer?.cancel();
     recordingTimer = null;
@@ -137,20 +140,21 @@ class ChallengeController extends GetxController {
                 'Recording Uploaded Successfully of User $currentUserId in Room $roomId');
           }
         }
-
         update();
       }
     });
   }
 
   Future<void> onLongPressedStart() async {
+    debugPrint('OnLongPressedStartCalled');
     isUserRecording.value = true;
     await startRecording();
   }
 
   Future<void> onLongPressedEnd(
       {required String userId, required String roomId}) async {
-    await stopRecording();
+    debugPrint('OnLongPressedEndCalled');
+    stopRecording();
     if (userId == MyAppStorage.userId) {
       if (recordedFilePath != null) {
         debugPrint('B-StopTimerCalledOnUser$userId');
@@ -213,6 +217,9 @@ class ChallengeController extends GetxController {
       resultModel = ResultModel.fromJson(data);
       debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers}');
       debugPrint('UserResult:  ${resultModel?.usersResult}');
+      debugPrint(
+          'CalculateAverageResult:  ${resultModel?.calculateAverageResult}');
+      debugPrint('ChallengeRoomId:  ${resultModel?.nextRoom}');
     });
     recordingTimer?.cancel();
     isUserRecording.value = false;
@@ -227,13 +234,27 @@ class ChallengeController extends GetxController {
     // // Navigate to the ResultScreen when the results are calculated.
     Future.delayed(const Duration(seconds: 5), () {
       Get.off(() => ResultScreen(model: resultModel!));
+      // Get.delete<ChallengeController>();
     });
   }
 
   void resetControllerValues() {
     debugPrint('ResetControllerValuesCalled');
+    isDefaultAudioPlaying.value = false;
+    defaultAudioDuration.value = Duration.zero;
+    defaultAudioPosition.value = Duration.zero;
+    isUserAudioPlaying.value = false;
+    isUserRecording.value = false;
+    recordingTimer?.cancel();
+    recordedFilePath = null;
+    currentTurnParticipantId.value = '';
     eachTurnDuration.value = 15;
     originalTurnDuration.value = 15;
+    hasChallengeStarted.value = false;
+    isChallengeStarts.value = false;
     isRoundCompleted.value = false;
+    isChallengeCompleted.value = false;
+    countdownForNextRound.value = 60;
+    totalParticipants.clear();
   }
 }

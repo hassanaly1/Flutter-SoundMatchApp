@@ -18,7 +18,7 @@ class ChallengeRoomModel {
   bool? isExpired;
   List<Participant>? users;
   int? totalMembers;
-  int? challengeRoomNumber;
+  int? challengeRoomNumber; //
   ChallengeGroup? challengeGroup;
   List<dynamic>? userSounds;
   Sound? sound;

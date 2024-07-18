@@ -6,22 +6,31 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/challenge_controller.dart';
+// import 'package:sound_app/controller/challenge_controller.dart';
+import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/result_model.dart';
 import 'package:sound_app/utils/storage_helper.dart';
+import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/widgets/bar_chart.dart';
 import 'package:sound_app/view/challenge/widgets/user_result_card.dart';
 import 'package:sound_app/view/home_screen.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   final ResultModel model;
 
   const ResultScreen({super.key, required this.model});
 
+  @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -48,7 +57,6 @@ class ResultScreen extends StatelessWidget {
                   TextButton(
                     onPressed: () {
                       Get.offAll(() => const HomeScreen());
-                      Get.delete<ChallengeController>();
                     },
                     child: const CustomTextWidget(
                       text: 'Exit',
@@ -102,7 +110,7 @@ class ResultScreen extends StatelessWidget {
                       Expanded(
                           flex: 2,
                           child: UserResultPreview(
-                            model: model,
+                            model: widget.model,
                             isOverAllResult: false,
                           )),
                       // const Expanded(
@@ -113,7 +121,7 @@ class ResultScreen extends StatelessWidget {
                     children: [
                       Expanded(
                           child: UserResultPreview(
-                        model: model,
+                        model: widget.model,
                         isOverAllResult: true,
                       )),
                       Expanded(child: MyBarChart(showBlurBackground: true)),
@@ -145,6 +153,7 @@ class UserResultPreview extends StatefulWidget {
 
 class _UserResultPreviewState extends State<UserResultPreview>
     with AutomaticKeepAliveClientMixin {
+  io.Socket socket = SocketService().getSocket();
   final ChallengeController controller = Get.find();
   final CarouselController carouselController = CarouselController();
   late ConfettiController confettiController;
@@ -153,9 +162,14 @@ class _UserResultPreviewState extends State<UserResultPreview>
   bool timerCompleted = false;
   RxInt currentIndex = 0.obs;
 
+  // RxBool isChallengeCompleted = false.obs;
+  // RxInt countdownForNextRound = 60.obs;
+
   @override
   void initState() {
     super.initState();
+    controller.isChallengeCompleted.value =
+        widget.model.nextRoomUsers!.isEmpty ? true : false;
     _startTimer();
     confettiController = ConfettiController();
     isFirstIndex.value = true;
@@ -188,6 +202,11 @@ class _UserResultPreviewState extends State<UserResultPreview>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(
+        'IsChallengeCompleted: ${controller.isChallengeCompleted.value}');
+    bool isCurrentUserQualified = widget.model.nextRoomUsers
+            ?.any((user) => user.id == MyAppStorage.userId) ??
+        false;
     super.build(context); // AutomaticKeepAliveClientMixin
 
     return Stack(
@@ -212,25 +231,26 @@ class _UserResultPreviewState extends State<UserResultPreview>
               ),
               itemCount: widget.model.usersResult!.length,
               itemBuilder: (BuildContext context, int index, _) {
+                bool isQualified =
+                    widget.model.usersResult?[index].isQualified ?? false;
                 return UserResultCard(
                   index: index,
                   resultModel: widget.model,
+                  isQualified: isQualified,
                 );
               },
             ),
             buildCarouselControls(),
             widget.isOverAllResult
                 ? const SizedBox()
-                : Obx(
-                    () => CustomAuthButton(
-                      isLoading: false,
-                      text: MyAppStorage.userId ==
-                              widget.model.usersResult
-                                  ?.map((e) => e.participant?.id)
-                          ? 'Next Round'
-                          : 'Exit',
-                      onTap: () {},
-                    ),
+                : CustomAuthButton(
+                    isLoading: false,
+                    text: isCurrentUserQualified ? 'Next Round' : 'Exit',
+                    onTap: () {
+                      isCurrentUserQualified
+                          ? nextRoom()
+                          : Get.offAll(() => const HomeScreen());
+                    },
                   ),
             widget.isOverAllResult
                 ? const SizedBox()
@@ -238,6 +258,22 @@ class _UserResultPreviewState extends State<UserResultPreview>
           ],
         ),
       ],
+    );
+  }
+
+  void nextRoom() {
+    Get.offAll(() => const ChallengeRoomScreen());
+    String challengeRoomId = widget.model.nextRoom ?? '';
+    debugPrint('Going to Next Room: $challengeRoomId');
+    socket.emit(
+      'entry_to_challenge_room',
+      {
+        'user_id': MyAppStorage.userId,
+        'room_id': challengeRoomId,
+      },
+    );
+    Get.to(
+      () => const ChallengeRoomScreen(),
     );
   }
 
