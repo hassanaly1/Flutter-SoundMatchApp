@@ -54,6 +54,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
           model = challengeRoomModel;
           controller.totalParticipants.value = model!.users!;
           controller.isChallengeStarts.value = model!.isStarted!;
+          controller.currentRound.value = model?.challengeRoomNumber ?? 0;
           controller.currentTurnParticipantId.value =
               model!.currentTurnHolder!.id;
           controller.isRoundCompleted.value = model!.isFinished!;
@@ -112,8 +113,9 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
     required ChallengeController controller,
     required ChallengeRoomModel model,
   }) {
-    if (!context.mounted)
+    if (!context.mounted) {
       return; // Ensure the widget is mounted before showing the dialog
+    }
 
     // Show the dialog
     showGeneralDialog(

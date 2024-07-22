@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:sound_app/data/sounds_service.dart';
 import 'package:sound_app/models/challenge_model.dart';
@@ -18,8 +20,20 @@ class MyUniversalController extends GetxController {
   RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
   RxList<SoundPackModel> userSoundPacks = <SoundPackModel>[].obs;
 
+  final storage = MyAppStorage.storage;
+  XFile? userImage;
+  RxString userImageURL = ''.obs;
+  Uint8List? userImageInBytes;
+  RxMap userInfo = {}.obs;
+
+  set setUserImageUrl(String value) {
+    userImageURL.value = value;
+    update();
+  }
+
   @override
   void onInit() {
+    super.onInit();
     _internetConnectionStreamSubscription =
         InternetConnection().onStatusChange.listen(
       (event) {
@@ -37,7 +51,16 @@ class MyUniversalController extends GetxController {
         }
       },
     );
-    super.onInit();
+    userInfo.value = storage.read('user_info') ?? {};
+    userImageURL.value = MyAppStorage.userProfilePicture != null
+        ? MyAppStorage.userProfilePicture!
+        : '';
+    debugPrint('UserImageAtStart: $userImageURL');
+  }
+
+  updateUserInfo(Map<String, dynamic> userInfo) {
+    this.userInfo.value = userInfo;
+    storage.write('user_info', userInfo);
   }
 
   @override

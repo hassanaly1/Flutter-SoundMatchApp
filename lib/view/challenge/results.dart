@@ -8,7 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/challenge_controller.dart';
-// import 'package:sound_app/controller/challenge_controller.dart';
 import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -31,120 +30,188 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  io.Socket socket = SocketService().getSocket();
+  final ChallengeController controller = Get.find();
+  Timer? _timer;
+  bool timerCompleted = false;
+  RxInt currentIndex = 0.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.isChallengeCompleted.value =
+        widget.model.nextRoomUsers!.isEmpty ? true : false;
+    _startTimer();
+  }
+
+  void _startTimer() {
+    if (_timer != null && _timer!.isActive) {
+      _timer!.cancel();
+    }
+
+    if (!controller.isChallengeCompleted.value) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (controller.countdownForNextRound.value > 0) {
+          controller.countdownForNextRound.value--;
+        } else {
+          _timer?.cancel();
+          timerCompleted = true;
+          controller.resetControllerValues();
+
+          // Check user qualification and navigate accordingly
+          bool isCurrentUserQualified = widget.model.nextRoomUsers
+                  ?.any((user) => user.id == MyAppStorage.userId) ??
+              false;
+          if (isCurrentUserQualified) {
+            nextRoom();
+          } else {
+            Get.offAll(() => const HomeScreen());
+          }
+        }
+      });
+    }
+  }
+
+  void nextRoom() {
+    Get.offAll(() => const ChallengeRoomScreen());
+    String challengeRoomId = widget.model.nextRoom ?? '';
+    debugPrint('Going to Next Room: $challengeRoomId');
+    socket.emit(
+      'entry_to_challenge_room',
+      {
+        'user_id': MyAppStorage.userId,
+        'room_id': challengeRoomId,
+      },
+    );
+    Get.to(
+      () => const ChallengeRoomScreen(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Stack(
-      fit: StackFit.expand,
-      children: [
-        SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
-        DefaultTabController(
-          length: 2,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                centerTitle: true,
-                title: const CustomTextWidget(
-                  text: "Results",
-                  textColor: MyColorHelper.white,
-                  fontFamily: "Horta",
-                  fontSize: 40,
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Get.offAll(() => const HomeScreen());
-                    },
-                    child: const CustomTextWidget(
-                      text: 'Exit',
-                      textColor: MyColorHelper.white,
-                      fontFamily: "Horta",
-                      fontSize: 26,
-                    ),
-                  )
-                ],
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          DefaultTabController(
+            length: 2,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Scaffold(
                 backgroundColor: Colors.transparent,
-                bottom: TabBar(
-                  isScrollable: false,
-                  tabAlignment: TabAlignment.center,
-                  indicatorColor: MyColorHelper.primaryColor,
-                  labelColor: MyColorHelper.white,
-                  labelStyle: const TextStyle(
-                    color: MyColorHelper.white,
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  centerTitle: true,
+                  title: CustomTextWidget(
+                    text: "Round ${controller.currentRound.value} Results",
+                    textColor: MyColorHelper.white,
                     fontFamily: "Horta",
-                    fontSize: 20,
+                    fontSize: 30,
                   ),
-                  unselectedLabelColor: MyColorHelper.white,
-                  unselectedLabelStyle: const TextStyle(
-                    color: MyColorHelper.white,
-                    fontFamily: "Horta",
-                    fontSize: 14,
-                  ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    border: const Border(
-                      right: BorderSide.none,
-                      left: BorderSide.none,
-                      bottom: BorderSide(
-                        color: MyColorHelper.white,
-                        width: 5.0,
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Get.offAll(() => const HomeScreen());
+                      },
+                      child: const CustomTextWidget(
+                        text: 'Exit',
+                        textColor: MyColorHelper.white,
+                        fontFamily: "Horta",
+                        fontSize: 24,
                       ),
+                    )
+                  ],
+                  backgroundColor: Colors.transparent,
+                  bottom: TabBar(
+                    isScrollable: false,
+                    tabAlignment: TabAlignment.center,
+                    indicatorColor: MyColorHelper.primaryColor,
+                    labelColor: MyColorHelper.white,
+                    labelStyle: const TextStyle(
+                      color: MyColorHelper.white,
+                      fontFamily: "Horta",
+                      fontSize: 20,
                     ),
-                    color: MyColorHelper.tabColor,
+                    unselectedLabelColor: MyColorHelper.white,
+                    unselectedLabelStyle: const TextStyle(
+                      color: MyColorHelper.white,
+                      fontFamily: "Horta",
+                      fontSize: 14,
+                    ),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      border: const Border(
+                        right: BorderSide.none,
+                        left: BorderSide.none,
+                        bottom: BorderSide(
+                          color: MyColorHelper.white,
+                          width: 5.0,
+                        ),
+                      ),
+                      color: MyColorHelper.tabColor,
+                    ),
+                    tabs: const [
+                      Tab(text: 'Last Round Individual Results'),
+                      Tab(text: 'Overall Game Progress'),
+                    ],
                   ),
-                  tabs: const [
-                    Tab(text: 'Last Round Individual Results'),
-                    Tab(text: 'Overall Game Progress'),
+                ),
+                body: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    UserResultPreview(
+                      model: widget.model,
+                      isOverAllResult: false,
+                      timerCompleted: timerCompleted,
+                      countdownValue: controller.countdownForNextRound,
+                    ),
+                    Column(
+                      children: [
+                        Expanded(
+                          child: UserResultPreview(
+                            model: widget.model,
+                            isOverAllResult: true,
+                            timerCompleted: timerCompleted,
+                            countdownValue: controller.countdownForNextRound,
+                          ),
+                        ),
+                        Expanded(
+                          child: MyBarChart(resultModel: widget.model),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              body: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  Column(
-                    children: [
-                      Expanded(
-                          flex: 2,
-                          child: UserResultPreview(
-                            model: widget.model,
-                            isOverAllResult: false,
-                          )),
-                      // const Expanded(
-                      //     child: MyRadarChart(showBlurBackground: true)),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Expanded(
-                          child: UserResultPreview(
-                        model: widget.model,
-                        isOverAllResult: true,
-                      )),
-                      Expanded(child: MyBarChart(showBlurBackground: true)),
-                    ],
-                  ),
-                ],
-              ),
             ),
           ),
-        ),
-      ],
-    ));
+        ],
+      ),
+    );
   }
 }
 
 class UserResultPreview extends StatefulWidget {
   final ResultModel model;
   final bool isOverAllResult;
+  final bool timerCompleted;
+  final RxInt countdownValue;
 
   const UserResultPreview({
     super.key,
     required this.model,
     required this.isOverAllResult,
+    required this.timerCompleted,
+    required this.countdownValue,
   });
 
   @override
@@ -158,40 +225,12 @@ class _UserResultPreviewState extends State<UserResultPreview>
   final CarouselController carouselController = CarouselController();
   late ConfettiController confettiController;
   final RxBool isFirstIndex = true.obs;
-  Timer? _timer;
-  bool timerCompleted = false;
   RxInt currentIndex = 0.obs;
-
-  // RxBool isChallengeCompleted = false.obs;
-  // RxInt countdownForNextRound = 60.obs;
 
   @override
   void initState() {
     super.initState();
-    controller.isChallengeCompleted.value =
-        widget.model.nextRoomUsers!.isEmpty ? true : false;
-    _startTimer();
     confettiController = ConfettiController();
-    isFirstIndex.value = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      confettiController.play();
-    });
-  }
-
-  void _startTimer() {
-    if (!controller.isChallengeCompleted.value) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (controller.countdownForNextRound.value > 0) {
-          controller.countdownForNextRound.value--;
-        } else {
-          _timer?.cancel();
-          timerCompleted = true;
-          controller.countdownForNextRound.value = 60;
-
-          controller.resetControllerValues();
-        }
-      });
-    }
   }
 
   @override
@@ -209,54 +248,50 @@ class _UserResultPreviewState extends State<UserResultPreview>
         false;
     super.build(context); // AutomaticKeepAliveClientMixin
 
-    return Stack(
-      alignment: Alignment.topCenter,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            widget.isOverAllResult
-                ? const SizedBox()
-                : SizedBox(height: context.height * 0.1),
-            CarouselSlider.builder(
-              carouselController: carouselController,
-              options: CarouselOptions(
-                enlargeCenterPage: true,
-                viewportFraction: 0.6,
-                enableInfiniteScroll: false,
-                initialPage: 0,
-                onPageChanged: (index, reason) {
-                  currentIndex.value = index;
+        widget.isOverAllResult
+            ? const SizedBox()
+            : SizedBox(height: context.height * 0.1),
+        CarouselSlider.builder(
+          carouselController: carouselController,
+          options: CarouselOptions(
+            enlargeCenterPage: true,
+            viewportFraction: 0.6,
+            enableInfiniteScroll: false,
+            initialPage: 0,
+            onPageChanged: (index, reason) {
+              currentIndex.value = index;
+            },
+          ),
+          itemCount: widget.model.usersResult!.length,
+          itemBuilder: (BuildContext context, int index, _) {
+            bool isQualified =
+                widget.model.usersResult?[index].isQualified ?? false;
+            return UserResultCard(
+              index: index,
+              resultModel: widget.model,
+              isQualified: isQualified,
+              isOverAllResult: widget.isOverAllResult,
+            );
+          },
+        ),
+        buildCarouselControls(),
+        widget.isOverAllResult
+            ? const SizedBox()
+            : CustomAuthButton(
+                isLoading: false,
+                text: isCurrentUserQualified ? 'Next Round' : 'Exit',
+                onTap: () {
+                  isCurrentUserQualified
+                      ? nextRoom()
+                      : Get.offAll(() => const HomeScreen());
                 },
               ),
-              itemCount: widget.model.usersResult!.length,
-              itemBuilder: (BuildContext context, int index, _) {
-                bool isQualified =
-                    widget.model.usersResult?[index].isQualified ?? false;
-                return UserResultCard(
-                  index: index,
-                  resultModel: widget.model,
-                  isQualified: isQualified,
-                );
-              },
-            ),
-            buildCarouselControls(),
-            widget.isOverAllResult
-                ? const SizedBox()
-                : CustomAuthButton(
-                    isLoading: false,
-                    text: isCurrentUserQualified ? 'Next Round' : 'Exit',
-                    onTap: () {
-                      isCurrentUserQualified
-                          ? nextRoom()
-                          : Get.offAll(() => const HomeScreen());
-                    },
-                  ),
-            widget.isOverAllResult
-                ? const SizedBox()
-                : SizedBox(height: context.height * 0.1),
-          ],
-        ),
+        widget.isOverAllResult
+            ? const SizedBox()
+            : SizedBox(height: context.height * 0.1),
       ],
     );
   }
@@ -316,13 +351,13 @@ class _UserResultPreviewState extends State<UserResultPreview>
                   alignment: Alignment.center,
                   children: [
                     CircularProgressIndicator(
-                      value: controller.countdownForNextRound.value / 60,
+                      value: widget.countdownValue.value / 60,
                       strokeWidth: 4.0,
                       valueColor: const AlwaysStoppedAnimation<Color>(
                           MyColorHelper.caribbeanCurrent),
                     ),
                     CustomTextWidget(
-                      text: controller.countdownForNextRound.value.toString(),
+                      text: widget.countdownValue.value.toString(),
                       fontSize: 18.0,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,

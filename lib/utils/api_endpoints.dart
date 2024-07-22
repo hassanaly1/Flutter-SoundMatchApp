@@ -10,6 +10,11 @@ class ApiEndPoints {
   static String sendOtpUrl = 'api/user/send-reset-password-email';
   static String verifyOtpUrl = 'api/user/verify-reset-otp';
   static String changePasswordUrl = 'api/user/changepassword';
+  static String updateProfileUrl = 'api/user/change-profile-meta-data';
+  static String updateProfilePictureUrl = 'api/user/uploadprofile';
+  static String changePasswordInAppUrl = 'api/user/changepasswordinapp';
+  static String onAuthStateChangeUrl = 'api/user/onauthstatechange';
+  static String logoutUrl = 'api/user/logout';
 
   //Sound&SoundPacks
   static String listofsoundpacksUrl = 'api/soundpack/getlistofsoundpackages';

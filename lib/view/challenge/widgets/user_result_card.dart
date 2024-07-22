@@ -9,12 +9,14 @@ class UserResultCard extends StatelessWidget {
   final ResultModel resultModel;
   final int index;
   final bool isQualified;
+  final bool isOverAllResult;
 
   const UserResultCard({
     super.key,
     required this.index,
     required this.resultModel,
     required this.isQualified,
+    required this.isOverAllResult,
   });
 
   @override
@@ -36,8 +38,8 @@ class UserResultCard extends StatelessWidget {
               child: ListTile(
                 isThreeLine: true,
                 leading: Container(
-                  height: 60,
-                  width: 60,
+                  height: 50,
+                  width: 50,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
@@ -51,8 +53,9 @@ class UserResultCard extends StatelessWidget {
                   ),
                 ),
                 title: CustomTextWidget(
-                  text:
-                      '${resultModel.usersResult?[index].participant?.firstName} ${resultModel.usersResult?[index].participant?.lastName} ',
+                  text: isOverAllResult
+                      ? '${resultModel.calculateAverageResult?[index].participant?.firstName} ${resultModel.calculateAverageResult?[index].participant?.lastName} '
+                      : '${resultModel.usersResult?[index].participant?.firstName} ${resultModel.usersResult?[index].participant?.lastName} ',
                   fontFamily: "Horta",
                   textColor: MyColorHelper.white,
                   fontSize: 18,
@@ -61,17 +64,22 @@ class UserResultCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomTextWidget(
-                      text:
-                          "Percentage: ${resultModel.usersResult?[index].achievedPercentage}%",
+                      text: isOverAllResult
+                          ? "Avg Result: ${resultModel.usersResult?[index].achievedPercentage}%"
+                          : "Result: ${resultModel.calculateAverageResult?[index].averageAchievedPercentage}%",
                       fontFamily: "horta",
                       textColor: MyColorHelper.white,
                       fontSize: 18,
+                      maxLines: 2,
                     ),
-                    CustomTextWidget(
-                      text: isQualified ? "Qualified" : "Not Qualified",
-                      fontFamily: "Horta",
-                      textColor: MyColorHelper.white,
-                      fontSize: 18,
+                    Visibility(
+                      visible: !isOverAllResult,
+                      child: CustomTextWidget(
+                        text: isQualified ? "Qualified" : "Not Qualified",
+                        fontFamily: "Horta",
+                        textColor: MyColorHelper.white,
+                        fontSize: 18,
+                      ),
                     ),
                     // CustomTextWidget(
                     //   text: getOrdinalSuffix(index + 1),

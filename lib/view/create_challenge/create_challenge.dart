@@ -42,13 +42,6 @@ class _CreateChallengeState extends State<CreateChallenge> {
   }
 
   @override
-  void dispose() {
-    // controller.dispose();
-    universalController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final PageController pageController = PageController(initialPage: 0);
     RxInt currentPage = 0.obs;
@@ -74,13 +67,13 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       children: [
                         const Padding(
                           padding: EdgeInsets.only(top: 16.0),
-                          child: CustomAppbar(showNotificationsIcon: false),
+                          child: CustomAppbar(showNotificationsIcon: true),
                         ),
                         const CreateChallengeImage(),
                         Container(
                           height: context.height * 0.7,
                           padding: EdgeInsets.symmetric(
-                            vertical: context.height * 0.15,
+                            vertical: context.height * 0.1,
                             horizontal: context.width * 0.07,
                           ),
                           decoration: BoxDecoration(
@@ -144,8 +137,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
           ),
           SizedBox(height: context.height * 0.01),
           SizedBox(
-            height: context.height * 0.07,
-            width: context.width * 0.6,
+            width: context.width * 0.7,
             child: CustomTextField(
               hintText: 'Challenge Name',
               controller: controller.challengeNameController,
@@ -235,11 +227,11 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             : MyColorHelper.blue,
                         context: context,
                         onTap: () {
-                          if (universalController.userSoundPacks.isNotEmpty) {
-                            universalController.fetchSoundsByPackId(
-                              universalController.userSoundPacks[0].id,
-                            );
-                          }
+                          // if (universalController.userSoundPacks.isNotEmpty) {
+                          //   universalController.fetchSoundsByPackId(
+                          //     universalController.userSoundPacks[0].id,
+                          //   );
+                          // }
                           showModalBottomSheet(
                             backgroundColor: Colors.transparent,
                             context: context,
@@ -283,7 +275,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
       () => SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Align(
                 alignment: Alignment.topLeft,

@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
-import 'package:sound_app/helper/custom_social_icon.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/utils/validator.dart';
@@ -148,7 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         isLoading: authController.isLoading.value,
                         text: 'Login',
                         onTap: () {
-                          print('Login');
                           if (authController.loginFormKey.currentState!
                               .validate()) {
                             authController.loginUser();
@@ -158,17 +156,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: context.height * 0.02),
 
-                    const CustomTextWidget(
-                      text: 'Or Register with',
-                      fontWeight: FontWeight.w600,
-                      textColor: Colors.white60,
-                      fontFamily: 'poppins',
-                    ),
-                    SizedBox(height: context.height * 0.02),
-                    const Center(
-                      child: CustomSocialIcon(
-                          imagePath: 'assets/images/google-icon.png'),
-                    ),
+                    // const CustomTextWidget(
+                    //   text: 'Or Register with',
+                    //   fontWeight: FontWeight.w600,
+                    //   textColor: Colors.white60,
+                    //   fontFamily: 'poppins',
+                    // ),
+                    // SizedBox(height: context.height * 0.02),
+                    // const Center(
+                    //   child: CustomSocialIcon(
+                    //       imagePath: 'assets/images/google-icon.png'),
+                    // ),
                     SizedBox(height: context.height * 0.02),
                     GestureDetector(
                       onTap: () {

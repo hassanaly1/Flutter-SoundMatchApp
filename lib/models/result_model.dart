@@ -12,12 +12,14 @@ class ResultModel {
   List<Participant>? nextRoomUsers;
   List<UsersResult>? usersResult;
   String? nextRoom;
+  List<AllRoomResult>? allRoomResult;
 
   ResultModel({
     this.calculateAverageResult,
     this.nextRoomUsers,
     this.usersResult,
     this.nextRoom,
+    this.allRoomResult,
   });
 
   factory ResultModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,10 @@ class ResultModel {
           : List<UsersResult>.from(
               json["users_result"]!.map((x) => UsersResult.fromJson(x))),
       nextRoom: json["next_room"],
+      allRoomResult: json["all_room_result"] == null
+          ? []
+          : List<AllRoomResult>.from(
+              json["all_room_result"]!.map((x) => AllRoomResult.fromJson(x))),
     );
   }
 
@@ -50,6 +56,9 @@ class ResultModel {
             ? []
             : List<dynamic>.from(usersResult!.map((x) => x.toJson())),
         "next_room": nextRoom,
+        "all_room_result": allRoomResult == null
+            ? []
+            : List<dynamic>.from(allRoomResult!.map((x) => x.toJson())),
       };
 }
 
@@ -137,5 +146,34 @@ class UsersResult {
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
         "__v": v,
+      };
+}
+
+class AllRoomResult {
+  Participant? participant;
+  int? roomOne;
+  int? roomTwo;
+  int? roomThree;
+
+  AllRoomResult({
+    this.participant,
+    this.roomOne,
+    this.roomTwo,
+    this.roomThree,
+  });
+
+  factory AllRoomResult.fromJson(Map<String, dynamic> json) => AllRoomResult(
+        participant:
+            json["user"] == null ? null : Participant.fromJson(json["user"]),
+        roomOne: json["room_one"],
+        roomTwo: json["room_two"],
+        roomThree: json["room_three"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "user": participant?.toJson(),
+        "room_one": roomOne,
+        "room_two": roomTwo,
+        "room_three": roomThree,
       };
 }

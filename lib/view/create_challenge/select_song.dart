@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -7,16 +8,34 @@ import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
+import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/view/challenge/widgets/custom_sound_avatar.dart';
+import 'package:sound_app/view/soundpacks/purchase_songs.dart';
 
-class SelectSongsScreen extends StatelessWidget {
+class SelectSongsScreen extends StatefulWidget {
   const SelectSongsScreen({super.key});
 
   @override
+  State<SelectSongsScreen> createState() => _SelectSongsScreenState();
+}
+
+class _SelectSongsScreenState extends State<SelectSongsScreen> {
+  final MyUniversalController controller = Get.find();
+  final CreateChallengeController addChallengeController = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    if (controller.userSoundPacks.isNotEmpty) {
+      controller.fetchSoundsByPackId(
+        controller.userSoundPacks[0].id,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final MyUniversalController controller = Get.find();
-    final CreateChallengeController addChallengeController = Get.find();
     return SafeArea(
       child: Stack(
         fit: StackFit.expand,
@@ -53,36 +72,54 @@ class SelectSongsScreen extends StatelessWidget {
                       )),
                   iconTheme: const IconThemeData(size: 20.0),
                   backgroundColor: Colors.transparent,
-                  title: Obx(
-                    () => CustomTextWidget(
-                      text:
-                          'Sound Treasury ${addChallengeController.selectedSound.value?.id}',
-                      fontFamily: 'horta',
-                      textColor: Colors.white,
-                      fontSize: 12.0,
-                    ),
+                  title: const CustomTextWidget(
+                    text: 'Select Sound',
+                    fontFamily: 'horta',
+                    textColor: Colors.white,
+                    fontSize: 26.0,
                   ),
                   centerTitle: true,
                 ),
                 body: Obx(
                   () => controller.userSoundPacks.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Padding(
-                            padding: EdgeInsets.all(12.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                CustomTextWidget(
+                                const CustomTextWidget(
                                   text:
                                       'Your sound bucket is currently empty. To add sounds, explore the collection of Signature Sounds below.',
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w400,
                                   textColor: Colors.white,
-                                  fontFamily: 'poppins',
                                   textAlign: TextAlign.center,
                                   maxLines: 3,
                                 ),
-                                SizedBox(height: 20.0),
+                                const SizedBox(height: 20.0),
+                                OpenContainer(
+                                  openColor: Colors.transparent,
+                                  closedColor: Colors.transparent,
+                                  transitionDuration:
+                                      const Duration(milliseconds: 500),
+                                  closedBuilder: (context, action) {
+                                    return CustomAuthButton(
+                                      text: 'Explore Sounds',
+                                      onTap: action,
+                                      isLoading: false,
+                                    );
+                                  },
+                                  openBuilder: (context, action) {
+                                    return const PurchaseSongsScreen();
+                                  },
+                                  openElevation: 0,
+                                  closedElevation: 0,
+                                  closedShape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
+                                )
                               ],
                             ),
                           ),

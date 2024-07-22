@@ -23,7 +23,11 @@ class CustomAuthButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isLoading ? null : onTap,
+      // onTap:   isLoading ? null : onTap,
+      onTap: () {
+        isLoading ? null : onTap();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: context.height * 0.02),
         child: Container(

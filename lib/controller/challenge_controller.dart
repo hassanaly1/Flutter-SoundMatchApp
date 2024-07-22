@@ -19,6 +19,7 @@ import 'package:sound_app/view/challenge/results.dart';
 
 class ChallengeController extends GetxController {
   ///AudioPlaying
+  int eventCount = 0; // Counter variable
   RxBool isDefaultAudioPlaying = false.obs;
   Rx<Duration> defaultAudioDuration = Duration.zero.obs;
   Rx<Duration> defaultAudioPosition = Duration.zero.obs;
@@ -34,16 +35,17 @@ class ChallengeController extends GetxController {
 
   /// Track the current participant's turn
   RxString currentTurnParticipantId = ''.obs;
+  RxInt currentRound = 0.obs;
 
   /// Track the current round status
-  RxInt eachTurnDuration = 15.obs;
-  RxInt originalTurnDuration = 15.obs;
+  RxInt eachTurnDuration = 60.obs;
+  RxInt originalTurnDuration = 60.obs;
   RxBool hasChallengeStarted = false.obs;
   RxBool isChallengeStarts = false.obs;
   RxBool isRoundCompleted = false.obs;
 
   RxBool isChallengeCompleted = false.obs;
-  RxInt countdownForNextRound = 60.obs;
+  RxInt countdownForNextRound = 20.obs;
 
   var totalParticipants = <Participant>[].obs;
 
@@ -203,7 +205,7 @@ class ChallengeController extends GetxController {
   void showCalculatingResultPopup(ChallengeRoomModel model) {
     debugPrint('ShowCalculatingResultPopupCalled');
     io.Socket socket = SocketService().getSocket();
-    print('ChallengeRoomId: ${model.id}');
+
     socket.emit(
       'room_challenge_completed',
       {
@@ -212,14 +214,17 @@ class ChallengeController extends GetxController {
         }
       },
     );
-
+// Increment the counter each time the event is emitted
+    eventCount++;
+    debugPrint('Event fired $eventCount times.');
     socket.on('challenge_result', (data) {
       resultModel = ResultModel.fromJson(data);
-      debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers}');
-      debugPrint('UserResult:  ${resultModel?.usersResult}');
+      debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers?.length}');
+      debugPrint('UserResult:  ${resultModel?.usersResult?.length}');
       debugPrint(
-          'CalculateAverageResult:  ${resultModel?.calculateAverageResult}');
-      debugPrint('ChallengeRoomId:  ${resultModel?.nextRoom}');
+          'CalculateAverageResult:  ${resultModel?.calculateAverageResult?.length}');
+      debugPrint('AllRoomResult:  ${resultModel?.allRoomResult}');
+      debugPrint('NextChallengeRoomId:  ${resultModel?.nextRoom}');
     });
     recordingTimer?.cancel();
     isUserRecording.value = false;
@@ -248,8 +253,8 @@ class ChallengeController extends GetxController {
     recordingTimer?.cancel();
     recordedFilePath = null;
     currentTurnParticipantId.value = '';
-    eachTurnDuration.value = 15;
-    originalTurnDuration.value = 15;
+    eachTurnDuration.value = 60;
+    originalTurnDuration.value = 60;
     hasChallengeStarted.value = false;
     isChallengeStarts.value = false;
     isRoundCompleted.value = false;

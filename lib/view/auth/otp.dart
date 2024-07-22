@@ -70,6 +70,11 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Stack(
@@ -191,6 +196,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                     _start = 60;
                                   });
                                   controller.otpController.clear();
+                                  controller.sendOtp();
                                   startTimer();
                                 },
                                 child: const CustomTextWidget(

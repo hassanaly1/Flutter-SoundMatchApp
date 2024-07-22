@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -451,18 +450,30 @@ class HomeAppbar extends StatelessWidget {
                   child: const Padding(
                       padding: EdgeInsets.zero,
                       child: Icon(Icons.notifications,
-                          color: Colors.white70, size: 30))),
+                          color: Colors.white, size: 30))),
               const SizedBox(width: 10.0),
               InkWell(
                   onTap: () => Get.to(() => const ProfileScreen(),
                       transition: Transition.upToDown),
-                  child: const Padding(
-                      padding: EdgeInsets.zero,
-                      child: Icon(
-                        CupertinoIcons.profile_circled,
-                        color: Colors.white70,
-                        size: 30,
-                      )))
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                      color: Colors.white70,
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: MyAppStorage.userProfilePicture != null
+                          ? Image.network(
+                              MyAppStorage.userProfilePicture,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/images/placeholder.png',
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ))
             ],
           )
         ],
@@ -470,3 +481,4 @@ class HomeAppbar extends StatelessWidget {
     );
   }
 }
+// assets/images/placeholder.png

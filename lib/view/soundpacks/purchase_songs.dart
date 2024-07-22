@@ -46,6 +46,11 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                 leading: IconButton(
                     onPressed: () {
                       Get.back();
+                      if (controller.userSoundPacks.isNotEmpty) {
+                        controller.fetchSoundsByPackId(
+                          controller.userSoundPacks[0].id,
+                        );
+                      }
                     },
                     icon: const Icon(Icons.arrow_back_rounded,
                         color: Colors.white70)),

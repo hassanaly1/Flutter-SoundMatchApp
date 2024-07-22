@@ -1,20 +1,30 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sound_app/controller/universal_controller.dart';
+import 'package:sound_app/data/auth_service.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/utils/storage_helper.dart';
-import 'package:sound_app/view/profile/challenges_section.dart';
+import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/profile/profile_info_section.dart';
 import 'package:sound_app/view/profile/security_section.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final MyUniversalController universalController = Get.find();
+  RxBool circularLoading = false.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -50,27 +60,52 @@ class ProfileScreen extends StatelessWidget {
                               padding: const EdgeInsets.all(15),
                               color: Colors.white.withOpacity(0.3),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   //appbar
                                   const CustomAppbar(
-                                      showNotificationsIcon: true),
-                                  //profile icon
-                                  Align(
-                                      alignment: Alignment.center,
-                                      child: Icon(
-                                        CupertinoIcons.person_circle_fill,
-                                        color: Colors.white60,
-                                        size: height * 0.22,
-                                      )),
-
-                                  //name and email
-                                  CustomTextWidget(
-                                    text: MyAppStorage.fullName,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22,
-                                    textColor: MyColorHelper.white,
+                                    showNotificationsIcon: false,
+                                    showLogoutIcon: true,
                                   ),
+
+                                  InkWell(
+                                    onTap: updateUserImage,
+                                    child: Obx(
+                                      () => CircleAvatar(
+                                        radius: 60,
+                                        backgroundColor: Colors.white,
+                                        backgroundImage: universalController
+                                                .userImageURL.value.isNotEmpty
+                                            ? NetworkImage(universalController
+                                                .userImageURL.value)
+                                            : const AssetImage(
+                                                    'assets/images/placeholder.png')
+                                                as ImageProvider,
+                                      ),
+                                    ),
+                                  ),
+                                  if (circularLoading.value)
+                                    const CircularProgressIndicator(
+                                      color: MyColorHelper.primaryColor,
+                                      strokeWidth: 2.0,
+                                    ),
+                                  const SizedBox(height: 12.0),
+                                  Obx(
+                                    () => CustomTextWidget(
+                                      // text: MyAppStorage.fullName,
+                                      text: (universalController.userInfo
+                                                  .value['first_name'] ??
+                                              '') +
+                                          ' ' +
+                                          (universalController
+                                                  .userInfo['last_name'] ??
+                                              ''),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22,
+                                      textColor: MyColorHelper.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6.0),
                                   CustomTextWidget(
                                     text: MyAppStorage.userEmail,
                                     fontWeight: FontWeight.w400,
@@ -87,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
 
                       Expanded(
                         child: DefaultTabController(
-                          length: 3,
+                          length: 2,
                           child: Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: context.height * 0.01,
@@ -124,12 +159,8 @@ class ProfileScreen extends StatelessWidget {
                                     ),
                                     color: MyColorHelper.tabColor,
                                   ),
-                                  onTap: (index) {
-                                    // _index.value = index;
-                                  },
                                   tabs: const [
                                     Tab(text: 'Personal Info'),
-                                    Tab(text: 'Challenges'),
                                     Tab(text: 'Security'),
                                   ],
                                 ),
@@ -137,7 +168,6 @@ class ProfileScreen extends StatelessWidget {
                                   child: TabBarView(
                                     children: [
                                       PersonalInfoSection(),
-                                      ChallengesSection(),
                                       SecuritySection(),
                                     ],
                                   ),
@@ -154,5 +184,54 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> updateUserImage() async {
+    try {
+      final XFile? image =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      circularLoading.value = true;
+      if (image != null) {
+        universalController.userImage = image;
+        universalController.userImageURL.value = image.path;
+        universalController.userImageInBytes =
+            (await universalController.userImage?.readAsBytes())!;
+
+        UpdateUserImageResult result = await AuthService().updateUserImage(
+          userImageInBytes: universalController.userImageInBytes!,
+        );
+
+        if (result.isSuccess) {
+          if (result.profileUrl != null && result.profileUrl!.isNotEmpty) {
+            debugPrint('AfterUpdateProfileLink: ${result.profileUrl}');
+            universalController.setUserImageUrl = result.profileUrl ?? '';
+            debugPrint(
+                'AfterUpdate: ${universalController.userImageURL.value}');
+            ToastMessage.showToastMessage(
+                message: 'Profile Image Updated',
+                backgroundColor: Colors.green);
+          } else {
+            ToastMessage.showToastMessage(
+                message: 'Something went wrong, try again',
+                backgroundColor: Colors.yellow);
+          }
+        } else {
+          ToastMessage.showToastMessage(
+              message: 'Something went wrong, try again',
+              backgroundColor: Colors.red);
+        }
+        circularLoading.value = false;
+        setState(() {});
+      } else {
+        debugPrint('No image selected');
+        ToastMessage.showToastMessage(
+            message: 'No image selected', backgroundColor: Colors.red);
+        circularLoading.value = false;
+      }
+    } catch (e) {
+      debugPrint('Error occurred: $e');
+      ToastMessage.showToastMessage(
+          message: 'An error occurred: $e', backgroundColor: Colors.red);
+    }
   }
 }
