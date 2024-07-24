@@ -12,6 +12,7 @@ import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/toast.dart';
+import 'package:sound_app/view/profile/all_challenges_section.dart';
 import 'package:sound_app/view/profile/profile_info_section.dart';
 import 'package:sound_app/view/profile/security_section.dart';
 
@@ -63,10 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   //appbar
-                                  const CustomAppbar(
-                                    showNotificationsIcon: false,
-                                    showLogoutIcon: true,
-                                  ),
+                                  const CustomAppbar(showLogoutIcon: true),
 
                                   InkWell(
                                     onTap: updateUserImage,
@@ -122,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       Expanded(
                         child: DefaultTabController(
-                          length: 2,
+                          length: 3,
                           child: Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: context.height * 0.01,
@@ -132,19 +130,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 SizedBox(height: height * 0.02),
                                 TabBar(
+                                  physics: const NeverScrollableScrollPhysics(),
                                   tabAlignment: TabAlignment.center,
                                   indicatorColor: MyColorHelper.primaryColor,
                                   labelColor: MyColorHelper.white,
                                   labelStyle: const TextStyle(
                                     color: MyColorHelper.white,
-                                    fontFamily: "Horta",
-                                    fontSize: 20,
+                                    fontFamily: "Poppins",
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
                                   ),
                                   unselectedLabelColor: MyColorHelper.white,
                                   unselectedLabelStyle: const TextStyle(
                                     color: MyColorHelper.white,
-                                    fontFamily: "Horta",
-                                    fontSize: 20,
+                                    fontFamily: "Poppins",
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
                                   ),
                                   indicatorSize: TabBarIndicatorSize.tab,
                                   indicator: BoxDecoration(
@@ -161,13 +162,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   tabs: const [
                                     Tab(text: 'Personal Info'),
+                                    Tab(text: 'All Challenges'),
                                     Tab(text: 'Security'),
                                   ],
                                 ),
                                 const Expanded(
                                   child: TabBarView(
+                                    physics: NeverScrollableScrollPhysics(),
                                     children: [
                                       PersonalInfoSection(),
+                                      AllChallengesSection(),
                                       SecuritySection(),
                                     ],
                                   ),

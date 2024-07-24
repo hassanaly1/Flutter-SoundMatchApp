@@ -4,15 +4,12 @@ import 'package:sound_app/data/auth_service.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/auth/login.dart';
-import 'package:sound_app/view/notifications/notification_screen.dart';
 
 class CustomAppbar extends StatelessWidget {
-  final bool showNotificationsIcon;
   final bool showLogoutIcon;
 
   const CustomAppbar({
     super.key,
-    this.showNotificationsIcon = false,
     this.showLogoutIcon = false,
   });
 
@@ -32,17 +29,6 @@ class CustomAppbar extends StatelessWidget {
           ),
           Row(
             children: [
-              showNotificationsIcon
-                  ? InkWell(
-                      onTap: () {
-                        Get.to(() => const NotificationScreen(),
-                            transition: Transition.upToDown);
-                      },
-                      child: const Padding(
-                          padding: EdgeInsets.zero,
-                          child: Icon(Icons.notifications,
-                              color: Colors.white70, size: 30)))
-                  : const SizedBox(),
               showLogoutIcon
                   ? IconButton(
                       onPressed: () async {

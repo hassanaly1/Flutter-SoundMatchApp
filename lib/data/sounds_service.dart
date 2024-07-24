@@ -5,8 +5,57 @@ import 'package:http/http.dart' as http;
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 
 class SoundServices {
+  Future<bool> addFreeSoundPacks({required String soundPackId}) async {
+    final url =
+        Uri.parse(ApiEndPoints.baseUrl + ApiEndPoints.addFreeSoundPackUrl);
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${MyAppStorage.token}',
+      },
+      body: jsonEncode({
+        'sound_pack_id': soundPackId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      debugPrint('Added Free SoundPack Successfully');
+      debugPrint(response.body);
+      return true;
+    } else {
+      throw Exception(
+          'Failed to add free soundpacks. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<String> addPaidSoundPacks({required String soundPackId}) async {
+    final url =
+        Uri.parse(ApiEndPoints.baseUrl + ApiEndPoints.addPaidSoundPackUrl);
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${MyAppStorage.token}',
+      },
+      body: jsonEncode({
+        'id': soundPackId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      final responseBody = jsonDecode(response.body);
+
+      var clientSecret = responseBody['url']['client_secret'];
+      // print('Client Secret: $clientSecret');
+      return clientSecret;
+    } else {
+      throw Exception(
+          'Error Getting Client Secret. Status Code: ${response.statusCode}');
+    }
+  }
+
   Future<List<dynamic>> fetchSoundPacks(int page) async {
     final url = Uri.parse(
         '${ApiEndPoints.baseUrl}${ApiEndPoints.listofsoundpacksUrl}?page=$page&limit=10');

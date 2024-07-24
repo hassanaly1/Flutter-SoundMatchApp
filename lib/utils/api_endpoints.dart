@@ -17,11 +17,16 @@ class ApiEndPoints {
   static String logoutUrl = 'api/user/logout';
 
   //Sound&SoundPacks
+  static String addFreeSoundPackUrl = 'api/soundpack/addSoundPackToUser';
+  static String addPaidSoundPackUrl = 'api/soundpack/checkoutSoundPack';
   static String listofsoundpacksUrl = 'api/soundpack/getlistofsoundpackages';
   static String listofsoundsByIdUrl = 'api/soundpack/getSoundPackageById';
 
   //Participants
   static String listOfParticipantsUrl = 'api/user/get-users-paginated-List';
+
+  //getUserResults
+  static String getUserResults = 'api/challenge/get-user-results';
 
   //Default Match
   static String defaultMatchUrl = 'show-test-match-result';

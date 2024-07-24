@@ -17,7 +17,6 @@ import 'package:sound_app/view/challenge/challenge.dart';
 import 'package:sound_app/view/challenge/default_match.dart';
 import 'package:sound_app/view/challenge/widgets/custom_match_card.dart';
 import 'package:sound_app/view/create_challenge/create_challenge.dart';
-import 'package:sound_app/view/notifications/notification_screen.dart';
 import 'package:sound_app/view/profile/profile.dart';
 import 'package:sound_app/view/soundpacks/purchase_songs.dart';
 
@@ -437,45 +436,30 @@ class HomeAppbar extends StatelessWidget {
             Icons.notifications,
             color: Colors.transparent,
           ),
-          Row(
-            children: [
-              InkWell(
-                  onTap: () {
-                    Get.to(
-                        () => const NotificationScreen(
-                            //  challengeModel: challengeModel,
-                            ),
-                        transition: Transition.upToDown);
-                  },
-                  child: const Padding(
-                      padding: EdgeInsets.zero,
-                      child: Icon(Icons.notifications,
-                          color: Colors.white, size: 30))),
-              const SizedBox(width: 10.0),
-              InkWell(
-                  onTap: () => Get.to(() => const ProfileScreen(),
-                      transition: Transition.upToDown),
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                      color: Colors.white70,
-                      shape: BoxShape.circle,
-                    ),
-                    child: ClipOval(
-                      child: MyAppStorage.userProfilePicture != null
-                          ? Image.network(
-                              MyAppStorage.userProfilePicture,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
-                              'assets/images/placeholder.png',
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ))
-            ],
-          )
+          InkWell(
+              onTap: () => Get.to(() => const ProfileScreen(),
+                  transition: Transition.upToDown),
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: const BoxDecoration(
+                  color: Colors.white70,
+                  shape: BoxShape.circle,
+                ),
+                child: ClipOval(
+                  child:
+                      // MyAppStorage.userProfilePicture != null
+                      //     ? Image.network(
+                      //         MyAppStorage.userProfilePicture,
+                      //         fit: BoxFit.cover,
+                      //       )
+                      //     :
+                      Image.asset(
+                    'assets/images/placeholder.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ))
         ],
       ),
     );

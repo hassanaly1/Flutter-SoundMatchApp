@@ -51,7 +51,6 @@ class CustomAuthButton extends StatelessWidget {
                         fontSize: 16.0,
                         fontWeight: FontWeight.w300,
                         textAlign: TextAlign.center,
-                        fontFamily: 'poppins',
                         textColor: Colors.white,
                       ),
                     ),

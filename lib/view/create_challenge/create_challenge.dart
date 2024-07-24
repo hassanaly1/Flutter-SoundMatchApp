@@ -67,7 +67,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       children: [
                         const Padding(
                           padding: EdgeInsets.only(top: 16.0),
-                          child: CustomAppbar(showNotificationsIcon: true),
+                          child: CustomAppbar(),
                         ),
                         const CreateChallengeImage(),
                         Container(

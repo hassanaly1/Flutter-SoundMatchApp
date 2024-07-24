@@ -51,7 +51,6 @@ class CustomTextField extends StatelessWidget {
             fontSize: 14.0,
             fontWeight: FontWeight.w400,
             color: Colors.white,
-            fontFamily: 'Poppins',
           ),
           decoration: InputDecoration(
             suffixIcon: suffixIcon,
@@ -61,12 +60,10 @@ class CustomTextField extends StatelessWidget {
               fontSize: 17.0,
               fontWeight: FontWeight.w400,
               color: MyColorHelper.verdigris,
-              fontFamily: 'Poppins',
             ),
             hintStyle: const TextStyle(
               fontSize: 14.0,
               fontWeight: FontWeight.w300,
-              fontFamily: 'Poppins',
               color: Colors.white60,
             ),
             errorStyle: const TextStyle(

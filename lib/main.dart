@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -6,9 +7,11 @@ import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/login.dart';
 import 'package:sound_app/view/auth/onboarding/onboarding_screen.dart';
 import 'package:sound_app/view/home_screen.dart';
+import 'package:sound_app/view/utils/conts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = STRIPE_PUBLISHABLE_KEY;
   await GetStorage.init();
   runApp(const MyApp());
 }

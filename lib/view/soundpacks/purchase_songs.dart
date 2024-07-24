@@ -3,10 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/universal_controller.dart';
+import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/models/sound_pack_model.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/widgets/custom_soundpack_widget.dart';
 import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 
@@ -23,12 +27,37 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
   @override
   void initState() {
     fetchSoundPacks();
+    getAllSoundPacksByUserId();
     super.initState();
+  }
+
+  void getAllSoundPacksByUserId() {
+    io.Socket socket = SocketService().getSocket();
+    try {
+      final data = MyAppStorage.userId;
+
+      //Connect to their Room
+      socket.emit('get_sound_packs_by_user', '66862b4c89034893c356592f');
+      //Get the Users SoundPacks.
+      socket.on(
+        'soundpacks',
+        (data) {
+          controller.userSoundPacks.clear();
+          for (var soundPackData in data) {
+            SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
+            controller.userSoundPacks.add(soundPack);
+          }
+          debugPrint('UsersSoundPacks: ${controller.userSoundPacks.length}');
+        },
+      );
+    } catch (e) {
+      debugPrint('Error Sending Challenge Data: $e');
+    }
   }
 
   Future<void> fetchSoundPacks() async {
     await controller.fetchSoundPacks(1);
-    debugPrint('SoundPacks: ${controller.allSoundPacks.length}');
+    debugPrint('AllSoundPacks: ${controller.allSoundPacks.length}');
   }
 
   @override
@@ -113,10 +142,9 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                         children: [
                           const CustomTextWidget(
                             text: 'Your Sound Packs',
-                            fontSize: 14.0,
+                            fontSize: 16.0,
                             textAlign: TextAlign.center,
                             fontWeight: FontWeight.w600,
-                            fontFamily: 'poppins',
                             textColor: Colors.white,
                           ),
                           SizedBox(height: context.height * 0.02),
@@ -146,7 +174,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                                       itemCount:
                                           controller.userSoundPacks.length,
                                       itemBuilder: (context, index) {
-                                        final soundPack =
+                                        final userSoundPack =
                                             controller.userSoundPacks[index];
                                         {
                                           return Padding(
@@ -161,16 +189,16 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                                                   InkWell(
                                                     onTap: () {
                                                       controller.soundsById
-                                                          .clear(); //To remove the previously added sounds.
+                                                          .clear();
                                                       controller
                                                           .fetchSoundsByPackId(
-                                                              soundPack.id);
+                                                              userSoundPack.id);
                                                       debugPrint(
                                                           'SoundsLength: ${controller.soundsById.length}');
                                                       Get.to(
                                                           () => SoundPackList(
                                                               soundPackModel:
-                                                                  soundPack,
+                                                                  userSoundPack,
                                                               sounds: controller
                                                                   .soundsById),
                                                           transition:
@@ -180,30 +208,19 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                                                                   milliseconds:
                                                                       200));
                                                     },
-                                                    // onTap: () {
-                                                    //   //   Get.to(
-                                                    //   //   () => SoundPackList(
-                                                    //   //     soundPackModel:
-                                                    //   //         universalController
-                                                    //   //                 .userSoundPacks[
-                                                    //   //             index],
-                                                    //   //   ),
-                                                    //   //   transition: Transition.zoom,
-                                                    //   //   duration: const Duration(
-                                                    //   //       milliseconds: 500),
-                                                    //   // );
-                                                    // },
                                                     child: CircleAvatar(
                                                       backgroundColor:
                                                           Colors.grey.shade300,
                                                       backgroundImage:
-                                                          NetworkImage(soundPack
-                                                              .packImage),
+                                                          NetworkImage(
+                                                              userSoundPack
+                                                                  .packImage),
                                                       radius: 40,
                                                     ),
                                                   ),
                                                   CustomTextWidget(
-                                                    text: soundPack.packName,
+                                                    text:
+                                                        userSoundPack.packName,
                                                     textColor: Colors.white70,
                                                     fontSize: 14.0,
                                                     fontWeight: FontWeight.w600,
@@ -221,57 +238,64 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                           SizedBox(height: context.height * 0.02),
                           const CustomTextWidget(
                             text: 'Discover Signature Sound Packs',
-                            fontSize: 14.0,
+                            fontSize: 16.0,
                             textAlign: TextAlign.center,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'poppins',
                             textColor: Colors.white,
                           ),
-                          Obx(
-                            () => controller.allSoundPacks.isEmpty
-                                ? const Center(
-                                    heightFactor: 5.0,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : GridView.builder(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: controller.allSoundPacks
-                                        .where((soundPack) =>
-                                            soundPack.isPaid == false)
-                                        .length,
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      childAspectRatio: 0.6,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      final paidSoundPacks = controller
-                                          .allSoundPacks
-                                          .where((soundPack) =>
-                                              soundPack.isPaid == false)
-                                          .toList();
-                                      if (index < paidSoundPacks.length) {
-                                        // Show paid soundPacks
-                                        return CustomSoundPackWidget(
-                                          soundPackModel: paidSoundPacks[index],
-                                          // showTickIcon: false,
-                                          // showAddIcon: true,
-                                        );
-                                      } else {
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            color: Colors.red,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                          ),
+                          SizedBox(height: context.height * 0.02),
+                          Obx(() => controller.allSoundPacks.isEmpty
+                                  ? const Center(
+                                      heightFactor: 5.0,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Wrap(
+                                      children: controller.allSoundPacks
+                                          .map((soundPack) =>
+                                              CustomSoundPackWidget(
+                                                soundPackModel: soundPack,
+                                              ))
+                                          .toList(),
+                                    )
+                              // : GridView.builder(
+                              //     physics:
+                              //         const NeverScrollableScrollPhysics(),
+                              //     shrinkWrap: true,
+                              //     itemCount: controller
+                              //         .allSoundPacks
+                              //         // .where((soundPack) =>
+                              //         //     soundPack.isPaid == false)
+                              //         .length,
+                              //     gridDelegate:
+                              //         const SliverGridDelegateWithFixedCrossAxisCount(
+                              //       crossAxisCount: 3,
+                              //       childAspectRatio: 0.6,
+                              //     ),
+                              //     itemBuilder: (context, index) {
+                              //       final paidSoundPacks =
+                              //           controller.allSoundPacks
+                              //               // .where((soundPack) =>
+                              //               //     soundPack.isPaid == false)
+                              //               .toList();
+                              //       if (index < paidSoundPacks.length) {
+                              //         // Show paid soundPacks
+                              //         return CustomSoundPackWidget(
+                              //           soundPackModel: paidSoundPacks[index],
+                              //         );
+                              //       } else {
+                              //         return Padding(
+                              //           padding: const EdgeInsets.all(8.0),
+                              //           child: Container(
+                              //             color: Colors.red,
+                              //           ),
+                              //         );
+                              //       }
+                              //     },
+                              //   ),
+                              ),
                         ],
                       ),
                     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+
 import 'colors.dart';
 
 class CreateAccountPopup extends StatelessWidget {
@@ -11,6 +12,7 @@ class CreateAccountPopup extends StatelessWidget {
   final String imagePath;
   final VoidCallback onTap;
   final bool isSvg;
+
   const CreateAccountPopup(
       {super.key,
       required this.imagePath,
@@ -19,6 +21,7 @@ class CreateAccountPopup extends StatelessWidget {
       this.opacity,
       required this.isSvg,
       required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
@@ -43,7 +46,6 @@ class CreateAccountPopup extends StatelessWidget {
             CustomTextWidget(
               text: text,
               fontSize: 12.0,
-              fontFamily: 'poppins',
               textColor: Colors.white60,
               textAlign: TextAlign.center,
               maxLines: 3,
