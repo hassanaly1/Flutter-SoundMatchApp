@@ -31,6 +31,7 @@ class ChallengeRoomModel {
   List<dynamic>? turnHolder;
   DateTime? createdAt;
   DateTime? updatedAt;
+  DateTime? turnTime;
   int? v;
 
   ChallengeRoomModel({
@@ -52,6 +53,7 @@ class ChallengeRoomModel {
     this.turnHolder,
     this.createdAt,
     this.updatedAt,
+    this.turnTime,
     this.v,
   });
 
@@ -96,6 +98,9 @@ class ChallengeRoomModel {
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
+        turnTime: json["turn_time"] == null
+            ? null
+            : DateTime.parse(json["turn_time"]),
         v: json["__v"],
       );
 

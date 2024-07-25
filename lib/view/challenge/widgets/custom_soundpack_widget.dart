@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/universal_controller.dart';
+import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 
 class CustomSoundPackWidget extends StatelessWidget {
@@ -14,7 +18,7 @@ class CustomSoundPackWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
       child: InkWell(
         onTap: () {
           controller.soundsById.clear();
@@ -35,7 +39,7 @@ class CustomSoundPackWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
           decoration: BoxDecoration(
             color: Colors.white30,
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,26 +57,37 @@ class CustomSoundPackWidget extends StatelessWidget {
     return Obx(
       () => Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12.0),
-            child: Image.network(
-              height: context.height * 0.12,
-              soundPackModel.packImage,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            (loadingProgress.expectedTotalBytes ?? 1)
-                        : null,
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return const Center(child: CircularProgressIndicator());
-              },
+          Container(
+            height: context.height * 0.12,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: Image.network(
+                height: context.height * 0.12,
+                soundPackModel.packImage,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              (loadingProgress.expectedTotalBytes ?? 1)
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: SpinKitFadingCircle(
+                      color: Colors.black87,
+                      size: 40.0,
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           _buildPaidFreeLabel(),
@@ -144,7 +159,7 @@ class CustomSoundPackWidget extends StatelessWidget {
               ? null
               : soundPackModel.isPaid
                   ? controller.addPaidSoundPack(soundPackModel)
-                  : controller.addFreeSoundPack(soundPackModel);
+                  : addFreeSoundPack();
         },
         child: Container(
           padding: const EdgeInsets.all(4.0),
@@ -160,5 +175,19 @@ class CustomSoundPackWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void addFreeSoundPack() {
+    debugPrint('Adding SoundPack: ${soundPackModel.id}');
+    io.Socket socket = SocketService().getSocket();
+    try {
+      Map<String, dynamic> data = {
+        'user_id': MyAppStorage.userId,
+        'sound_pack_id': soundPackModel.id
+      };
+      socket.emit('add_sound_pack_to_user', data);
+    } catch (e) {
+      debugPrint('Error Sending Challenge Data: $e');
+    }
   }
 }

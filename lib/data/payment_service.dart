@@ -19,7 +19,6 @@ class StripeService {
       //   currency: 'usd',
       // );
       // Use paymentIntent (client_secret) for further payment processing
-      if (paymentIntentClientSecret == null) return;
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
             paymentIntentClientSecret: paymentIntentClientSecret,

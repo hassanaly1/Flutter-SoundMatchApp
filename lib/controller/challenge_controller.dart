@@ -38,7 +38,7 @@ class ChallengeController extends GetxController {
   RxInt currentRound = 0.obs;
 
   /// Track the current round status
-  RxInt eachTurnDuration = 60.obs;
+  RxInt currentTurnDuration = 60.obs;
   RxInt originalTurnDuration = 60.obs;
   RxBool hasChallengeStarted = false.obs;
   RxBool isChallengeStarts = false.obs;
@@ -126,8 +126,8 @@ class ChallengeController extends GetxController {
 
   void startTimer({required String currentUserId, required String roomId}) {
     recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (eachTurnDuration.value > 0) {
-        eachTurnDuration.value--;
+      if (currentTurnDuration.value > 0) {
+        currentTurnDuration.value--;
       } else {
         recordingTimer?.cancel();
         if (currentUserId == MyAppStorage.userId) {
@@ -229,7 +229,7 @@ class ChallengeController extends GetxController {
     recordingTimer?.cancel();
     isUserRecording.value = false;
     hasChallengeStarted.value = false;
-    eachTurnDuration.value = originalTurnDuration.value;
+    currentTurnDuration.value = originalTurnDuration.value;
     Get.dialog(
       const AlertDialog(
         backgroundColor: Colors.transparent,
@@ -253,7 +253,7 @@ class ChallengeController extends GetxController {
     recordingTimer?.cancel();
     recordedFilePath = null;
     currentTurnParticipantId.value = '';
-    eachTurnDuration.value = 60;
+    currentTurnDuration.value = 60;
     originalTurnDuration.value = 60;
     hasChallengeStarted.value = false;
     isChallengeStarts.value = false;

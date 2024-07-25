@@ -11,9 +11,9 @@ import 'package:sound_app/models/challenge_model.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/utils/storage_helper.dart';
-import 'package:sound_app/utils/toast.dart';
 
 class MyUniversalController extends GetxController {
+  var isSoundPacksAreLoading = false.obs;
   RxBool isGuestUser = false.obs;
   RxBool isConnectedToInternet = false.obs;
   StreamSubscription? _internetConnectionStreamSubscription;
@@ -21,6 +21,8 @@ class MyUniversalController extends GetxController {
 
   RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
   RxList<SoundPackModel> userSoundPacks = <SoundPackModel>[].obs;
+  ScrollController scrollController = ScrollController();
+  final RxInt _currentPage = 1.obs;
 
   final storage = MyAppStorage.storage;
   XFile? userImage;
@@ -58,17 +60,42 @@ class MyUniversalController extends GetxController {
         ? MyAppStorage.userProfilePicture!
         : '';
     debugPrint('UserImageAtStart: $userImageURL');
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        if (!isSoundPacksAreLoading.value) {
+          _loadNextPageSoundPacks();
+        }
+      }
+    });
   }
 
-  updateUserInfo(Map<String, dynamic> userInfo) {
-    this.userInfo.value = userInfo;
-    storage.write('user_info', userInfo);
-  }
+  void _loadNextPageSoundPacks() async {
+    isSoundPacksAreLoading.value = true;
 
-  @override
-  void onClose() {
-    _internetConnectionStreamSubscription?.cancel();
-    super.onClose();
+    final List<SoundPackModel> nextPageSoundPacks =
+        await SoundServices().fetchSoundPacks(_currentPage.value);
+
+    // Create a Set of existing soundpack IDs to avoid duplicates
+    Set<String?> existingSoundPacksIds =
+        allSoundPacks.map((soundPack) => soundPack.id).toSet();
+
+    // Add only unique SoundPacks
+    for (var soundPacks in nextPageSoundPacks) {
+      if (!existingSoundPacksIds.contains(soundPacks.id)) {
+        allSoundPacks.add(soundPacks);
+        // Update the set with the new soundpack ID
+        existingSoundPacksIds.add(soundPacks.id);
+      }
+    }
+
+    // Only increment the page if we received a full page of soundpacks
+    if (nextPageSoundPacks.length >= 10) {
+      _currentPage.value++;
+    }
+
+    isSoundPacksAreLoading.value = false;
   }
 
   // Challenges
@@ -97,19 +124,19 @@ class MyUniversalController extends GetxController {
     )
   ].obs;
 
-  Future<void> addFreeSoundPack(SoundPackModel soundPackModel) async {
-    try {
-      bool isSuccess = await SoundServices()
-          .addFreeSoundPacks(soundPackId: soundPackModel.id);
-      if (isSuccess) {
-        ToastMessage.showToastMessage(
-            message: 'Sound Pack Added Successfully',
-            backgroundColor: Colors.green);
-      }
-    } catch (e) {
-      debugPrint('Error Adding FreeSoundPack: $e');
-    }
-  }
+  // Future<void> addFreeSoundPack(SoundPackModel soundPackModel) async {
+  //   try {
+  //     bool isSuccess = await SoundServices()
+  //         .addFreeSoundPacks(soundPackId: soundPackModel.id);
+  //     if (isSuccess) {
+  //       ToastMessage.showToastMessage(
+  //           message: 'Sound Pack Added Successfully',
+  //           backgroundColor: Colors.green);
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error Adding FreeSoundPack: $e');
+  //   }
+  // }
 
   Future<void> addPaidSoundPack(SoundPackModel soundPackModel) async {
     try {
@@ -132,13 +159,10 @@ class MyUniversalController extends GetxController {
   Future<void> fetchSoundPacks(int page) async {
     try {
       allSoundPacks.clear();
-
-      final List<dynamic> fetchedSounds =
-          await SoundServices().fetchSoundPacks(page);
-      for (var soundPackData in fetchedSounds) {
-        SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
-        allSoundPacks.add(soundPack);
-      }
+      _currentPage.value = 1;
+      final List<SoundPackModel> nextPageSoundPacks =
+          await SoundServices().fetchSoundPacks(_currentPage.value);
+      allSoundPacks.value = nextPageSoundPacks;
     } catch (e) {
       debugPrint('Error Fetching SoundPacks: $e');
     }
@@ -155,5 +179,22 @@ class MyUniversalController extends GetxController {
     } catch (e) {
       debugPrint('Error Fetching Sounds for SoundPack ID $soundPackId: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  updateUserInfo(Map<String, dynamic> userInfo) {
+    this.userInfo.value = userInfo;
+    storage.write('user_info', userInfo);
+  }
+
+  @override
+  void onClose() {
+    _internetConnectionStreamSubscription?.cancel();
+    super.onClose();
   }
 }

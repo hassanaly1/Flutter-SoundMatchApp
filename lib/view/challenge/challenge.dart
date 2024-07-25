@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/challenge_controller.dart';
@@ -46,11 +47,13 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
       socket.on(
         'challenge_room',
         (data) {
+          print(data);
           debugPrint(
               '<================================== New Data Received In The Challenge Room ==================================>');
           ChallengeRoomModel challengeRoomModel =
               ChallengeRoomModel.fromJson(data['challenge_room']);
-          // print('Challenge Room Model: ${challengeRoomModel.toJson()}');
+          print('Challenge Room Model: $challengeRoomModel');
+
           model = challengeRoomModel;
           controller.totalParticipants.value = model!.users!;
           controller.isChallengeStarts.value = model!.isStarted!;
@@ -58,7 +61,31 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
           controller.currentTurnParticipantId.value =
               model!.currentTurnHolder!.id;
           controller.isRoundCompleted.value = model!.isFinished!;
+          //--------------------------------------------------------------------------------
+          DateTime? turnTime = model?.turnTime;
+          if (turnTime != null) {
+            // Adjust both times to the same timezone
+            DateTime currentDateTime =
+                DateTime.now().toUtc().add(const Duration(hours: 5));
+            DateTime formattedTurnTime =
+                turnTime.toUtc().add(const Duration(hours: 5));
 
+            // Calculate the difference in seconds
+            int differenceInSeconds =
+                currentDateTime.difference(formattedTurnTime).inSeconds;
+
+            print(
+                'TurnTimeAfterFormat: ${getFormattedTime(formattedTurnTime)}');
+            print('Difference in seconds: $differenceInSeconds');
+            controller.currentTurnDuration.value =
+                controller.originalTurnDuration.value - differenceInSeconds;
+            print(
+                'Current Turn Duration: ${controller.currentTurnDuration.value}');
+          } else {
+            print('TurnTime is null');
+          }
+
+          //--------------------------------------------------------------------------------
           debugPrint(
               'Total Participants: ${controller.totalParticipants.length}');
           debugPrint(
@@ -72,7 +99,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
             controller.recordingTimer?.cancel();
             controller.recordingTimer = null;
             controller.isUserRecording.value = false;
-            controller.eachTurnDuration.value =
+            controller.currentTurnDuration.value =
                 controller.originalTurnDuration.value;
             controller.onGameStarts(
               currentUserId: controller.currentTurnParticipantId.value,
@@ -107,6 +134,10 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
     } catch (e) {
       debugPrint('Error Getting Challenge Data: $e');
     }
+  }
+
+  String getFormattedTime(DateTime dateTime) {
+    return DateFormat('HH:mm:ss').format(dateTime);
   }
 
   void showRoundStartedPopup({
@@ -353,7 +384,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                               children: [
                                                 CircularProgressIndicator(
                                                   value: controller
-                                                          .eachTurnDuration
+                                                          .currentTurnDuration
                                                           .value /
                                                       controller
                                                           .originalTurnDuration
@@ -367,7 +398,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                                 ),
                                                 CustomTextWidget(
                                                   text: controller
-                                                      .eachTurnDuration.value
+                                                      .currentTurnDuration.value
                                                       .toString(),
                                                   fontSize: 24.0,
                                                   fontFamily: 'Poppins',
