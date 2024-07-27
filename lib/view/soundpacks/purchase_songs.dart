@@ -37,10 +37,12 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
     try {
       final data = MyAppStorage.userId;
       socket.emit('get_sound_packs_by_user', data);
+
       //Get the Users SoundPacks.
       socket.on(
         'soundpacks',
         (data) {
+          print('UsersSoundPacksData: $data');
           controller.userSoundPacks.clear();
           for (var soundPackData in data) {
             SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);

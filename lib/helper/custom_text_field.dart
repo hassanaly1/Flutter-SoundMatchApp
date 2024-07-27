@@ -64,7 +64,8 @@ class CustomTextField extends StatelessWidget {
             hintStyle: const TextStyle(
               fontSize: 14.0,
               fontWeight: FontWeight.w300,
-              color: Colors.white60,
+              color: Colors.white,
+              fontFamily: 'Poppins',
             ),
             errorStyle: const TextStyle(
                 fontFamily: 'poppins', color: Colors.red, fontSize: 14.0),

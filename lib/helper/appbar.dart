@@ -32,11 +32,11 @@ class CustomAppbar extends StatelessWidget {
               showLogoutIcon
                   ? IconButton(
                       onPressed: () async {
-                        bool isSuccess =
-                            await AuthService().logout(MyAppStorage.userId);
+                        bool isSuccess = await AuthService()
+                            .logout(MyAppStorage.userId ?? '');
 
                         if (isSuccess) {
-                          MyAppStorage().removeUser();
+                          MyAppStorage.instance.removeUser();
                           Get.offAll(() => const LoginScreen(),
                               transition: Transition.upToDown);
                           ToastMessage.showToastMessage(

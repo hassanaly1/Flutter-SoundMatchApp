@@ -157,7 +157,7 @@ class AuthService {
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(response.body);
         debugPrint('StatusCodeIfError: ${response.statusCode}');
-        debugPrint('StatusCodeIfError: ${response.body}');
+        debugPrint('StatusCodeIfError: $errorResponse');
 
         return false;
       }
@@ -256,10 +256,10 @@ class AuthService {
     }
   } // ChangePassword
 
-  Future<Map<String, dynamic>> changePassword(
-      {required String password,
-      required String confirmPassword,
-      required String token}) async {
+  Future<Map<String, dynamic>> changePassword({
+    required String password,
+    required String confirmPassword,
+  }) async {
     final Uri apiUrl =
         Uri.parse(ApiEndPoints.baseUrl + ApiEndPoints.changePasswordUrl);
 
@@ -273,7 +273,7 @@ class AuthService {
         apiUrl,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer ${MyAppStorage.token}',
         },
         body: jsonEncode(payload),
       );
@@ -328,8 +328,6 @@ class AuthService {
       required String token}) async {
     final Uri apiUrl =
         Uri.parse(ApiEndPoints.baseUrl + ApiEndPoints.updateProfileUrl);
-    print(firstName);
-    print(lastName);
     final Map<String, dynamic> payload = {
       'first_name': firstName,
       'last_name': lastName,
@@ -344,10 +342,9 @@ class AuthService {
         },
         body: jsonEncode(payload),
       );
-
+      debugPrint('StatusCode: ${response.statusCode}');
+      debugPrint('ResponseBody: ${response.body}');
       if (response.statusCode == 200) {
-        debugPrint('StatusCode: ${response.statusCode}');
-        debugPrint('ResponseBody: ${response.body}');
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         Map<String, dynamic> userData = jsonResponse['data'];
         MyAppStorage.storage.write('user_info', userData);

@@ -427,7 +427,7 @@ class CenterPart extends StatelessWidget {
                 DefaultChallengeService().uploadUserRecording(
                   userRecordingInBytes: bytes,
                   soundId: '668278c2e67d38ed7866d163',
-                  userId: MyAppStorage.userId,
+                  userId: MyAppStorage.userId ?? '',
                   // userId: storage.read('user_info')['_id'],
                 );
               }

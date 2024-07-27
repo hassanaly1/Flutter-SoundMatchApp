@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
@@ -21,6 +22,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late AuthController authController;
+  final GuestController guestController = Get.find();
 
   @override
   void initState() {
@@ -139,8 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                                 child: const CustomTextWidget(
                                   text: 'Forget Password?',
-                                  textColor: Colors.white60,
+                                  textColor: Colors.white,
                                   fontFamily: 'poppins',
+                                  fontSize: 14.0,
                                 )),
                           ],
                         ),
@@ -156,6 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (authController.loginFormKey.currentState!
                               .validate()) {
                             authController.loginUser();
+                            guestController.isGuestUser.value = false;
                           }
                         },
                       ),
@@ -208,10 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           onTap: () {
                             Get.offAll(() => const HomeScreen(),
                                 transition: Transition.downToUp);
-
-                            ///TODO: Login as GuestUser
-                            // universalController.isGuestUser.value = true;
-                            debugPrint('Login as GuestUser');
+                            guestController.isGuestUser.value = true;
+                            debugPrint(
+                                'Login as GuestUser: ${guestController.isGuestUser.value}');
                           },
                           child: Container(
                             decoration: BoxDecoration(

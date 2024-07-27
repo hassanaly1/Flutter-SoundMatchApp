@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/data/auth_service.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/toast.dart';
@@ -29,9 +30,9 @@ class AuthController extends GetxController {
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController otpController = TextEditingController();
 
-  void saveUserInfo(Map<String, dynamic> userInfo) {
-    MyAppStorage.storage.write('user_info', userInfo);
-  }
+  // void saveUserInfo(Map<String, dynamic> userInfo) {
+  //   MyAppStorage.storage.write('user_info', userInfo);
+  // }
 
   //Calling Apis Methods.
 
@@ -125,7 +126,10 @@ class AuthController extends GetxController {
           );
           MyAppStorage.storage.write('token', response['token']);
 
-          saveUserInfo(response['user']);
+          // saveUserInfo(response['user']);
+          final userInfo = response['user'];
+          MyAppStorage.storage.write('user_info', userInfo);
+          GuestController().isGuestUser.value = false;
           Get.offAll(() => const HomeScreen(), transition: Transition.zoom);
 
           clearAllControllers();
@@ -226,9 +230,9 @@ class AuthController extends GetxController {
 
       try {
         Map<String, dynamic> response = await AuthService().changePassword(
-            password: passwordController.text.trim(),
-            confirmPassword: confirmPasswordController.text.trim(),
-            token: MyAppStorage.token);
+          password: passwordController.text.trim(),
+          confirmPassword: confirmPasswordController.text.trim(),
+        );
         print(response);
         if (response['status'] == 'success') {
           ToastMessage.showToastMessage(

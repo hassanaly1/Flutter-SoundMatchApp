@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/data/socket_service.dart';
@@ -69,7 +70,12 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           padding: EdgeInsets.only(top: 16.0),
                           child: CustomAppbar(),
                         ),
-                        const CreateChallengeImage(),
+                        SizedBox(
+                          height: context.height * 0.15,
+                          width: context.width,
+                          child:
+                              Image.asset(MyAssetHelper.addChallengeBackground),
+                        ),
                         Container(
                           height: context.height * 0.7,
                           padding: EdgeInsets.symmetric(
@@ -336,7 +342,8 @@ class _CreateChallengeState extends State<CreateChallenge> {
       {required MyUniversalController universalController,
       required CreateChallengeController controller,
       required BuildContext context}) {
-    if (universalController.isGuestUser.value) {
+    final GuestController guestController = Get.find();
+    if (guestController.isGuestUser.value) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -399,9 +406,9 @@ class _CreateChallengeState extends State<CreateChallenge> {
       challenge: Challenge(
         name: controller.challengeNameController.text,
         numberOfChallenges: controller.numberOfRounds.value.toString(),
-        user: MyAppStorage.userId,
+        user: MyAppStorage.userId ?? '',
         sound: controller.selectedSound.value!.id.toString(),
-        createdBy: MyAppStorage.userId,
+        createdBy: MyAppStorage.userId ?? '',
       ),
       passingCriteria: List.generate(
         controller.numberOfRounds.value,
@@ -412,9 +419,9 @@ class _CreateChallengeState extends State<CreateChallenge> {
         ),
       ),
       challengeRoom: ChallengeRoom(
-        users: [MyAppStorage.userId],
+        users: [MyAppStorage.userId ?? ''],
         totalMembers: 1,
-        currentTurnHolder: MyAppStorage.userId,
+        currentTurnHolder: MyAppStorage.userId ?? '',
       ),
       invitation: Invitation(
         type: 'challenge',
@@ -422,7 +429,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
           // MyAppStorage.userId,
           ...controller.selectedParticipants.map((e) => e.id.toString()),
         ],
-        createdBy: MyAppStorage.userId,
+        createdBy: MyAppStorage.userId ?? '',
       ),
     );
 
@@ -489,60 +496,5 @@ class _CreateChallengeState extends State<CreateChallenge> {
         },
       );
     }).toList();
-  }
-}
-
-class CreateChallengeImage extends StatelessWidget {
-  const CreateChallengeImage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.width * 0.1),
-      child: Stack(
-        children: [
-          GestureDetector(
-            onTap: () {},
-            child: SizedBox(
-              height: context.height * 0.15,
-              width: context.width,
-              child: Image.asset(MyAssetHelper.addChallengeBackground),
-            ),
-          ),
-          const Positioned.fill(
-              child: Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: CustomTextWidget(
-                    fontFamily: 'horta',
-                    text: 'Create New Challenge',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 26.0,
-                    textColor: Colors.white,
-                    isShadow: true,
-                    shadow: [
-                      Shadow(
-                        blurRadius: 15.0,
-                        color: Colors.black,
-                        offset: Offset(0, 0),
-                      ),
-                      Shadow(
-                        blurRadius: 5.0,
-                        color: MyColorHelper.blue,
-                        offset: Offset(0, 0),
-                      ),
-                    ],
-                  ),
-                )
-              ])))
-        ],
-      ),
-    );
   }
 }

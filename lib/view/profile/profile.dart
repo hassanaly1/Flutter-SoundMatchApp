@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/data/auth_service.dart';
 import 'package:sound_app/helper/appbar.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/profile/all_challenges_section.dart';
@@ -25,6 +27,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final MyUniversalController universalController = Get.find();
+  final GuestController guestController = Get.find();
+
   RxBool circularLoading = false.obs;
 
   @override
@@ -67,18 +71,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   const CustomAppbar(showLogoutIcon: true),
 
                                   InkWell(
-                                    onTap: updateUserImage,
+                                    // onTap: updateUserImage,
+                                    onTap: () {
+                                      if (guestController.isGuestUser.value) {
+                                        MySnackBarsHelper.showMessage(
+                                          "To Update the Profile Picture,",
+                                          "Please Create Account",
+                                          Icons.no_accounts,
+                                        );
+                                      } else {
+                                        updateUserImage();
+                                      }
+                                    },
                                     child: Obx(
                                       () => CircleAvatar(
                                         radius: 60,
                                         backgroundColor: Colors.white,
-                                        backgroundImage: universalController
-                                                .userImageURL.value.isNotEmpty
-                                            ? NetworkImage(universalController
-                                                .userImageURL.value)
-                                            : const AssetImage(
-                                                    'assets/images/placeholder.png')
-                                                as ImageProvider,
+                                        backgroundImage: guestController
+                                                .isGuestUser.value
+                                            ? const AssetImage(MyAppStorage
+                                                .dummyProfilePicture)
+                                            : universalController.userImageURL
+                                                    .value.isNotEmpty
+                                                ? NetworkImage(
+                                                    universalController
+                                                        .userImageURL.value)
+                                                : const AssetImage(
+                                                        'assets/images/placeholder.png')
+                                                    as ImageProvider,
                                       ),
                                     ),
                                   ),
@@ -91,13 +111,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Obx(
                                     () => CustomTextWidget(
                                       // text: MyAppStorage.fullName,
-                                      text: (universalController.userInfo
-                                                  .value['first_name'] ??
-                                              '') +
+                                      text: (universalController
+                                                  .userInfo['first_name'] ??
+                                              'Guest') +
                                           ' ' +
                                           (universalController
                                                   .userInfo['last_name'] ??
-                                              ''),
+                                              'User'),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 22,
                                       textColor: MyColorHelper.white,
@@ -105,7 +125,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   const SizedBox(height: 6.0),
                                   CustomTextWidget(
-                                    text: MyAppStorage.userEmail,
+                                    text: MyAppStorage.userEmail ??
+                                        'guest.user@soundmatch.com',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
                                     textColor: MyColorHelper.white,

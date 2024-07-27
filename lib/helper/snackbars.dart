@@ -29,7 +29,7 @@ class MySnackBarsHelper {
             fontWeight: FontWeight.w600,
             textColor: Colors.white,
           ),
-          duration: const Duration(seconds: 1),
+          duration: const Duration(seconds: 2),
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.withOpacity(0.80));
@@ -37,7 +37,7 @@ class MySnackBarsHelper {
   static void showMessage(String value, String title, IconData icon) =>
       Get.snackbar(title, value,
           icon: Icon(icon),
-          duration: const Duration(seconds: 1),
+          duration: const Duration(seconds: 2),
           colorText: Colors.black,
           margin: const EdgeInsets.all(10),
           titleText: CustomTextWidget(

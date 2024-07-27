@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/data/auth_service.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/utils/validator.dart';
 import 'package:sound_app/view/profile/profile_info_section.dart';
@@ -14,6 +16,7 @@ class SecuritySection extends StatefulWidget {
 }
 
 class _SecuritySectionState extends State<SecuritySection> {
+  final GuestController guestController = Get.find();
   RxBool isLoading = false.obs;
   GlobalKey<FormState> changePasswordKey = GlobalKey<FormState>();
   TextEditingController currentPasswordController = TextEditingController();
@@ -66,7 +69,13 @@ class _SecuritySectionState extends State<SecuritySection> {
                   buttonText: 'Save',
                   onTap: () async {
                     FocusManager.instance.primaryFocus?.unfocus();
-                    if (changePasswordKey.currentState!.validate()) {
+                    if (guestController.isGuestUser.value) {
+                      MySnackBarsHelper.showMessage(
+                        "To Change the Password,",
+                        "Please Create Account",
+                        Icons.no_accounts,
+                      );
+                    } else if (changePasswordKey.currentState!.validate()) {
                       if (newPasswordController.text.trim() ==
                           confirmNewPasswordController.text.trim()) {
                         bool isSuccess = await changePasswordInApp();

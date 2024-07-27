@@ -56,7 +56,6 @@ class OnBoardingController extends GetxController {
   skip() {
     MyAppStorage.storage.write('isFirstTime', false);
     Get.offAll(() => const LoginScreen(), transition: Transition.rightToLeft);
-    // controller.jumpToPage(page: pages.length - 1);
   }
 
   animateToNextSlide() {
@@ -64,6 +63,7 @@ class OnBoardingController extends GetxController {
     if (nextPage < pages.length) {
       controller.animateToPage(page: nextPage);
     } else {
+      MyAppStorage.storage.write('isFirstTime', false);
       Get.offAll(() => const LoginScreen(), transition: Transition.rightToLeft);
     }
   }

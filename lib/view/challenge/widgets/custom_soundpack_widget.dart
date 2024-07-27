@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
@@ -12,6 +14,7 @@ import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 class CustomSoundPackWidget extends StatelessWidget {
   final SoundPackModel soundPackModel;
   final MyUniversalController controller = Get.find();
+  final GuestController guestController = Get.find();
 
   CustomSoundPackWidget({super.key, required this.soundPackModel});
 
@@ -155,11 +158,19 @@ class CustomSoundPackWidget extends StatelessWidget {
       right: 0,
       child: InkWell(
         onTap: () {
-          isSoundPackAdded
-              ? null
-              : soundPackModel.isPaid
-                  ? controller.addPaidSoundPack(soundPackModel)
-                  : addFreeSoundPack();
+          if (guestController.isGuestUser.value) {
+            MySnackBarsHelper.showMessage(
+              "To purchase the SoundPack,",
+              "Please Create Account",
+              Icons.no_accounts,
+            );
+          } else {
+            isSoundPackAdded
+                ? null
+                : soundPackModel.isPaid
+                    ? controller.addPaidSoundPack(soundPackModel)
+                    : addFreeSoundPack();
+          }
         },
         child: Container(
           padding: const EdgeInsets.all(4.0),
