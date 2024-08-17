@@ -35,7 +35,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
   void getAllSoundPacksByUserId() {
     io.Socket socket = SocketService().getSocket();
     try {
-      final data = MyAppStorage.userId;
+      final data = MyAppStorage.storage.read('user_info')['_id'];
       socket.emit('get_sound_packs_by_user', data);
 
       //Get the Users SoundPacks.

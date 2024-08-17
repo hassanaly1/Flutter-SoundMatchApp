@@ -32,6 +32,10 @@ class SocketService {
       socket.onDisconnect((_) {
         debugPrint('Disconnected from Socket Server ${ApiEndPoints.baseUrl}');
       });
+
+      socket.onConnectError((data) {
+        debugPrint('Socket Connection Error: $data');
+      });
     } catch (e) {
       debugPrint('Socket initialization error: $e');
     }

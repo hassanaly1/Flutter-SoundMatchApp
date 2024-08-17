@@ -227,7 +227,7 @@ class AuthService {
         apiUrl,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${MyAppStorage.token}',
+          'Authorization': 'Bearer ${MyAppStorage.storage.read('token')}',
         },
         body: jsonEncode(payload),
       );
@@ -273,7 +273,7 @@ class AuthService {
         apiUrl,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${MyAppStorage.token}',
+          'Authorization': 'Bearer ${MyAppStorage.storage.read('token')}',
         },
         body: jsonEncode(payload),
       );
@@ -313,7 +313,7 @@ class AuthService {
         'user_id': userId,
       }),
     );
-
+    print('StatusCode: ${response.statusCode} ${response.body}');
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
       return responseBody['status'] == 'success';
@@ -364,19 +364,20 @@ class AuthService {
   Future<UpdateUserImageResult> updateUserImage({
     required Uint8List userImageInBytes,
   }) async {
-    debugPrint('userImageInBytes: $userImageInBytes');
+    debugPrint(
+        'userImageInBytesFor${MyAppStorage.storage.read('user_info')['_id']}: $userImageInBytes');
     bool isSuccess = false;
     String? profileUrl;
 
     var headers = {
-      'Authorization': 'Bearer ${MyAppStorage.token}',
+      'Authorization': 'Bearer ${MyAppStorage.storage.read('token')}',
       'Content-Type': 'application/json',
     };
 
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-        '${ApiEndPoints.baseUrl}${ApiEndPoints.updateProfilePictureUrl}?user_id=${MyAppStorage.userId}',
+        '${ApiEndPoints.baseUrl}${ApiEndPoints.updateProfilePictureUrl}?user_id=${MyAppStorage.storage.read('user_info')['_id']}',
       ),
     );
     request.files.add(

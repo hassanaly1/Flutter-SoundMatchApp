@@ -1,4 +1,0 @@
-const String STRIPE_PUBLISHABLE_KEY =
-    'pk_test_51PfEBIDsyH5PcwqR7GEjw2w8Rfyax9TTVzNnKZYGLLZZduFaql6gahLh2eU6mTdlOWSyphC0bbpJoxVtVVVRWsdn00yclZQLpo';
-const String STRIPE_SECRET_KEY =
-    'sk_test_51PfEBIDsyH5PcwqRIOtevbTCN4noTusiQC6fCcff8TtK2qR91KMiqur94QHo6JJFiGqtYMcsRiurMeDLZP8yn4Kb00d7CNqMl6';

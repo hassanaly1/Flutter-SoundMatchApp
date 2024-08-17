@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:http/http.dart' as http;
 import 'package:sound_app/helper/colors.dart';
-import 'package:sound_app/view/utils/conts.dart';
 
 class StripeService {
   StripeService._(); // Private Constructor
@@ -22,6 +19,7 @@ class StripeService {
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
             paymentIntentClientSecret: paymentIntentClientSecret,
+            allowsDelayedPaymentMethods: true,
             style: ThemeMode.dark,
             merchantDisplayName: 'Progziel Inc.',
             appearance: const PaymentSheetAppearance(
@@ -36,44 +34,43 @@ class StripeService {
                   text: Colors.white,
                 )),
               ),
-              shapes: PaymentSheetShape(borderWidth: 1, borderRadius: 16.0),
             )),
       );
-      await _processPayment();
+      _processPayment();
     } catch (e) {
       debugPrint('Error: $e');
     }
   }
 
-  Future<String> _createPaymentIntent({
-    required int amount,
-    required String currency,
-  }) async {
-    try {
-      Map<String, dynamic> data = {
-        'amount': _calculateAmountInCents(amount: amount),
-        'currency': currency,
-      };
-      final response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        body: data,
-        headers: {
-          'Authorization': 'Bearer $STRIPE_SECRET_KEY',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      );
-      if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
-        debugPrint(responseBody.toString());
-        var clientSecret = responseBody['client_secret'];
-        return clientSecret;
-      } else {
-        throw Exception('Failed to Create Payment Intent');
-      }
-    } catch (e) {
-      throw Exception('Error $e');
-    }
-  }
+  // Future<String> _createPaymentIntent({
+  //   required int amount,
+  //   required String currency,
+  // }) async {
+  //   try {
+  //     Map<String, dynamic> data = {
+  //       'amount': _calculateAmountInCents(amount: amount),
+  //       'currency': currency,
+  //     };
+  //     final response = await http.post(
+  //       Uri.parse('https://api.stripe.com/v1/payment_intents'),
+  //       body: data,
+  //       headers: {
+  //         'Authorization': 'Bearer $STRIPE_SECRET_KEY',
+  //         'Content-Type': 'application/x-www-form-urlencoded',
+  //       },
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final responseBody = jsonDecode(response.body);
+  //       debugPrint(responseBody.toString());
+  //       var clientSecret = responseBody['client_secret'];
+  //       return clientSecret;
+  //     } else {
+  //       throw Exception('Failed to Create Payment Intent');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error $e');
+  //   }
+  // }
 
   Future<void> _processPayment() async {
     try {

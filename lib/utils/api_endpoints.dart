@@ -1,7 +1,7 @@
 class ApiEndPoints {
-  // static String baseUrl = 'https://sounds-match-api-production.up.railway.app/';
   // static String baseUrl = '192.168.100.24/'; //localhost
-  static String baseUrl = 'http://10.0.2.2:5000/'; //localhost
+  // static String baseUrl = 'http://10.0.2.2:5000/'; //localhost
+  static String baseUrl = 'https://api.cklordconsulting.com/'; //baseUrl
 
   //Authentications
   static String registerUserUrl = 'api/user/register';
@@ -30,6 +30,8 @@ class ApiEndPoints {
 
   //Default Match
   static String defaultMatchUrl = 'show-test-match-result';
+  static String getSoundsForDefaultMatch =
+      'api/sounds/getListOfSoundsForTestMatch';
 
   //Main Match
   static String uploadSounds = 'uploadsounds';

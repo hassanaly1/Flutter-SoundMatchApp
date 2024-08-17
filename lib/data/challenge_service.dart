@@ -28,7 +28,7 @@ class ChallengeService {
         http.MultipartFile.fromBytes(
           'users_sounds',
           userRecordingInBytes,
-          filename: 'users_sounds.aac',
+          filename: 'users_sounds.mp3',
           // contentType: MediaType('audio', 'aac'),
         ),
       );

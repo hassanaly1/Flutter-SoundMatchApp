@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -12,8 +13,8 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
-import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class DefaultMatchScreen extends StatefulWidget {
@@ -26,11 +27,13 @@ class DefaultMatchScreen extends StatefulWidget {
 class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
   late DefaultMatchController controller;
   late io.Socket socket;
+  int randomId = Random().nextInt(100000);
 
   @override
   void initState() {
     controller = Get.put(DefaultMatchController());
     connectToSocket();
+    controller.fetchSoundsForDefaultMatch();
     super.initState();
   }
 
@@ -48,8 +51,8 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
         socket.emit(
           ApiEndPoints.connectToDefaultMatch,
           {
-            // 'user_id': storage.read('user_info')['_id'],
-            'user_id': "123",
+            // 'user_id': MyAppStorage.storage.read('user_info')['_id'],
+            'user_id': randomId,
           },
         );
       });
@@ -92,18 +95,28 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: Scaffold(
                 backgroundColor: Colors.transparent,
-                body: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: context.height * 0.03,
-                        horizontal: context.width * 0.02),
-                    child: Column(
-                      children: [
-                        TopContainer(controller: controller),
-                        CenterPart(controller: controller),
-                      ],
-                    ),
-                  ),
+                body: Obx(
+                  () => controller.freeMatchSounds.value.isEmpty
+                      ? Center(
+                          child: Lottie.asset(
+                            MyAssetHelper.thinkLoader,
+                            height: 100,
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: context.height * 0.03,
+                                horizontal: context.width * 0.02),
+                            child: Column(
+                              children: [
+                                TopContainer(controller: controller),
+                                CenterPart(
+                                    controller: controller, randomId: randomId),
+                              ],
+                            ),
+                          ),
+                        ),
                 ),
               ))
         ],
@@ -145,17 +158,65 @@ class TopContainer extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const CustomTextWidget(
-              text: "Free Sound Match",
-              fontFamily: "Horta",
-              textColor: MyColorHelper.white,
-              fontSize: 26,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const CustomTextWidget(
+                  text: "Free Sound Match",
+                  fontFamily: "Horta",
+                  textColor: MyColorHelper.white,
+                  fontSize: 26,
+                ),
+                Obx(
+                  () => Container(
+                    width: 150,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: context.width * 0.03),
+                    decoration: BoxDecoration(
+                      color: MyColorHelper.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: DropdownButton<SoundModel>(
+                      isExpanded: true,
+                      underline: const SizedBox.shrink(),
+                      borderRadius: BorderRadius.circular(8.0),
+                      hint: const CustomTextWidget(
+                        text: "Select a Sound",
+                        textColor: Colors.black87,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      icon: const Icon(
+                        Icons.arrow_drop_down_circle,
+                        color: Colors.black87,
+                      ),
+                      value: controller.selectedSound.value,
+                      items: controller.freeMatchSounds
+                          .map((dynamic sound) => DropdownMenuItem<SoundModel>(
+                                value: sound as SoundModel,
+                                child: CustomTextWidget(
+                                  text: sound.name ?? 'Unknown',
+                                  textColor: Colors.black87,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        controller.selectedSound.value = value;
+                        // controller.defaultAudioDuration.value =
+                        //     Duration(seconds: value?.duration ?? 0);
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
             Row(
               children: [
                 const CircleAvatar(
                   radius: 35,
                   backgroundColor: Colors.white,
+                  backgroundImage:
+                      AssetImage('assets/images/guest_user_profile.PNG'),
                   // backgroundImage: NetworkImage(MyAssetHelper.lead),
                 ),
                 Flexible(
@@ -186,6 +247,7 @@ class TopContainer extends StatelessWidget {
                                         ? Icons.pause_circle
                                         : Icons.play_circle,
                                     size: 35.0,
+                                    color: Colors.black87,
                                   ),
                                 ),
                                 const SizedBox(width: 6.0),
@@ -228,10 +290,12 @@ class TopContainer extends StatelessWidget {
 
 class CenterPart extends StatelessWidget {
   final DefaultMatchController controller;
+  final int randomId;
 
   const CenterPart({
     super.key,
     required this.controller,
+    required this.randomId,
   });
 
   String _formatDuration(Duration duration) {
@@ -278,9 +342,8 @@ class CenterPart extends StatelessWidget {
                                     color: Colors.white,
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
-                                      image: NetworkImage(
-                                        'https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?size=626&ext=jpg&uid=R133237588&ga=GA1.2.1091155359.1700008188&semt=ais',
-                                      ),
+                                      image: AssetImage(
+                                          'assets/images/guest_user_profile.PNG'),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -335,7 +398,8 @@ class CenterPart extends StatelessWidget {
             : controller.isResultCalculating.value
                 ? const Center(
                     heightFactor: 10,
-                    child: CircularProgressIndicator(color: Colors.white))
+                    child: CircularProgressIndicator(color: Colors.white),
+                  )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -343,14 +407,15 @@ class CenterPart extends StatelessWidget {
                       UserAudioDuration(),
                       MyRecordingAnimation(),
                       MyRecordAudioButton(controller: controller),
-                      UserRecordedSoundAndCalculateButton(context)
+                      UserRecordedSoundAndCalculateButton(context, randomId)
                     ],
                   ),
       ),
     );
   }
 
-  Visibility UserRecordedSoundAndCalculateButton(BuildContext context) {
+  Visibility UserRecordedSoundAndCalculateButton(
+      BuildContext context, int randomId) {
     return Visibility(
       visible: controller.isUserRecordingCompleted.value,
       child: Column(
@@ -424,12 +489,20 @@ class CenterPart extends StatelessWidget {
               if (controller.recordedFilePath != null) {
                 final file = File(controller.recordedFilePath!);
                 final bytes = await file.readAsBytes();
-                DefaultChallengeService().uploadUserRecording(
+                bool isSuccessful =
+                    await DefaultChallengeService().uploadUserRecording(
                   userRecordingInBytes: bytes,
-                  soundId: '668278c2e67d38ed7866d163',
-                  userId: MyAppStorage.userId ?? '',
+                  soundId: controller.selectedSound.value?.id ?? '',
+                  userId: randomId,
                   // userId: storage.read('user_info')['_id'],
                 );
+                if (isSuccessful) {
+                  controller.isResultCalculating.value = false;
+                  controller.isResultCalculated.value = true;
+                } else {
+                  controller.isResultCalculating.value = false;
+                  controller.isResultCalculated.value = false;
+                }
               }
             },
           ),

@@ -129,6 +129,10 @@ class AuthController extends GetxController {
           // saveUserInfo(response['user']);
           final userInfo = response['user'];
           MyAppStorage.storage.write('user_info', userInfo);
+          debugPrint(
+              'TokenAtStorageAtLogin: ${MyAppStorage.storage.read('token')}');
+          debugPrint(
+              'UserAtStorageAtLogin: ${MyAppStorage.storage.read('user_info')}');
           GuestController().isGuestUser.value = false;
           Get.offAll(() => const HomeScreen(), transition: Transition.zoom);
 

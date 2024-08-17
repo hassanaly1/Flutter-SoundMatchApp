@@ -6,6 +6,8 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sound_app/data/default_challenge_service.dart';
+import 'package:sound_app/models/sound_model.dart';
 
 class DefaultMatchController extends GetxController {
   RxBool isDefaultAudioPlaying = false.obs;
@@ -14,6 +16,8 @@ class DefaultMatchController extends GetxController {
   RxBool isUserRecordingCompleted = false.obs;
   RxBool isResultCalculating = false.obs;
   RxBool isResultCalculated = false.obs;
+  RxList freeMatchSounds = <SoundModel>[].obs;
+  Rx<SoundModel?> selectedSound = Rx<SoundModel?>(null);
 
   Rx<Duration> defaultAudioDuration = Duration.zero.obs;
   Rx<Duration> defaultAudioPosition = Duration.zero.obs;
@@ -36,6 +40,7 @@ class DefaultMatchController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeRecorder();
+
     _defaultAudioPlayer.onDurationChanged.listen((duration) {
       defaultAudioDuration.value = duration;
     });
@@ -61,16 +66,8 @@ class DefaultMatchController extends GetxController {
       isUserAudioPlaying.value = false;
       userAudioPosition.value = Duration.zero;
     });
-  }
 
-  @override
-  void dispose() {
-    _audioRecorder.closeRecorder();
-    _defaultAudioPlayer.dispose();
-    _userAudioPlayer.dispose();
-    _recordingTimer?.cancel();
-
-    super.dispose();
+    // fetchSoundsForDefaultMatch();
   }
 
   void resetValuesOnPlayAgain() {
@@ -152,8 +149,29 @@ class DefaultMatchController extends GetxController {
 
   @override
   void onClose() {
+    debugPrint('DefaultMatchControllerOnClosedCalled');
     _audioRecorder.closeRecorder();
+    _audioRecorder.stopRecorder();
+    _defaultAudioPlayer.stop();
+    _defaultAudioPlayer.dispose();
+    _userAudioPlayer.stop();
+    _userAudioPlayer.dispose();
+    _recordingTimer?.cancel();
+
     super.onClose();
+  }
+
+  ///Fetch Sounds For DefaultMatch
+  void fetchSoundsForDefaultMatch() async {
+    try {
+      List<SoundModel> sounds = await DefaultChallengeService().fetchSounds();
+      if (sounds.isNotEmpty) {
+        freeMatchSounds.assignAll(sounds);
+        print('Free Match Sounds: ${freeMatchSounds.length}');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   ///Toggle Default Audio
@@ -166,10 +184,10 @@ class DefaultMatchController extends GetxController {
         await _defaultAudioPlayer.stop();
         // await _defaultAudioPlayer.play(AssetSource('music/music2.mp3'));
         await _defaultAudioPlayer.play(
-          UrlSource(
-            'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3',
-          ),
-        );
+            // UrlSource(
+            //   'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3',
+            // ),
+            UrlSource(selectedSound.value?.url ?? ''));
         isDefaultAudioPlaying.value = true;
       }
     } catch (e) {

@@ -31,14 +31,14 @@ class Participant {
   });
 
   factory Participant.fromJson(Map<String, dynamic> json) => Participant(
-        id: json["_id"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        email: json["email"],
-        isEmailVerified: json["is_email_verified"],
-        isAdmin: json["is_admin"],
-        isOnline: json["is_online"],
-        profile: json["profile"],
+        id: json["_id"] ?? "",
+        firstName: json["first_name"] ?? "",
+        lastName: json["last_name"] ?? "",
+        email: json["email"] ?? "",
+        isEmailVerified: json["is_email_verified"] ?? false,
+        isAdmin: json["is_admin"] ?? false,
+        isOnline: json["is_online"] ?? false,
+        profile: json["profile"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {

@@ -193,12 +193,12 @@ class CustomSoundPackWidget extends StatelessWidget {
     io.Socket socket = SocketService().getSocket();
     try {
       Map<String, dynamic> data = {
-        'user_id': MyAppStorage.userId,
+        'user_id': MyAppStorage.storage.read('user_info')['_id'],
         'sound_pack_id': soundPackModel.id
       };
       socket.emit('add_sound_pack_to_user', data);
     } catch (e) {
-      debugPrint('Error Sending Challenge Data: $e');
+      debugPrint('Error Adding SoundPack: $e');
     }
   }
 }

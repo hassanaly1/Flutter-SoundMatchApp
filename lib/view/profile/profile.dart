@@ -12,7 +12,6 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/snackbars.dart';
-import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/profile/all_challenges_section.dart';
 import 'package:sound_app/view/profile/profile_info_section.dart';
@@ -89,8 +88,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         backgroundColor: Colors.white,
                                         backgroundImage: guestController
                                                 .isGuestUser.value
-                                            ? const AssetImage(MyAppStorage
-                                                .dummyProfilePicture)
+                                            ? const AssetImage(
+                                                'assets/images/guest_user_profile.PNG')
                                             : universalController.userImageURL
                                                     .value.isNotEmpty
                                                 ? NetworkImage(
@@ -125,8 +124,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   const SizedBox(height: 6.0),
                                   CustomTextWidget(
-                                    text: MyAppStorage.userEmail ??
-                                        'guest.user@soundmatch.com',
+                                    text:
+                                        universalController.userInfo['email'] ??
+                                            'guest.user@soundmatch.com',
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
                                     textColor: MyColorHelper.white,
@@ -153,6 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 TabBar(
                                   physics: const NeverScrollableScrollPhysics(),
                                   tabAlignment: TabAlignment.center,
+                                  isScrollable: true,
                                   indicatorColor: MyColorHelper.primaryColor,
                                   labelColor: MyColorHelper.white,
                                   labelStyle: const TextStyle(
@@ -221,7 +222,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         universalController.userImageURL.value = image.path;
         universalController.userImageInBytes =
             (await universalController.userImage?.readAsBytes())!;
-
         UpdateUserImageResult result = await AuthService().updateUserImage(
           userImageInBytes: universalController.userImageInBytes!,
         );

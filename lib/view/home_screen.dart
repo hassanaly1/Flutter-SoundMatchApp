@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final data = {
-        'user_id': MyAppStorage.userId,
+        'user_id': MyAppStorage.storage.read('user_info')['_id'],
       };
       //Connect to their Room
       socket.emit(ApiEndPoints.connectToRoom, data);
@@ -87,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       socket.emit(
                         'entry_to_challenge_room',
                         {
-                          'user_id': MyAppStorage.userId,
+                          'user_id':
+                              MyAppStorage.storage.read('user_info')['_id'],
                           'room_id': challengeRoomId,
                         },
                       );
@@ -126,7 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 const AlwaysStoppedAnimation<Color>(Colors.white),
             progressIndicatorBackgroundColor: MyColorHelper.caribbeanCurrent,
             titleText: CustomTextWidget(
-              text: "Hello ${MyAppStorage.fullName}",
+              text:
+                  "Hello ${MyAppStorage.storage.read('user_info')['first_name']}",
               fontSize: 16.0,
               fontFamily: 'poppins',
               fontWeight: FontWeight.w700,
@@ -367,7 +369,8 @@ class HomeAppbar extends StatelessWidget {
                     radius: 60,
                     backgroundColor: Colors.white,
                     backgroundImage: guestController.isGuestUser.value
-                        ? const AssetImage(MyAppStorage.dummyProfilePicture)
+                        ? const AssetImage(
+                            'assets/images/guest_user_profile.PNG')
                         : universalController.userImageURL.value.isNotEmpty
                             ? NetworkImage(
                                 universalController.userImageURL.value)

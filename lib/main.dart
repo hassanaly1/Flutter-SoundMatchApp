@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -14,11 +15,12 @@ import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/login.dart';
 import 'package:sound_app/view/auth/onboarding/onboarding_screen.dart';
 import 'package:sound_app/view/home_screen.dart';
-import 'package:sound_app/view/utils/conts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = STRIPE_PUBLISHABLE_KEY;
+  await dotenv.load(fileName: ".env");
+
+  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
   // Initialize GetStorage and GetX controllers before using MyAppStorage
   await GetStorage.init();
   Get.put(GuestController());
@@ -76,14 +78,6 @@ class AuthStatusCheckController extends GetxController {
       "Session Expired",
       "Your session has expired. Please log in again.",
       Icons.no_accounts_sharp,
-    );
-    Get.snackbar(
-      "Session Expired",
-      "Your session has expired. Please log in again.",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
     );
   }
 

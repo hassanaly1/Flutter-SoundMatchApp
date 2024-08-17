@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/challenge_controller.dart';
+import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -31,6 +32,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
   @override
   void initState() {
     super.initState();
+    Get.delete<CreateChallengeController>();
     controller = Get.put(ChallengeController());
     callSockets();
   }
@@ -47,12 +49,12 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
       socket.on(
         'challenge_room',
         (data) {
-          print(data);
+          debugPrint('ChallengeData: $data');
           debugPrint(
               '<================================== New Data Received In The Challenge Room ==================================>');
           ChallengeRoomModel challengeRoomModel =
               ChallengeRoomModel.fromJson(data['challenge_room']);
-          print('Challenge Room Model: $challengeRoomModel');
+          debugPrint('Challenge Room Model: $challengeRoomModel');
 
           model = challengeRoomModel;
           controller.totalParticipants.value = model!.users!;
@@ -74,15 +76,15 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
             int differenceInSeconds =
                 currentDateTime.difference(formattedTurnTime).inSeconds;
 
-            print(
+            debugPrint(
                 'TurnTimeAfterFormat: ${getFormattedTime(formattedTurnTime)}');
-            print('Difference in seconds: $differenceInSeconds');
+            debugPrint('Difference in seconds: $differenceInSeconds');
             controller.currentTurnDuration.value =
                 controller.originalTurnDuration.value - differenceInSeconds;
-            print(
+            debugPrint(
                 'Current Turn Duration: ${controller.currentTurnDuration.value}');
           } else {
-            print('TurnTime is null');
+            debugPrint('TurnTime is null');
           }
 
           //--------------------------------------------------------------------------------
@@ -127,8 +129,6 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                 'isRoundCompleted: ${controller.isRoundCompleted.value}');
             controller.showCalculatingResultPopup(model!);
           }
-          // debugPrint(
-          //     'Created By: ${model!.createdBy?.firstName} ${model!.createdBy?.lastName} with Id: ${model!.createdBy?.id} and profile: ${model!.createdBy?.profile}');
         },
       );
     } catch (e) {
@@ -233,7 +233,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
       },
     );
 
-    // Close the dialog after 3 seconds
+    // Close the Game Start Dialog after 5 seconds
     Future.delayed(const Duration(seconds: 5), () {
       if (context.mounted) {
         Navigator.of(context).pop();
@@ -307,9 +307,9 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                 alignment: Alignment.bottomCenter,
                                 child: Padding(
                                   padding: EdgeInsets.only(
-                                      top: context.height * 0.1),
+                                      bottom: context.height * 0.15),
                                   child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Obx(
                                         () => Visibility(
@@ -328,7 +328,8 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                         //         .currentTurnIndex.value ==
                                         //     controller.currentUserIndex.value,
                                         visible: model!.currentTurnHolder?.id ==
-                                                MyAppStorage.userId &&
+                                                MyAppStorage.storage
+                                                    .read('user_info')['_id'] &&
                                             controller
                                                 .hasChallengeStarted.value,
                                         child: GestureDetector(
@@ -362,83 +363,61 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                       ),
 
                                       /// Countdown Timer
-                                      Container(
-                                        height: 80,
-                                        margin: const EdgeInsets.all(10),
-                                        padding: const EdgeInsets.all(20),
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey.shade300,
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                blurRadius: 15.0,
-                                                spreadRadius: 4.0,
-                                                offset: Offset(5.0, 5.0),
-                                              )
-                                            ],
-                                            shape: BoxShape.circle),
-                                        child: Center(
-                                          child: Obx(
-                                            () => Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                CircularProgressIndicator(
-                                                  value: controller
-                                                          .currentTurnDuration
-                                                          .value /
-                                                      controller
-                                                          .originalTurnDuration
-                                                          .toDouble(),
-                                                  strokeWidth: 4.0,
-                                                  valueColor:
-                                                      const AlwaysStoppedAnimation<
-                                                              Color>(
-                                                          MyColorHelper
-                                                              .caribbeanCurrent),
-                                                ),
-                                                CustomTextWidget(
-                                                  text: controller
-                                                      .currentTurnDuration.value
-                                                      .toString(),
-                                                  fontSize: 24.0,
-                                                  fontFamily: 'Poppins',
-                                                  fontWeight: FontWeight.w600,
-                                                  textColor: MyColorHelper
-                                                      .caribbeanCurrent,
-                                                ),
+                                      Visibility(
+                                        visible: controller
+                                            .hasChallengeStarted.value,
+                                        child: Container(
+                                          height: 80,
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 14, horizontal: 10),
+                                          padding: const EdgeInsets.all(20),
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 15.0,
+                                                  spreadRadius: 4.0,
+                                                  offset: Offset(5.0, 5.0),
+                                                )
                                               ],
+                                              shape: BoxShape.circle),
+                                          child: Center(
+                                            child: Obx(
+                                              () => Stack(
+                                                alignment: Alignment.center,
+                                                children: [
+                                                  CircularProgressIndicator(
+                                                    value: controller
+                                                            .currentTurnDuration
+                                                            .value /
+                                                        controller
+                                                            .originalTurnDuration
+                                                            .toDouble(),
+                                                    strokeWidth: 4.0,
+                                                    valueColor:
+                                                        const AlwaysStoppedAnimation<
+                                                                Color>(
+                                                            MyColorHelper
+                                                                .caribbeanCurrent),
+                                                  ),
+                                                  CustomTextWidget(
+                                                    text: controller
+                                                        .currentTurnDuration
+                                                        .value
+                                                        .toString(),
+                                                    fontSize: 20.0,
+                                                    fontFamily: 'Poppins',
+                                                    fontWeight: FontWeight.w600,
+                                                    textColor: MyColorHelper
+                                                        .caribbeanCurrent,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      // InkWell(
-                                      //   onTap: () {
-                                      //     ChallengeService().uploadUserSound(
-                                      //       userRecordingInBytes: null,
-                                      //       userId: MyAppStorage.userId,
-                                      //       roomId: model?.id ?? '',
-                                      //     );
-                                      //   },
-                                      //   child: Container(
-                                      //     height: 80,
-                                      //     margin: const EdgeInsets.all(10),
-                                      //     padding: const EdgeInsets.all(20),
-                                      //     decoration: BoxDecoration(
-                                      //         color: Colors.grey.shade300,
-                                      //         boxShadow: const [
-                                      //           BoxShadow(
-                                      //             color: Colors.black26,
-                                      //             blurRadius: 15.0,
-                                      //             spreadRadius: 4.0,
-                                      //             offset: Offset(5.0, 5.0),
-                                      //           )
-                                      //         ],
-                                      //         shape: BoxShape.circle),
-                                      //     child: Center(
-                                      //       child: Icon(Icons.add_circle),
-                                      //     ),
-                                      //   ),
-                                      // ),
                                     ],
                                   ),
                                 ),
@@ -563,8 +542,11 @@ class TopContainer extends StatelessWidget {
                       CircleAvatar(
                         radius: 35,
                         backgroundColor: Colors.white,
-                        backgroundImage:
-                            NetworkImage(model.createdBy?.profile ?? ''),
+                        backgroundImage: model.createdBy?.profile == ''
+                            ? const AssetImage(
+                                    'assets/images/guest_user_profile.PNG')
+                                as ImageProvider
+                            : NetworkImage(model.createdBy?.profile ?? ''),
                       ),
                       CustomTextWidget(
                           text:
@@ -634,7 +616,6 @@ class TopContainer extends StatelessWidget {
               ],
             ),
             CustomTextWidget(
-              // text: 'Round # ${controller.currentRound.toString()}',
               text:
                   ' Passing Criteria for Round # ${model.challengeRoomNumber.toString()}: ${model.passingCriteria?.percentage}',
               fontWeight: FontWeight.w500,
@@ -654,7 +635,8 @@ class TopContainer extends StatelessWidget {
                   fontSize: 16,
                 ),
                 Visibility(
-                  visible: model.createdBy?.id == MyAppStorage.userId &&
+                  visible: model.createdBy?.id ==
+                          MyAppStorage.storage.read('user_info')['_id'] &&
                       controller.isChallengeStarts.value == false,
                   child: GestureDetector(
                     onTap: () {
@@ -778,7 +760,7 @@ class CustomUserCard extends StatelessWidget {
       child: Column(
         children: [
           CustomTextWidget(
-            text: participant.firstName ?? '',
+            text: participant.firstName,
             fontFamily: 'Poppins',
             fontSize: 10.0,
             fontWeight: FontWeight.w400,
@@ -799,7 +781,10 @@ class CustomUserCard extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: CircleAvatar(
                 radius: 30,
-                backgroundImage: NetworkImage(participant.profile ?? ''),
+                backgroundImage: participant.profile == ''
+                    ? const AssetImage('assets/images/guest_user_profile.PNG')
+                        as ImageProvider
+                    : NetworkImage(participant.profile),
               ),
             ),
           ),

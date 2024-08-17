@@ -59,8 +59,10 @@ class _ResultScreenState extends State<ResultScreen> {
           controller.resetControllerValues();
 
           // Check user qualification and navigate accordingly
-          bool isCurrentUserQualified = widget.model.nextRoomUsers
-                  ?.any((user) => user.id == MyAppStorage.userId) ??
+          bool isCurrentUserQualified = widget.model.nextRoomUsers?.any(
+                  (user) =>
+                      user.id ==
+                      MyAppStorage.storage.read('user_info')['_id']) ??
               false;
           if (isCurrentUserQualified) {
             nextRoom();
@@ -79,7 +81,7 @@ class _ResultScreenState extends State<ResultScreen> {
     socket.emit(
       'entry_to_challenge_room',
       {
-        'user_id': MyAppStorage.userId,
+        'user_id': MyAppStorage.storage.read('user_info')['_id'],
         'room_id': challengeRoomId,
       },
     );
@@ -243,8 +245,8 @@ class _UserResultPreviewState extends State<UserResultPreview>
   Widget build(BuildContext context) {
     debugPrint(
         'IsChallengeCompleted: ${controller.isChallengeCompleted.value}');
-    bool isCurrentUserQualified = widget.model.nextRoomUsers
-            ?.any((user) => user.id == MyAppStorage.userId) ??
+    bool isCurrentUserQualified = widget.model.nextRoomUsers?.any((user) =>
+            user.id == MyAppStorage.storage.read('user_info')['_id']) ??
         false;
     super.build(context); // AutomaticKeepAliveClientMixin
 
@@ -303,7 +305,7 @@ class _UserResultPreviewState extends State<UserResultPreview>
     socket.emit(
       'entry_to_challenge_room',
       {
-        'user_id': MyAppStorage.userId,
+        'user_id': MyAppStorage.storage.read('user_info')['_id'],
         'room_id': challengeRoomId,
       },
     );

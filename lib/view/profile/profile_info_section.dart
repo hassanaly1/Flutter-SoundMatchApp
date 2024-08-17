@@ -70,7 +70,8 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                 ),
                 SizedBox(height: context.height * 0.03),
                 CustomTextField(
-                  hintText: MyAppStorage.userEmail ?? '',
+                  hintText: universalController.userInfo['email'] ??
+                      'guest.user@soundmatch.com',
                   labelText: "Email",
                   readOnly: true,
                 ),

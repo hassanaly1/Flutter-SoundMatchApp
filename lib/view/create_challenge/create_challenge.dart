@@ -164,7 +164,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                         context: context,
                         onTap: () {
                           if (controller.participants.isEmpty) {
-                            controller.fetchParticipants();
+                            controller.fetchParticipants(searchString: '');
                           }
                           showModalBottomSheet(
                             backgroundColor: Colors.transparent,
@@ -406,9 +406,9 @@ class _CreateChallengeState extends State<CreateChallenge> {
       challenge: Challenge(
         name: controller.challengeNameController.text,
         numberOfChallenges: controller.numberOfRounds.value.toString(),
-        user: MyAppStorage.userId ?? '',
+        user: MyAppStorage.storage.read('user_info')['_id'] ?? '',
         sound: controller.selectedSound.value!.id.toString(),
-        createdBy: MyAppStorage.userId ?? '',
+        createdBy: MyAppStorage.storage.read('user_info')['_id'] ?? '',
       ),
       passingCriteria: List.generate(
         controller.numberOfRounds.value,
@@ -419,9 +419,9 @@ class _CreateChallengeState extends State<CreateChallenge> {
         ),
       ),
       challengeRoom: ChallengeRoom(
-        users: [MyAppStorage.userId ?? ''],
+        users: [MyAppStorage.storage.read('user_info')['_id'] ?? ''],
         totalMembers: 1,
-        currentTurnHolder: MyAppStorage.userId ?? '',
+        currentTurnHolder: MyAppStorage.storage.read('user_info')['_id'] ?? '',
       ),
       invitation: Invitation(
         type: 'challenge',
@@ -429,7 +429,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
           // MyAppStorage.userId,
           ...controller.selectedParticipants.map((e) => e.id.toString()),
         ],
-        createdBy: MyAppStorage.userId ?? '',
+        createdBy: MyAppStorage.storage.read('user_info')['_id'] ?? '',
       ),
     );
 

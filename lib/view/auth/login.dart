@@ -110,6 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             CustomTextField(
                               controller: authController.emailController,
                               hintText: 'Enter your Email',
+                              keyboardType: TextInputType.emailAddress,
                               validator: (val) =>
                                   AppValidator.validateEmail(value: val),
                             ),

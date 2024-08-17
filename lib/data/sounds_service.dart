@@ -39,16 +39,17 @@ class SoundServices {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${MyAppStorage.token}',
+        'Authorization': 'Bearer ${MyAppStorage.storage.read('token')}',
       },
       body: jsonEncode({
         'id': soundPackId,
       }),
     );
+    print('StatusCodeForPaymentIntent: ${response.statusCode}');
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
-
-      var clientSecret = responseBody['url']['client_secret'];
+      print('Response Body: $responseBody');
+      var clientSecret = responseBody['payment_indent']['client_secret'];
       // print('Client Secret: $clientSecret');
       return clientSecret;
     } else {
@@ -57,7 +58,7 @@ class SoundServices {
     }
   }
 
-  Future<List<SoundPackModel>> fetchSoundPacks(int page) async {
+  Future<List<SoundPackModel>> fetchSoundPacks({required int page}) async {
     debugPrint('Loading Page $page SoundPacks');
     final url = Uri.parse(
         '${ApiEndPoints.baseUrl}${ApiEndPoints.listofsoundpacksUrl}?page=$page&limit=10');
@@ -112,9 +113,10 @@ class SoundServices {
   }
 
   Future<List<Participant>> fetchParticipants(
-      {required String searchString}) async {
+      {required String searchString, required int page}) async {
+    debugPrint('Loading Page $page Participants');
     final url = Uri.parse(
-        '${ApiEndPoints.baseUrl}${ApiEndPoints.listOfParticipantsUrl}');
+        '${ApiEndPoints.baseUrl}${ApiEndPoints.listOfParticipantsUrl}?page=$page&limit=10');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

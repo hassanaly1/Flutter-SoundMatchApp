@@ -9,14 +9,14 @@ class MyAppStorage {
   late GuestController controller;
 
   // Static fields
-  static late final String? token;
-  static late final String? userId;
-  static late final String? userEmail;
-  static late final String? userProfilePicture;
-  static const dummyProfilePicture = 'assets/images/guest_user_profile.PNG';
-  static late final String? firstName;
-  static late final String? lastName;
-  static late final String? fullName;
+  // static late final String? token;
+  // static late final String? userId;
+  // static late final String? userEmail;
+  // static late final String? userProfilePicture;
+  // static const dummyProfilePicture = 'assets/images/guest_user_profile.PNG';
+  // static late final String? firstName;
+  // static late final String? lastName;
+  // static late final String? fullName;
 
   // Private constructor
   MyAppStorage._internal() {
@@ -31,30 +31,30 @@ class MyAppStorage {
     final guestController = Get.find<GuestController>();
     if (!guestController.isGuestUser.value) {
       final userInfo = storage.read('user_info');
-      token = storage.read('token');
-      userId = userInfo?['_id'];
-      userEmail = userInfo?['email'];
-      userProfilePicture = userInfo?['profile'];
-      firstName = userInfo?['first_name'] ?? 'Guest';
-      lastName = userInfo?['last_name'] ?? 'User';
-      fullName =
-          (userInfo?['first_name'] != null && userInfo?['last_name'] != null)
-              ? '$firstName $lastName}'
-              : null;
+      // token = storage.read('token');
+      // userId = userInfo?['_id'];
+      // userEmail = userInfo?['email'];
+      // userProfilePicture = userInfo?['profile'];
+      // firstName = userInfo?['first_name'] ?? 'Guest';
+      // lastName = userInfo?['last_name'] ?? 'User';
+      // fullName =
+      //     (userInfo?['first_name'] != null && userInfo?['last_name'] != null)
+      //         ? '$firstName $lastName}'
+      //         : null;
     } else {
-      token = null;
-      userId = null;
-      userEmail = null;
-      userProfilePicture = dummyProfilePicture;
-      firstName = 'Guest';
-      lastName = 'User';
-      fullName = 'Guest User';
+      // token = null;
+      // userId = null;
+      // userEmail = null;
+      // userProfilePicture = dummyProfilePicture;
+      // firstName = 'Guest';
+      // lastName = 'User';
+      // fullName = 'Guest User';
     }
   }
 
-  void removeUser() {
-    storage.remove('token');
-    storage.remove('user_info');
-    initialize(); // Re-initialize to reflect changes
-  }
+// void removeUser() {
+//   storage.remove('token');
+//   storage.remove('user_info');
+//   initialize(); // Re-initialize to reflect changes
+// }
 }

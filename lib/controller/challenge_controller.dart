@@ -130,7 +130,7 @@ class ChallengeController extends GetxController {
         currentTurnDuration.value--;
       } else {
         recordingTimer?.cancel();
-        if (currentUserId == MyAppStorage.userId) {
+        if (currentUserId == MyAppStorage.storage.read('user_info')['_id']) {
           debugPrint('A-StopTimerCalledOnUser$currentUserId');
           bool isSuccess = await ChallengeService().uploadUserSound(
             userRecordingInBytes: null,
@@ -157,7 +157,7 @@ class ChallengeController extends GetxController {
       {required String userId, required String roomId}) async {
     debugPrint('OnLongPressedEndCalled');
     stopRecording();
-    if (userId == MyAppStorage.userId) {
+    if (userId == MyAppStorage.storage.read('user_info')['_id']) {
       if (recordedFilePath != null) {
         debugPrint('B-StopTimerCalledOnUser$userId');
         final file = File(recordedFilePath!);
@@ -216,30 +216,33 @@ class ChallengeController extends GetxController {
     );
 // Increment the counter each time the event is emitted
     eventCount++;
-    debugPrint('Event fired $eventCount times.');
+    // debugPrint('Event fired $eventCount times.');
     socket.on('challenge_result', (data) {
-      resultModel = ResultModel.fromJson(data);
-      debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers?.length}');
-      debugPrint('UserResult:  ${resultModel?.usersResult?.length}');
-      debugPrint(
-          'CalculateAverageResult:  ${resultModel?.calculateAverageResult?.length}');
-      debugPrint('AllRoomResult:  ${resultModel?.allRoomResult}');
-      debugPrint('NextChallengeRoomId:  ${resultModel?.nextRoom}');
-    });
-    recordingTimer?.cancel();
-    isUserRecording.value = false;
-    hasChallengeStarted.value = false;
-    currentTurnDuration.value = originalTurnDuration.value;
-    Get.dialog(
-      const AlertDialog(
-        backgroundColor: Colors.transparent,
-        content: CalculatingResultPopup(),
-      ),
-    );
-    // // Navigate to the ResultScreen when the results are calculated.
-    Future.delayed(const Duration(seconds: 5), () {
-      Get.off(() => ResultScreen(model: resultModel!));
-      // Get.delete<ChallengeController>();
+      print(data);
+      if (data != null) {
+        resultModel = ResultModel.fromJson(data);
+        debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers?.length}');
+        debugPrint('UserResult:  ${resultModel?.usersResult?.length}');
+        debugPrint(
+            'CalculateAverageResult:  ${resultModel?.calculateAverageResult?.length}');
+        debugPrint('AllRoomResult:  ${resultModel?.allRoomResult}');
+        debugPrint('NextChallengeRoomId:  ${resultModel?.nextRoom}');
+        recordingTimer?.cancel();
+        isUserRecording.value = false;
+        hasChallengeStarted.value = false;
+        currentTurnDuration.value = originalTurnDuration.value;
+        Get.dialog(
+          const AlertDialog(
+            backgroundColor: Colors.transparent,
+            content: CalculatingResultPopup(),
+          ),
+        );
+        // // Navigate to the ResultScreen when the results are calculated.
+        Future.delayed(const Duration(seconds: 5), () {
+          Get.off(() => ResultScreen(model: resultModel!));
+          // Get.delete<ChallengeController>();
+        });
+      }
     });
   }
 

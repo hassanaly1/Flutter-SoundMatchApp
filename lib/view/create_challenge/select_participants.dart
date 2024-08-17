@@ -115,6 +115,7 @@ class _SelectParticipantsScreenState extends State<SelectParticipantsScreen> {
                       ),
                     ),
                     child: ListView(
+                      controller: _controller.scrollController,
                       children: [
                         const CustomTextWidget(
                           text: 'Invite Friends & Family',
@@ -214,29 +215,36 @@ class CustomParticipantWidget extends StatelessWidget {
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    child: Image.network(
-                      participant.profile.toString(),
-                      fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
-                            ),
-                          );
-                        }
-                      },
-                      errorBuilder: (BuildContext context, Object error,
-                          StackTrace? stackTrace) {
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                    ),
+                    child: participant.profile == ''
+                        ? Image.asset('assets/images/guest_user_profile.PNG')
+                        : Image.network(
+                            participant.profile.toString(),
+                            fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            (loadingProgress
+                                                    .expectedTotalBytes ??
+                                                1)
+                                        : null,
+                                  ),
+                                );
+                              }
+                            },
+                            errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            },
+                          ),
                   ),
                   CustomTextWidget(
                     text: '${participant.firstName} ${participant.lastName}',
