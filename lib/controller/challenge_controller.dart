@@ -214,11 +214,11 @@ class ChallengeController extends GetxController {
         }
       },
     );
-// Increment the counter each time the event is emitted
+    // Increment the counter each time the event is emitted
     eventCount++;
     // debugPrint('Event fired $eventCount times.');
     socket.on('challenge_result', (data) {
-      print(data);
+      // print(data);
       if (data != null) {
         resultModel = ResultModel.fromJson(data);
         debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers?.length}');

@@ -10,6 +10,7 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/view/challenge/widgets/custom_sound_avatar.dart';
 import 'package:sound_app/view/soundpacks/purchase_songs.dart';
 
@@ -201,6 +202,8 @@ class _SelectSongsScreenState extends State<SelectSongsScreen> {
                                                         (context, index) {
                                                       return CustomSoundWidget(
                                                         index: index,
+                                                        soundPackModel: controller
+                                                            .userSoundPacks[i],
                                                         addChallengeController:
                                                             addChallengeController,
                                                         controller: controller,
@@ -232,8 +235,10 @@ class CustomSoundWidget extends StatelessWidget {
     required this.addChallengeController,
     required this.controller,
     required this.index,
+    required this.soundPackModel,
   });
 
+  final SoundPackModel soundPackModel;
   final CreateChallengeController addChallengeController;
   final MyUniversalController controller;
   final int index;
@@ -259,15 +264,9 @@ class CustomSoundWidget extends StatelessWidget {
                 controller.soundsById[index],
               );
             },
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
               backgroundColor: Colors.blueGrey,
-              // backgroundImage:
-              // NetworkImage(
-              //     controller
-              //             .sounds[
-              //                 index]
-              //             .url ??
-              //         ''),
+              backgroundImage: NetworkImage(soundPackModel.packImage),
             ),
             title: CustomTextWidget(
               text: controller.soundsById[index].name ?? '',

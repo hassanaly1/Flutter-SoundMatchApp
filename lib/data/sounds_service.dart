@@ -116,7 +116,7 @@ class SoundServices {
       {required String searchString, required int page}) async {
     debugPrint('Loading Page $page Participants');
     final url = Uri.parse(
-        '${ApiEndPoints.baseUrl}${ApiEndPoints.listOfParticipantsUrl}?page=$page&limit=10');
+        '${ApiEndPoints.baseUrl}${ApiEndPoints.listOfParticipantsUrl}?page=$page&limit=20');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -125,7 +125,7 @@ class SoundServices {
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
       final List<dynamic> participants = responseBody['data'];
-
+      print('Participants: $participants');
       return participants
           .map((participant) => Participant.fromJson(participant))
           .toList();

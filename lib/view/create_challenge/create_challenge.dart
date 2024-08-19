@@ -57,62 +57,58 @@ class _CreateChallengeState extends State<CreateChallenge> {
           SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: SafeArea(
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: context.width * 0.05),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16.0),
-                          child: CustomAppbar(),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Padding(
+                padding: EdgeInsets.symmetric(horizontal: context.width * 0.05),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16.0),
+                        child: CustomAppbar(),
+                      ),
+                      SizedBox(
+                        height: context.height * 0.15,
+                        width: context.width,
+                        child:
+                            Image.asset(MyAssetHelper.addChallengeBackground),
+                      ),
+                      Container(
+                        height: context.height * 0.7,
+                        padding: EdgeInsets.symmetric(
+                          vertical: context.height * 0.1,
+                          horizontal: context.width * 0.07,
                         ),
-                        SizedBox(
-                          height: context.height * 0.15,
-                          width: context.width,
-                          child:
-                              Image.asset(MyAssetHelper.addChallengeBackground),
-                        ),
-                        Container(
-                          height: context.height * 0.7,
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.height * 0.1,
-                            horizontal: context.width * 0.07,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(MyAssetHelper.challengeContainer),
+                            fit: BoxFit.fill,
                           ),
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image:
-                                  AssetImage(MyAssetHelper.challengeContainer),
-                              fit: BoxFit.fill,
+                        ),
+                        child: PageView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: pageController,
+                          onPageChanged: (value) {
+                            currentPage.value = value;
+                          },
+                          children: [
+                            MyPageView1(
+                              context,
+                              controller,
+                              universalController,
+                              pageController,
                             ),
-                          ),
-                          child: PageView(
-                            physics: const NeverScrollableScrollPhysics(),
-                            controller: pageController,
-                            onPageChanged: (value) {
-                              currentPage.value = value;
-                            },
-                            children: [
-                              MyPageView1(
-                                context,
-                                controller,
-                                universalController,
-                                pageController,
-                              ),
-                              MyPageView2(
-                                context,
-                                controller,
-                                universalController,
-                                pageController,
-                              )
-                            ],
-                          ),
+                            MyPageView2(
+                              context,
+                              controller,
+                              universalController,
+                              pageController,
+                            )
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -170,6 +166,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             backgroundColor: Colors.transparent,
                             context: context,
                             isScrollControlled: true,
+                            useSafeArea: true,
                             builder: (BuildContext context) {
                               return const SelectParticipantsScreen();
                             },
@@ -238,10 +235,12 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           //     universalController.userSoundPacks[0].id,
                           //   );
                           // }
+                          // getAllSoundPacksByUserId();
                           showModalBottomSheet(
                             backgroundColor: Colors.transparent,
                             context: context,
                             isScrollControlled: true,
+                            useSafeArea: true,
                             builder: (BuildContext context) {
                               return const SelectSongsScreen();
                             },
@@ -497,4 +496,29 @@ class _CreateChallengeState extends State<CreateChallenge> {
       );
     }).toList();
   }
+
+// void getAllSoundPacksByUserId() {
+//   io.Socket socket = SocketService().getSocket();
+//   try {
+//     final data = MyAppStorage.storage.read('user_info')['_id'];
+//     socket.emit('get_sound_packs_by_user', data);
+//
+//     //Get the Users SoundPacks.
+//     socket.on(
+//       'soundpacks',
+//       (data) {
+//         print('UsersSoundPacksData: $data');
+//         universalController.userSoundPacks.clear();
+//         for (var soundPackData in data) {
+//           SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
+//           universalController.userSoundPacks.add(soundPack);
+//         }
+//         debugPrint(
+//             'UsersSoundPacks: ${universalController.userSoundPacks.length}');
+//       },
+//     );
+//   } catch (e) {
+//     debugPrint('Error Getting SoundPacks: $e');
+//   }
+// }
 }

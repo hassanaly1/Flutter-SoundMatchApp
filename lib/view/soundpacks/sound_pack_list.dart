@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,8 +15,11 @@ class SoundPackList extends StatelessWidget {
   final SoundPackModel soundPackModel;
   final List<SoundModel> sounds;
 
-  const SoundPackList(
+  SoundPackList(
       {super.key, required this.soundPackModel, required this.sounds});
+
+  var isSoundPlaying = false.obs;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +42,8 @@ class SoundPackList extends StatelessWidget {
                 iconTheme:
                     const IconThemeData(color: Colors.white60, size: 30.0),
                 backgroundColor: Colors.transparent,
-                title: CustomTextWidget(
-                  text: 'Sound Treasury ${sounds.length}',
+                title: const CustomTextWidget(
+                  text: 'Sound Treasury',
                   fontFamily: 'horta',
                   textColor: Colors.white,
                   fontSize: 26.0,
@@ -113,23 +117,39 @@ class SoundPackList extends StatelessWidget {
                                   itemCount: sounds.length,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
+                                    final sound = sounds[index];
                                     return ListTile(
                                       leading: CircleAvatar(
                                         backgroundImage: NetworkImage(
-                                            sounds[index].url ?? ''),
+                                            soundPackModel.packImage),
                                       ),
                                       title: CustomTextWidget(
-                                        text: sounds[index].name ?? '',
+                                        text: sound.name ?? '',
                                         textColor: Colors.white,
                                         fontSize: 14.0,
                                         fontWeight: FontWeight.w500,
                                         fontFamily: 'poppins',
                                       ),
-                                      trailing: InkWell(
-                                        onTap: () {},
-                                        child: const Icon(
-                                          CupertinoIcons.play_circle_fill,
-                                          color: Colors.white70,
+                                      trailing: Obx(
+                                        () => InkWell(
+                                          onTap: () async {
+                                            if (isSoundPlaying.value) {
+                                              await _audioPlayer.pause();
+                                            } else {
+                                              await _audioPlayer
+                                                  .play(UrlSource(sound.url!));
+                                            }
+                                            isSoundPlaying.value =
+                                                !isSoundPlaying.value;
+                                          },
+                                          child: Icon(
+                                            isSoundPlaying.value
+                                                ? CupertinoIcons
+                                                    .pause_circle_fill
+                                                : CupertinoIcons
+                                                    .play_circle_fill,
+                                            color: Colors.white70,
+                                          ),
                                         ),
                                       ),
                                     );

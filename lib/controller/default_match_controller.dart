@@ -167,10 +167,11 @@ class DefaultMatchController extends GetxController {
       List<SoundModel> sounds = await DefaultChallengeService().fetchSounds();
       if (sounds.isNotEmpty) {
         freeMatchSounds.assignAll(sounds);
-        print('Free Match Sounds: ${freeMatchSounds.length}');
+        selectedSound.value = freeMatchSounds[0];
+        debugPrint('Free Match Sounds: ${freeMatchSounds.length}');
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 

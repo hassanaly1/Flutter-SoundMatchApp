@@ -422,19 +422,19 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                   ),
                                 ),
                               ),
-                              Obx(
-                                () => BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: controller.isRoundCompleted.value
-                                        ? 5
-                                        : 0,
-                                    sigmaY: controller.isRoundCompleted.value
-                                        ? 5
-                                        : 0,
-                                  ),
-                                  child: const SizedBox(),
-                                ),
-                              )
+                              // Obx(
+                              //   () => BackdropFilter(
+                              //     filter: ImageFilter.blur(
+                              //       sigmaX: controller.isRoundCompleted.value
+                              //           ? 5
+                              //           : 0,
+                              //       sigmaY: controller.isRoundCompleted.value
+                              //           ? 5
+                              //           : 0,
+                              //     ),
+                              //     child: const SizedBox(),
+                              //   ),
+                              // )
                             ],
                           );
                         },

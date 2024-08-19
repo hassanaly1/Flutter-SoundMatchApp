@@ -185,7 +185,7 @@ class MyUniversalController extends GetxController {
   //   }
   // }
 
-  Future<void> fetchSoundPacks(int page) async {
+  Future<void> fetchSoundPacks() async {
     try {
       allSoundPacks.clear();
       _currentPage.value = 1;
@@ -203,6 +203,7 @@ class MyUniversalController extends GetxController {
       List<SoundModel> fetchedSounds =
           await SoundServices().fetchSoundsByPackId(soundPackId);
       soundsById.addAll(fetchedSounds);
+      print(soundsById[0].url);
       debugPrint(
           'Fetched Sounds for SoundPack ID $soundPackId: ${soundsById.length}');
     } catch (e) {

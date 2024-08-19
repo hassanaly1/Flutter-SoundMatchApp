@@ -4,14 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/universal_controller.dart';
-import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/models/sound_pack_model.dart';
-import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/widgets/custom_soundpack_widget.dart';
 import 'package:sound_app/view/soundpacks/sound_pack_list.dart';
 
@@ -28,36 +24,36 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
   @override
   void initState() {
     fetchSoundPacks();
-    getAllSoundPacksByUserId();
+    // getAllSoundPacksByUserId();
     super.initState();
   }
 
-  void getAllSoundPacksByUserId() {
-    io.Socket socket = SocketService().getSocket();
-    try {
-      final data = MyAppStorage.storage.read('user_info')['_id'];
-      socket.emit('get_sound_packs_by_user', data);
-
-      //Get the Users SoundPacks.
-      socket.on(
-        'soundpacks',
-        (data) {
-          print('UsersSoundPacksData: $data');
-          controller.userSoundPacks.clear();
-          for (var soundPackData in data) {
-            SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
-            controller.userSoundPacks.add(soundPack);
-          }
-          debugPrint('UsersSoundPacks: ${controller.userSoundPacks.length}');
-        },
-      );
-    } catch (e) {
-      debugPrint('Error Getting SoundPacks: $e');
-    }
-  }
+  // void getAllSoundPacksByUserId() {
+  //   io.Socket socket = SocketService().getSocket();
+  //   try {
+  //     final data = MyAppStorage.storage.read('user_info')['_id'];
+  //     socket.emit('get_sound_packs_by_user', data);
+  //
+  //     //Get the Users SoundPacks.
+  //     socket.on(
+  //       'soundpacks',
+  //       (data) {
+  //         print('UsersSoundPacksData: $data');
+  //         controller.userSoundPacks.clear();
+  //         for (var soundPackData in data) {
+  //           SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
+  //           controller.userSoundPacks.add(soundPack);
+  //         }
+  //         debugPrint('UsersSoundPacks: ${controller.userSoundPacks.length}');
+  //       },
+  //     );
+  //   } catch (e) {
+  //     debugPrint('Error Getting SoundPacks: $e');
+  //   }
+  // }
 
   Future<void> fetchSoundPacks() async {
-    await controller.fetchSoundPacks(1);
+    await controller.fetchSoundPacks();
     debugPrint('AllSoundPacks: ${controller.allSoundPacks.length}');
   }
 
@@ -116,7 +112,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                     ];
                   },
                   body: RefreshIndicator(
-                    onRefresh: () => controller.fetchSoundPacks(1),
+                    onRefresh: () => controller.fetchSoundPacks(),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8.0,

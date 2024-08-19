@@ -10,6 +10,7 @@ import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/challenge/challenge.dart';
@@ -35,7 +36,32 @@ class _HomeScreenState extends State<HomeScreen> {
     // Initialize the socket service
     SocketService(); // This will call the constructor and initialize the socket
     connectToRoomAndWaitingToGetInvitations(context);
+    getAllSoundPacksByUserId();
     super.initState();
+  }
+
+  void getAllSoundPacksByUserId() {
+    io.Socket socket = SocketService().getSocket();
+    try {
+      final data = MyAppStorage.storage.read('user_info')['_id'];
+      socket.emit('get_sound_packs_by_user', data);
+
+      //Get the Users SoundPacks.
+      socket.on(
+        'soundpacks',
+        (data) {
+          print('UsersSoundPacksData: $data');
+          controller.userSoundPacks.clear();
+          for (var soundPackData in data) {
+            SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
+            controller.userSoundPacks.add(soundPack);
+          }
+          debugPrint('UsersSoundPacks: ${controller.userSoundPacks.length}');
+        },
+      );
+    } catch (e) {
+      debugPrint('Error Getting SoundPacks: $e');
+    }
   }
 
   void connectToRoomAndWaitingToGetInvitations(BuildContext context) {
@@ -289,6 +315,7 @@ class CreateNewChallenge extends StatelessWidget {
         showModalBottomSheet(
           backgroundColor: Colors.transparent,
           context: context,
+          useSafeArea: true,
           isScrollControlled: true,
           builder: (BuildContext context) {
             return const CreateChallenge();

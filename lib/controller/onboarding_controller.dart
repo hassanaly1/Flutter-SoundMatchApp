@@ -56,6 +56,7 @@ class OnBoardingController extends GetxController {
   skip() {
     MyAppStorage.storage.write('isFirstTime', false);
     Get.offAll(() => const LoginScreen(), transition: Transition.rightToLeft);
+    Get.delete<OnBoardingController>();
   }
 
   animateToNextSlide() {
@@ -65,6 +66,7 @@ class OnBoardingController extends GetxController {
     } else {
       MyAppStorage.storage.write('isFirstTime', false);
       Get.offAll(() => const LoginScreen(), transition: Transition.rightToLeft);
+      Get.delete<OnBoardingController>();
     }
   }
 

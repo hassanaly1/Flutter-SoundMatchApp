@@ -15,6 +15,7 @@ import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
+import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class DefaultMatchScreen extends StatefulWidget {
@@ -31,10 +32,10 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
 
   @override
   void initState() {
+    super.initState();
     controller = Get.put(DefaultMatchController());
     connectToSocket();
     controller.fetchSoundsForDefaultMatch();
-    super.initState();
   }
 
   void connectToSocket() {
@@ -66,6 +67,9 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
         controller.matchPercentage.value = data['percentage_matched'];
         controller.isResultCalculating.value = false;
         controller.isResultCalculated.value = true;
+        ToastMessage.showToastMessage(
+            message: 'Result Calculated Successfully',
+            backgroundColor: Colors.green);
       });
     } catch (e) {
       debugPrint('Socket initialization error: $e');
@@ -500,8 +504,15 @@ class CenterPart extends StatelessWidget {
                   controller.isResultCalculating.value = false;
                   controller.isResultCalculated.value = true;
                 } else {
-                  controller.isResultCalculating.value = false;
-                  controller.isResultCalculated.value = false;
+                  ToastMessage.showToastMessage(
+                      message: 'Something went wrong, please try again!',
+                      backgroundColor: Colors.red);
+                  controller.isDefaultAudioPlaying = false.obs;
+                  controller.isUserAudioPlaying = false.obs;
+                  controller.isUserRecording = false.obs;
+                  controller.isUserRecordingCompleted = false.obs;
+                  controller.isResultCalculating = false.obs;
+                  controller.isResultCalculated = false.obs;
                 }
               }
             },

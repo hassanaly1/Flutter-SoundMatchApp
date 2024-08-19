@@ -25,6 +25,8 @@ class CreateChallengeController extends GetxController {
   RxBool isSoundSelected = false.obs;
   Rx<SoundModel?> selectedSound = Rx<SoundModel?>(null);
 
+  final SoundServices _soundServices = SoundServices();
+
   void updateNumberOfRounds(int newCount) {
     numberOfRounds.value = newCount;
     passingCriteriaControllers = List.generate(
@@ -62,7 +64,7 @@ class CreateChallengeController extends GetxController {
   void _loadNextPageParticipants() async {
     isParticipantsAreLoading.value = true;
 
-    final List<Participant> nextPageParticipants = await SoundServices()
+    final List<Participant> nextPageParticipants = await _soundServices
         .fetchParticipants(searchString: '', page: _currentPage.value);
 
     // Create a Set of existing participant IDs to avoid duplicates
@@ -87,12 +89,12 @@ class CreateChallengeController extends GetxController {
   }
 
   Future<void> fetchParticipants({required String searchString}) async {
-    participants.clear();
     try {
-      List<Participant> fetchedParticipants = await SoundServices()
-          .fetchParticipants(
+      List<Participant> fetchedParticipants =
+          await _soundServices.fetchParticipants(
               searchString: searchString, page: _currentPage.value);
       debugPrint('Fetched Participants: ${fetchedParticipants.length}');
+      participants.clear();
       participants.addAll(fetchedParticipants);
       // Removing the current user from the participants list
       participants.removeWhere((participant) =>
