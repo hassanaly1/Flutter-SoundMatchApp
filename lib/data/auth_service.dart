@@ -3,9 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 
@@ -231,11 +229,9 @@ class AuthService {
         },
         body: jsonEncode(payload),
       );
-
+      debugPrint('StatusCode: ${response.statusCode}');
+      debugPrint('ResponseBody: ${response.body}');
       if (response.statusCode == 200) {
-        debugPrint('StatusCode: ${response.statusCode}');
-        debugPrint('ResponseBody: ${response.body}');
-
         return jsonDecode(response.body);
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(response.body);
@@ -348,7 +344,7 @@ class AuthService {
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         Map<String, dynamic> userData = jsonResponse['data'];
         MyAppStorage.storage.write('user_info', userData);
-        Get.find<MyUniversalController>().updateUserInfo(userData);
+        print('User Info: ${MyAppStorage.storage.read('user_info')}');
         return true;
       } else {
         debugPrint('StatusCodeIfError: ${response.statusCode}');

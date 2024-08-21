@@ -109,14 +109,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   const SizedBox(height: 12.0),
                                   Obx(
                                     () => CustomTextWidget(
-                                      // text: MyAppStorage.fullName,
-                                      text: (universalController
-                                                  .userInfo['first_name'] ??
-                                              'Guest') +
-                                          ' ' +
-                                          (universalController
-                                                  .userInfo['last_name'] ??
-                                              'User'),
+                                      text:
+                                          '${universalController.firstName.value} ${universalController.lastName.value}',
+                                      // text: (universalController
+                                      //             .userInfo['first_name'] ??
+                                      //         'Guest') +
+                                      //     ' ' +
+                                      //     (universalController
+                                      //             .userInfo['last_name'] ??
+                                      //         'User'),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 22,
                                       textColor: MyColorHelper.white,

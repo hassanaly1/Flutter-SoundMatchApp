@@ -17,6 +17,7 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/challenge_room_model.dart';
 import 'package:sound_app/models/participant_model.dart';
 import 'package:sound_app/utils/storage_helper.dart';
+import 'package:sound_app/view/home_screen.dart';
 
 class ChallengeRoomScreen extends StatefulWidget {
   const ChallengeRoomScreen({super.key});
@@ -32,7 +33,10 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
   @override
   void initState() {
     super.initState();
-    Get.delete<CreateChallengeController>();
+
+    if (Get.isRegistered<CreateChallengeController>()) {
+      Get.delete<CreateChallengeController>();
+    }
     controller = Get.put(ChallengeController());
     callSockets();
   }
@@ -247,103 +251,139 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Stack(
-      fit: StackFit.expand,
-      children: [
-        SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
-        BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Obx(
-              () => controller.totalParticipants.value.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: context.height * 0.03,
-                          horizontal: context.width * 0.02),
-                      child: GetBuilder<ChallengeController>(
-                        init: controller,
-                        builder: (controller) {
-                          return Stack(
-                            children: [
-                              Column(
-                                children: [
-                                  TopContainer(
-                                    controller: controller,
-                                    model: model!,
-                                  ),
-                                  Expanded(
-                                    child: GridView.builder(
-                                      shrinkWrap: true,
-                                      itemCount:
-                                          controller.totalParticipants.length,
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        mainAxisSpacing: 0.0,
-                                        crossAxisSpacing: 120.0,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final participant =
-                                            controller.totalParticipants[index];
-                                        return CustomUserCard(
-                                          participant: participant,
-                                          isCurrentTurn: controller
-                                                  .currentTurnParticipantId
-                                                  .value ==
-                                              participant.id,
-                                          index: index,
-                                          hasChallengeStarted: controller
-                                              .hasChallengeStarted.value,
-                                        );
-                                      },
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        Get.offAll(() => const HomeScreen());
+        if (Get.isRegistered<ChallengeController>()) {
+          Get.delete<ChallengeController>();
+        }
+      },
+      child: SafeArea(
+          child: Stack(
+        fit: StackFit.expand,
+        children: [
+          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Obx(
+                () => controller.totalParticipants.value.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: context.height * 0.03,
+                            horizontal: context.width * 0.02),
+                        child: GetBuilder<ChallengeController>(
+                          init: controller,
+                          builder: (controller) {
+                            return Stack(
+                              children: [
+                                Column(
+                                  children: [
+                                    TopContainer(
+                                      controller: controller,
+                                      model: model!,
                                     ),
-                                  )
-                                ],
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: context.height * 0.15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Obx(
-                                        () => Visibility(
-                                          visible:
-                                              controller.isUserRecording.value,
-                                          child: Lottie.asset(
-                                            MyAssetHelper.musicLoading,
-                                            width: 60,
-                                            height: 60,
-                                            fit: BoxFit.fill,
+                                    Expanded(
+                                      child: GridView.builder(
+                                        shrinkWrap: true,
+                                        itemCount:
+                                            controller.totalParticipants.length,
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          mainAxisSpacing: 0.0,
+                                          crossAxisSpacing: 120.0,
+                                        ),
+                                        itemBuilder: (context, index) {
+                                          final participant = controller
+                                              .totalParticipants[index];
+                                          return CustomUserCard(
+                                            participant: participant,
+                                            isCurrentTurn: controller
+                                                    .currentTurnParticipantId
+                                                    .value ==
+                                                participant.id,
+                                            index: index,
+                                            hasChallengeStarted: controller
+                                                .hasChallengeStarted.value,
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: context.height * 0.15),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Obx(
+                                          () => Visibility(
+                                            visible: controller
+                                                .isUserRecording.value,
+                                            child: Lottie.asset(
+                                              MyAssetHelper.musicLoading,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.fill,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Visibility(
-                                        // visible: controller
-                                        //         .currentTurnIndex.value ==
-                                        //     controller.currentUserIndex.value,
-                                        visible: model!.currentTurnHolder?.id ==
-                                                MyAppStorage.storage
-                                                    .read('user_info')['_id'] &&
-                                            controller
-                                                .hasChallengeStarted.value,
-                                        child: GestureDetector(
-                                          onLongPress:
-                                              controller.onLongPressedStart,
-                                          onLongPressEnd: (details) =>
-                                              controller.onLongPressedEnd(
-                                            userId: controller
-                                                .currentTurnParticipantId.value,
-                                            roomId: model!.id!,
+                                        Visibility(
+                                          // visible: controller
+                                          //         .currentTurnIndex.value ==
+                                          //     controller.currentUserIndex.value,
+                                          visible:
+                                              model!.currentTurnHolder?.id ==
+                                                      MyAppStorage.storage.read(
+                                                          'user_info')['_id'] &&
+                                                  controller.hasChallengeStarted
+                                                      .value,
+                                          child: GestureDetector(
+                                            onLongPress:
+                                                controller.onLongPressedStart,
+                                            onLongPressEnd: (details) =>
+                                                controller.onLongPressedEnd(
+                                              userId: controller
+                                                  .currentTurnParticipantId
+                                                  .value,
+                                              roomId: model!.id!,
+                                            ),
+                                            child: Container(
+                                              height: 80,
+                                              margin: const EdgeInsets.all(10),
+                                              padding: const EdgeInsets.all(20),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade300,
+                                                  boxShadow: const [
+                                                    BoxShadow(
+                                                      color: Colors.black26,
+                                                      blurRadius: 15.0,
+                                                      spreadRadius: 4.0,
+                                                      offset: Offset(5.0, 5.0),
+                                                    )
+                                                  ],
+                                                  shape: BoxShape.circle),
+                                              child: Image.asset(
+                                                  MyAssetHelper.mic),
+                                            ),
                                           ),
+                                        ),
+
+                                        /// Countdown Timer
+                                        Visibility(
+                                          visible: controller
+                                              .hasChallengeStarted.value,
                                           child: Container(
                                             height: 80,
-                                            margin: const EdgeInsets.all(10),
+                                            margin: const EdgeInsets.symmetric(
+                                                vertical: 14, horizontal: 10),
                                             padding: const EdgeInsets.all(20),
                                             decoration: BoxDecoration(
                                                 color: Colors.grey.shade300,
@@ -356,95 +396,71 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                                   )
                                                 ],
                                                 shape: BoxShape.circle),
-                                            child:
-                                                Image.asset(MyAssetHelper.mic),
-                                          ),
-                                        ),
-                                      ),
-
-                                      /// Countdown Timer
-                                      Visibility(
-                                        visible: controller
-                                            .hasChallengeStarted.value,
-                                        child: Container(
-                                          height: 80,
-                                          margin: const EdgeInsets.symmetric(
-                                              vertical: 14, horizontal: 10),
-                                          padding: const EdgeInsets.all(20),
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey.shade300,
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 15.0,
-                                                  spreadRadius: 4.0,
-                                                  offset: Offset(5.0, 5.0),
-                                                )
-                                              ],
-                                              shape: BoxShape.circle),
-                                          child: Center(
-                                            child: Obx(
-                                              () => Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  CircularProgressIndicator(
-                                                    value: controller
-                                                            .currentTurnDuration
-                                                            .value /
-                                                        controller
-                                                            .originalTurnDuration
-                                                            .toDouble(),
-                                                    strokeWidth: 4.0,
-                                                    valueColor:
-                                                        const AlwaysStoppedAnimation<
-                                                                Color>(
-                                                            MyColorHelper
-                                                                .caribbeanCurrent),
-                                                  ),
-                                                  CustomTextWidget(
-                                                    text: controller
-                                                        .currentTurnDuration
-                                                        .value
-                                                        .toString(),
-                                                    fontSize: 20.0,
-                                                    fontFamily: 'Poppins',
-                                                    fontWeight: FontWeight.w600,
-                                                    textColor: MyColorHelper
-                                                        .caribbeanCurrent,
-                                                  ),
-                                                ],
+                                            child: Center(
+                                              child: Obx(
+                                                () => Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    CircularProgressIndicator(
+                                                      value: controller
+                                                              .currentTurnDuration
+                                                              .value /
+                                                          controller
+                                                              .originalTurnDuration
+                                                              .toDouble(),
+                                                      strokeWidth: 4.0,
+                                                      valueColor:
+                                                          const AlwaysStoppedAnimation<
+                                                                  Color>(
+                                                              MyColorHelper
+                                                                  .caribbeanCurrent),
+                                                    ),
+                                                    CustomTextWidget(
+                                                      text: controller
+                                                          .currentTurnDuration
+                                                          .value
+                                                          .toString(),
+                                                      fontSize: 20.0,
+                                                      fontFamily: 'Poppins',
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      textColor: MyColorHelper
+                                                          .caribbeanCurrent,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              // Obx(
-                              //   () => BackdropFilter(
-                              //     filter: ImageFilter.blur(
-                              //       sigmaX: controller.isRoundCompleted.value
-                              //           ? 5
-                              //           : 0,
-                              //       sigmaY: controller.isRoundCompleted.value
-                              //           ? 5
-                              //           : 0,
-                              //     ),
-                              //     child: const SizedBox(),
-                              //   ),
-                              // )
-                            ],
-                          );
-                        },
+                                Obx(
+                                  () => BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: controller.isRoundCompleted.value
+                                          ? 5
+                                          : 0,
+                                      sigmaY: controller.isRoundCompleted.value
+                                          ? 5
+                                          : 0,
+                                    ),
+                                    child: const SizedBox(),
+                                  ),
+                                )
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                    ),
+              ),
             ),
-          ),
-        )
-      ],
-    ));
+          )
+        ],
+      )),
+    );
   }
 }
 

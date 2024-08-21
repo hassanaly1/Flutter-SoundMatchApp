@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundGradient: const LinearGradient(
                 colors: [Color(0XFF00B4B2), Color(0XFF03827B)]),
             isDismissible: false,
-            duration: const Duration(seconds: 10),
+            duration: const Duration(seconds: 5),
             icon: const Icon(Icons.gamepad, color: Colors.black54),
             mainButton: Row(
               children: [
@@ -135,13 +135,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(4.0),
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.redAccent),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
+                  child: InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4.0),
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.redAccent),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),

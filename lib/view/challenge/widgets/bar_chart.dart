@@ -138,6 +138,7 @@ class _MyBarChartState extends State<MyBarChart> {
                           .map((e) {
                         final index = e.key;
                         final data = e.value;
+                        print('index: $index, data: ${data.roomOne}');
                         return generateBarGroup(
                           index,
                           data.roomOne?.toDouble() ?? 0,

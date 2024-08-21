@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -34,13 +33,16 @@ class _ResultScreenState extends State<ResultScreen> {
   final ChallengeController controller = Get.find();
   Timer? _timer;
   bool timerCompleted = false;
-  RxInt currentIndex = 0.obs;
 
   @override
   void initState() {
     super.initState();
+    // controller.isChallengeCompleted.value =
+    //     widget.model.nextRoomUsers!.isEmpty ? true : false;
     controller.isChallengeCompleted.value =
-        widget.model.nextRoomUsers!.isEmpty ? true : false;
+        widget.model.nextRoom == null ? true : false;
+    print(
+        'isChallengeCompletedOnInitCheck: ${controller.isChallengeCompleted.value}');
     _startTimer();
   }
 
@@ -58,6 +60,9 @@ class _ResultScreenState extends State<ResultScreen> {
           timerCompleted = true;
           controller.resetControllerValues();
 
+          // if (controller.isChallengeCompleted.value) {
+          //   Get.offAll(() => const HomeScreen());
+          // }
           // Check user qualification and navigate accordingly
           bool isCurrentUserQualified = widget.model.nextRoomUsers?.any(
                   (user) =>
@@ -68,6 +73,9 @@ class _ResultScreenState extends State<ResultScreen> {
             nextRoom();
           } else {
             Get.offAll(() => const HomeScreen());
+            if (Get.isRegistered<ChallengeController>()) {
+              Get.delete<ChallengeController>();
+            }
           }
         }
       });
@@ -84,9 +92,6 @@ class _ResultScreenState extends State<ResultScreen> {
         'user_id': MyAppStorage.storage.read('user_info')['_id'],
         'room_id': challengeRoomId,
       },
-    );
-    Get.to(
-      () => const ChallengeRoomScreen(),
     );
   }
 
@@ -122,6 +127,9 @@ class _ResultScreenState extends State<ResultScreen> {
                     TextButton(
                       onPressed: () {
                         Get.offAll(() => const HomeScreen());
+                        if (Get.isRegistered<ChallengeController>()) {
+                          Get.delete<ChallengeController>();
+                        }
                       },
                       child: const CustomTextWidget(
                         text: 'Exit',
@@ -202,13 +210,13 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 }
 
-class UserResultPreview extends StatefulWidget {
+class UserResultPreview extends StatelessWidget {
   final ResultModel model;
   final bool isOverAllResult;
   final bool timerCompleted;
   final RxInt countdownValue;
 
-  const UserResultPreview({
+  UserResultPreview({
     super.key,
     required this.model,
     required this.isOverAllResult,
@@ -216,44 +224,27 @@ class UserResultPreview extends StatefulWidget {
     required this.countdownValue,
   });
 
-  @override
-  State<UserResultPreview> createState() => _UserResultPreviewState();
-}
-
-class _UserResultPreviewState extends State<UserResultPreview>
-    with AutomaticKeepAliveClientMixin {
   io.Socket socket = SocketService().getSocket();
+
   final ChallengeController controller = Get.find();
+
   final CarouselController carouselController = CarouselController();
-  late ConfettiController confettiController;
-  final RxBool isFirstIndex = true.obs;
-  RxInt currentIndex = 0.obs;
 
-  @override
-  void initState() {
-    super.initState();
-    confettiController = ConfettiController();
-  }
-
-  @override
-  void dispose() {
-    confettiController.dispose();
-    super.dispose();
-  }
+  // late ConfettiController confettiController;
+  // RxInt currentIndex = 0.obs;
 
   @override
   Widget build(BuildContext context) {
     debugPrint(
         'IsChallengeCompleted: ${controller.isChallengeCompleted.value}');
-    bool isCurrentUserQualified = widget.model.nextRoomUsers?.any((user) =>
+    bool isCurrentUserQualified = model.nextRoomUsers?.any((user) =>
             user.id == MyAppStorage.storage.read('user_info')['_id']) ??
         false;
-    super.build(context); // AutomaticKeepAliveClientMixin
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        widget.isOverAllResult
+        isOverAllResult
             ? const SizedBox()
             : SizedBox(height: context.height * 0.1),
         CarouselSlider.builder(
@@ -263,24 +254,23 @@ class _UserResultPreviewState extends State<UserResultPreview>
             viewportFraction: 0.6,
             enableInfiniteScroll: false,
             initialPage: 0,
-            onPageChanged: (index, reason) {
-              currentIndex.value = index;
-            },
+            // onPageChanged: (index, reason) {
+            //   currentIndex.value = index;
+            // },
           ),
-          itemCount: widget.model.usersResult!.length,
+          itemCount: model.usersResult!.length,
           itemBuilder: (BuildContext context, int index, _) {
-            bool isQualified =
-                widget.model.usersResult?[index].isQualified ?? false;
+            bool isQualified = model.usersResult?[index].isQualified ?? false;
             return UserResultCard(
               index: index,
-              resultModel: widget.model,
+              resultModel: model,
               isQualified: isQualified,
-              isOverAllResult: widget.isOverAllResult,
+              isOverAllResult: isOverAllResult,
             );
           },
         ),
         buildCarouselControls(),
-        widget.isOverAllResult
+        isOverAllResult
             ? const SizedBox()
             : CustomAuthButton(
                 isLoading: false,
@@ -291,7 +281,7 @@ class _UserResultPreviewState extends State<UserResultPreview>
                       : Get.offAll(() => const HomeScreen());
                 },
               ),
-        widget.isOverAllResult
+        isOverAllResult
             ? const SizedBox()
             : SizedBox(height: context.height * 0.1),
       ],
@@ -300,7 +290,7 @@ class _UserResultPreviewState extends State<UserResultPreview>
 
   void nextRoom() {
     Get.offAll(() => const ChallengeRoomScreen());
-    String challengeRoomId = widget.model.nextRoom ?? '';
+    String challengeRoomId = model.nextRoom ?? '';
     debugPrint('Going to Next Room: $challengeRoomId');
     socket.emit(
       'entry_to_challenge_room',
@@ -314,16 +304,7 @@ class _UserResultPreviewState extends State<UserResultPreview>
     );
   }
 
-  void onPageChanged(int index, CarouselPageChangedReason reason) {
-    if (index == 0) {
-      isFirstIndex.value = true;
-      confettiController.play();
-    } else {
-      isFirstIndex.value = false;
-      confettiController.stop();
-    }
-  }
-
+  // void onPageChanged(int index, CarouselPageChangedReason reason) {
   Widget buildCarouselControls() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -353,13 +334,13 @@ class _UserResultPreviewState extends State<UserResultPreview>
                   alignment: Alignment.center,
                   children: [
                     CircularProgressIndicator(
-                      value: widget.countdownValue.value / 60,
+                      value: countdownValue.value / 60,
                       strokeWidth: 4.0,
                       valueColor: const AlwaysStoppedAnimation<Color>(
                           MyColorHelper.caribbeanCurrent),
                     ),
                     CustomTextWidget(
-                      text: widget.countdownValue.value.toString(),
+                      text: countdownValue.value.toString(),
                       fontSize: 18.0,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
@@ -386,7 +367,4 @@ class _UserResultPreviewState extends State<UserResultPreview>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

@@ -27,6 +27,8 @@ class MyUniversalController extends GetxController {
 
   final storage = MyAppStorage.storage;
   XFile? userImage;
+  RxString firstName = ''.obs;
+  RxString lastName = ''.obs;
   RxString userImageURL = ''.obs;
   Uint8List? userImageInBytes;
   RxMap userInfo = {}.obs;
@@ -59,6 +61,8 @@ class MyUniversalController extends GetxController {
     userInfo.value = storage.read('user_info') ?? {};
     // userImageURL.value = MyAppStorage.userProfilePicture ?? '';
     userImageURL.value = userInfo.value['profile'] ?? '';
+    firstName.value = userInfo.value['first_name'] ?? 'Guest';
+    lastName.value = userInfo.value['last_name'] ?? 'User';
     debugPrint('UserImageAtStart: $userImageURL');
 
     scrollController.addListener(() {

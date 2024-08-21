@@ -42,11 +42,12 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                 Obx(
                   () => CustomTextField(
                     hintText: firstNameController.text =
-                        universalController.userInfo['first_name'] ?? 'Guest',
+                        universalController.userInfo.value['first_name'] ??
+                            'Guest',
                     labelText: "First Name",
                     controller: firstNameController,
                     onTap: () => firstNameController.text =
-                        universalController.userInfo['first_name'] ?? '',
+                        universalController.userInfo.value['first_name'] ?? '',
                     validator: (p0) => AppValidator.validateEmptyText(
                       fieldName: 'First Name',
                       value: p0,
@@ -134,7 +135,8 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
       isLoading.value = false;
 
       if (success) {
-        setState(() {});
+        universalController.firstName.value = firstNameController.text;
+        universalController.lastName.value = lastNameController.text;
         ToastMessage.showToastMessage(
             message: 'Profile updated successfully',
             backgroundColor: Colors.green);

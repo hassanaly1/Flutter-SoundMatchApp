@@ -45,7 +45,7 @@ class ChallengeController extends GetxController {
   RxBool isRoundCompleted = false.obs;
 
   RxBool isChallengeCompleted = false.obs;
-  RxInt countdownForNextRound = 20.obs;
+  RxInt countdownForNextRound = 60.obs;
 
   var totalParticipants = <Participant>[].obs;
 
@@ -218,7 +218,7 @@ class ChallengeController extends GetxController {
     eventCount++;
     // debugPrint('Event fired $eventCount times.');
     socket.on('challenge_result', (data) {
-      // print(data);
+      print('MyAllRoomResultData: ${data['all_room_results']}');
       if (data != null) {
         resultModel = ResultModel.fromJson(data);
         debugPrint('NextRoomUsers: ${resultModel?.nextRoomUsers?.length}');

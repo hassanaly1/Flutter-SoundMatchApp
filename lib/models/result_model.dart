@@ -37,10 +37,10 @@ class ResultModel {
           : List<UsersResult>.from(
               json["users_result"]!.map((x) => UsersResult.fromJson(x))),
       nextRoom: json["next_room"],
-      allRoomResult: json["all_room_result"] == null
+      allRoomResult: json["all_room_results"] == null
           ? []
           : List<AllRoomResult>.from(
-              json["all_room_result"]!.map((x) => AllRoomResult.fromJson(x))),
+              json["all_room_results"]!.map((x) => AllRoomResult.fromJson(x))),
     );
   }
 
@@ -162,13 +162,16 @@ class AllRoomResult {
     this.roomThree,
   });
 
-  factory AllRoomResult.fromJson(Map<String, dynamic> json) => AllRoomResult(
-        participant:
-            json["user"] == null ? null : Participant.fromJson(json["user"]),
-        roomOne: json["room_one"],
-        roomTwo: json["room_two"],
-        roomThree: json["room_three"],
-      );
+  factory AllRoomResult.fromJson(Map<String, dynamic> json) {
+    // print('AllRoomResultInJson: $json');
+    return AllRoomResult(
+      participant:
+          json["user"] == null ? null : Participant.fromJson(json["user"]),
+      roomOne: json["room_one"],
+      roomTwo: json["room_two"],
+      roomThree: json["room_three"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "user": participant?.toJson(),

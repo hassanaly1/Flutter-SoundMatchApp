@@ -88,7 +88,9 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
       canPop: false,
       onPopInvoked: (didPop) {
         Get.offAll(() => const HomeScreen());
-        Get.delete<DefaultMatchController>();
+        if (Get.isRegistered<DefaultMatchController>()) {
+          Get.delete<DefaultMatchController>();
+        }
       },
       child: SafeArea(
           child: Stack(
@@ -165,11 +167,13 @@ class TopContainer extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const CustomTextWidget(
-                  text: "Free Sound Match",
-                  fontFamily: "Horta",
-                  textColor: MyColorHelper.white,
-                  fontSize: 26,
+                const Expanded(
+                  child: CustomTextWidget(
+                    text: "Free Sound Match",
+                    fontFamily: "Horta",
+                    textColor: MyColorHelper.white,
+                    fontSize: 22,
+                  ),
                 ),
                 Obx(
                   () => Container(
@@ -388,7 +392,10 @@ class CenterPart extends StatelessWidget {
                     isLoading: false,
                     text: 'Back to Dashboard',
                     onTap: () {
-                      Get.delete<DefaultMatchController>();
+                      if (Get.isRegistered<DefaultMatchController>()) {
+                        Get.delete<DefaultMatchController>();
+                      }
+
                       Get.back();
                     },
                   ),
