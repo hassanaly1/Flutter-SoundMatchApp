@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -64,12 +63,14 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
 
       socket.on(ApiEndPoints.showTestMatchResult, (data) {
         debugPrint('Received Calculation Result: $data');
-        controller.matchPercentage.value = data['percentage_matched'];
-        controller.isResultCalculating.value = false;
-        controller.isResultCalculated.value = true;
-        ToastMessage.showToastMessage(
-            message: 'Result Calculated Successfully',
-            backgroundColor: Colors.green);
+        if (data != null) {
+          controller.matchPercentage.value = data['percentage_matched'];
+          controller.isResultCalculating.value = false;
+          controller.isResultCalculated.value = true;
+          ToastMessage.showToastMessage(
+              message: 'Result Calculated Successfully',
+              backgroundColor: Colors.green);
+        }
       });
     } catch (e) {
       debugPrint('Socket initialization error: $e');
@@ -96,7 +97,7 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
           child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
           BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: Scaffold(
@@ -407,9 +408,11 @@ class CenterPart extends StatelessWidget {
                 ],
               )
             : controller.isResultCalculating.value
-                ? const Center(
-                    heightFactor: 10,
-                    child: CircularProgressIndicator(color: Colors.white),
+                ? Center(
+                    child: Lottie.asset(
+                      MyAssetHelper.thinkLoader,
+                      height: 100,
+                    ),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/carousel_controller.dart';
@@ -29,14 +28,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late MyUniversalController controller;
+  late GuestController guestController;
 
   @override
   void initState() {
     controller = Get.put(MyUniversalController());
-    // Initialize the socket service
-    SocketService(); // This will call the constructor and initialize the socket
-    connectToRoomAndWaitingToGetInvitations(context);
-    getAllSoundPacksByUserId();
+    guestController = Get.find();
+    if (guestController.isGuestUser.value == false) {
+      // Initialize the socket service
+      SocketService(); // This will call the constructor and initialize the socket
+      connectToRoomAndWaitingToGetInvitations(context);
+      getAllSoundPacksByUserId();
+    }
+
     super.initState();
   }
 
@@ -50,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
       socket.on(
         'soundpacks',
         (data) {
-          print('UsersSoundPacksData: $data');
           controller.userSoundPacks.clear();
           for (var soundPackData in data) {
             SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
@@ -184,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Stack(fit: StackFit.expand, children: [
-        SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+        Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
         Scaffold(
             backgroundColor: Colors.transparent,
             body: SingleChildScrollView(
@@ -250,7 +253,7 @@ class SoundPacksContainer extends StatelessWidget {
           child: InkWell(
             onTap: action,
             child: Stack(children: [
-              SvgPicture.asset(
+              Image.asset(
                 MyAssetHelper.soundPackBackground,
                 height: context.height * 0.3,
                 fit: BoxFit.cover,

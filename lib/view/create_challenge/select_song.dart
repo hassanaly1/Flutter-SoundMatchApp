@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/controller/universal_controller.dart';
@@ -41,7 +40,7 @@ class _SelectSongsScreenState extends State<SelectSongsScreen> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.only(top: 12.0),
             child: BackdropFilter(

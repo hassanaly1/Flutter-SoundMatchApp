@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
@@ -28,30 +27,6 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
     super.initState();
   }
 
-  // void getAllSoundPacksByUserId() {
-  //   io.Socket socket = SocketService().getSocket();
-  //   try {
-  //     final data = MyAppStorage.storage.read('user_info')['_id'];
-  //     socket.emit('get_sound_packs_by_user', data);
-  //
-  //     //Get the Users SoundPacks.
-  //     socket.on(
-  //       'soundpacks',
-  //       (data) {
-  //         print('UsersSoundPacksData: $data');
-  //         controller.userSoundPacks.clear();
-  //         for (var soundPackData in data) {
-  //           SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
-  //           controller.userSoundPacks.add(soundPack);
-  //         }
-  //         debugPrint('UsersSoundPacks: ${controller.userSoundPacks.length}');
-  //       },
-  //     );
-  //   } catch (e) {
-  //     debugPrint('Error Getting SoundPacks: $e');
-  //   }
-  // }
-
   Future<void> fetchSoundPacks() async {
     await controller.fetchSoundPacks();
     debugPrint('AllSoundPacks: ${controller.allSoundPacks.length}');
@@ -63,7 +38,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.only(top: 12.0),
             child: BackdropFilter(
@@ -81,7 +56,7 @@ class _PurchaseSongsScreenState extends State<PurchaseSongsScreen> {
                         }
                       },
                       icon: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white70)),
+                          color: Colors.white)),
                   iconTheme:
                       const IconThemeData(color: Colors.white60, size: 30.0),
                   backgroundColor: Colors.transparent,

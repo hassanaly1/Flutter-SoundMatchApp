@@ -30,6 +30,8 @@ class AuthController extends GetxController {
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController otpController = TextEditingController();
 
+  final AuthService authService = AuthService();
+
   // void saveUserInfo(Map<String, dynamic> userInfo) {
   //   MyAppStorage.storage.write('user_info', userInfo);
   // }
@@ -43,7 +45,7 @@ class AuthController extends GetxController {
 
       try {
         // Call the registerUser method in AuthService and handle the response
-        Map<String, dynamic> response = await AuthService().registerUser(
+        Map<String, dynamic> response = await authService.registerUser(
           firstName: firstNameController.text.trim(),
           lastName: lastNameController.text.trim(),
           email: emailController.text.trim(),
@@ -83,7 +85,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       try {
-        Map<String, dynamic> response = await AuthService().verifyEmail(
+        Map<String, dynamic> response = await authService.verifyEmail(
           email: emailController.text.trim(),
           otp: otpController.text.trim(),
         );
@@ -114,7 +116,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       try {
-        Map<String, dynamic> response = await AuthService().loginUser(
+        Map<String, dynamic> response = await authService.loginUser(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
@@ -139,7 +141,7 @@ class AuthController extends GetxController {
           clearAllControllers();
         } else {
           response['message'] == 'Please Verify Your Email First'
-              ? Get.to(() => const VerifyEmailScreen(),
+              ? Get.to(() => VerifyEmailScreen(),
                   transition: Transition.rightToLeft)
               : null;
           ToastMessage.showToastMessage(message: response['message']);
@@ -160,7 +162,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       try {
-        final bool isSuccess = await AuthService().sendOtp(
+        final bool isSuccess = await authService.sendOtp(
           email: emailController.text.trim(),
         );
 
@@ -197,7 +199,7 @@ class AuthController extends GetxController {
       print(otpController.text.trim());
 
       try {
-        Map<String, dynamic> response = await AuthService().verifyOtp(
+        Map<String, dynamic> response = await authService.verifyOtp(
           email: emailController.text.trim(),
           otp: otpController.text.trim(),
         );
@@ -210,7 +212,7 @@ class AuthController extends GetxController {
           // Accessing the token correctly
           String token = response['data'][0]['token'];
           MyAppStorage.storage.write('token', token);
-          Get.offAll(() => const ChangePasswordScreen());
+          Get.offAll(() => ChangePasswordScreen());
 
           clearAllControllers();
         } else {
@@ -233,11 +235,10 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       try {
-        Map<String, dynamic> response = await AuthService().changePassword(
+        Map<String, dynamic> response = await authService.changePassword(
           password: passwordController.text.trim(),
           confirmPassword: confirmPasswordController.text.trim(),
         );
-        print(response);
         if (response['status'] == 'success') {
           ToastMessage.showToastMessage(
             message: 'Password Changed Successfully, Please Login Again',
@@ -267,16 +268,5 @@ class AuthController extends GetxController {
     verifyEmailController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
-  }
-
-  @override
-  void onClose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    emailController.dispose();
-    verifyEmailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.onClose();
   }
 }

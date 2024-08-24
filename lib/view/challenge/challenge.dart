@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -263,7 +262,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
           child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: Scaffold(
@@ -484,7 +483,7 @@ class CalculatingResultPopup extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SvgPicture.asset(
+          Image.asset(
             MyAssetHelper.robot,
             height: context.height * 0.15,
           ),

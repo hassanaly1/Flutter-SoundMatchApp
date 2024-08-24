@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
@@ -39,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: Scaffold(
@@ -67,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   //appbar
-                                  const CustomAppbar(showLogoutIcon: true),
+                                  CustomAppbar(showLogoutIcon: true),
 
                                   InkWell(
                                     // onTap: updateUserImage,

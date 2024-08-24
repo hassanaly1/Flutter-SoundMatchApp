@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/challenge_controller.dart';
@@ -41,7 +40,7 @@ class _ResultScreenState extends State<ResultScreen> {
     //     widget.model.nextRoomUsers!.isEmpty ? true : false;
     controller.isChallengeCompleted.value =
         widget.model.nextRoom == null ? true : false;
-    print(
+    debugPrint(
         'isChallengeCompletedOnInitCheck: ${controller.isChallengeCompleted.value}');
     _startTimer();
   }
@@ -107,7 +106,7 @@ class _ResultScreenState extends State<ResultScreen> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
           DefaultTabController(
             length: 2,
             child: BackdropFilter(
@@ -210,13 +209,13 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 }
 
-class UserResultPreview extends StatelessWidget {
+class UserResultPreview extends StatefulWidget {
   final ResultModel model;
   final bool isOverAllResult;
   final bool timerCompleted;
   final RxInt countdownValue;
 
-  UserResultPreview({
+  const UserResultPreview({
     super.key,
     required this.model,
     required this.isOverAllResult,
@@ -224,6 +223,11 @@ class UserResultPreview extends StatelessWidget {
     required this.countdownValue,
   });
 
+  @override
+  State<UserResultPreview> createState() => _UserResultPreviewState();
+}
+
+class _UserResultPreviewState extends State<UserResultPreview> {
   io.Socket socket = SocketService().getSocket();
 
   final ChallengeController controller = Get.find();
@@ -231,20 +235,18 @@ class UserResultPreview extends StatelessWidget {
   final CarouselController carouselController = CarouselController();
 
   // late ConfettiController confettiController;
-  // RxInt currentIndex = 0.obs;
-
   @override
   Widget build(BuildContext context) {
     debugPrint(
         'IsChallengeCompleted: ${controller.isChallengeCompleted.value}');
-    bool isCurrentUserQualified = model.nextRoomUsers?.any((user) =>
+    bool isCurrentUserQualified = widget.model.nextRoomUsers?.any((user) =>
             user.id == MyAppStorage.storage.read('user_info')['_id']) ??
         false;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        isOverAllResult
+        widget.isOverAllResult
             ? const SizedBox()
             : SizedBox(height: context.height * 0.1),
         CarouselSlider.builder(
@@ -258,19 +260,20 @@ class UserResultPreview extends StatelessWidget {
             //   currentIndex.value = index;
             // },
           ),
-          itemCount: model.usersResult!.length,
+          itemCount: widget.model.usersResult!.length,
           itemBuilder: (BuildContext context, int index, _) {
-            bool isQualified = model.usersResult?[index].isQualified ?? false;
+            bool isQualified =
+                widget.model.usersResult?[index].isQualified ?? false;
             return UserResultCard(
               index: index,
-              resultModel: model,
+              resultModel: widget.model,
               isQualified: isQualified,
-              isOverAllResult: isOverAllResult,
+              isOverAllResult: widget.isOverAllResult,
             );
           },
         ),
         buildCarouselControls(),
-        isOverAllResult
+        widget.isOverAllResult
             ? const SizedBox()
             : CustomAuthButton(
                 isLoading: false,
@@ -281,7 +284,7 @@ class UserResultPreview extends StatelessWidget {
                       : Get.offAll(() => const HomeScreen());
                 },
               ),
-        isOverAllResult
+        widget.isOverAllResult
             ? const SizedBox()
             : SizedBox(height: context.height * 0.1),
       ],
@@ -290,7 +293,7 @@ class UserResultPreview extends StatelessWidget {
 
   void nextRoom() {
     Get.offAll(() => const ChallengeRoomScreen());
-    String challengeRoomId = model.nextRoom ?? '';
+    String challengeRoomId = widget.model.nextRoom ?? '';
     debugPrint('Going to Next Room: $challengeRoomId');
     socket.emit(
       'entry_to_challenge_room',
@@ -334,13 +337,13 @@ class UserResultPreview extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     CircularProgressIndicator(
-                      value: countdownValue.value / 60,
+                      value: widget.countdownValue.value / 60,
                       strokeWidth: 4.0,
                       valueColor: const AlwaysStoppedAnimation<Color>(
                           MyColorHelper.caribbeanCurrent),
                     ),
                     CustomTextWidget(
-                      text: countdownValue.value.toString(),
+                      text: widget.countdownValue.value.toString(),
                       fontSize: 18.0,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,

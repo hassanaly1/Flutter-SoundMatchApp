@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sound_app/controller/carousel_controller.dart';
@@ -34,6 +33,8 @@ class CreateChallenge extends StatefulWidget {
 class _CreateChallengeState extends State<CreateChallenge> {
   late CreateChallengeController controller;
   final MyUniversalController universalController = Get.find();
+  final PageController pageController = PageController(initialPage: 0);
+  RxInt currentPage = 0.obs;
 
   @override
   void initState() {
@@ -44,9 +45,6 @@ class _CreateChallengeState extends State<CreateChallenge> {
 
   @override
   Widget build(BuildContext context) {
-    final PageController pageController = PageController(initialPage: 0);
-    RxInt currentPage = 0.obs;
-
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -54,7 +52,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+          Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: Scaffold(
@@ -64,7 +62,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(top: 16.0),
                         child: CustomAppbar(),
                       ),
@@ -496,29 +494,4 @@ class _CreateChallengeState extends State<CreateChallenge> {
       );
     }).toList();
   }
-
-// void getAllSoundPacksByUserId() {
-//   io.Socket socket = SocketService().getSocket();
-//   try {
-//     final data = MyAppStorage.storage.read('user_info')['_id'];
-//     socket.emit('get_sound_packs_by_user', data);
-//
-//     //Get the Users SoundPacks.
-//     socket.on(
-//       'soundpacks',
-//       (data) {
-//         print('UsersSoundPacksData: $data');
-//         universalController.userSoundPacks.clear();
-//         for (var soundPackData in data) {
-//           SoundPackModel soundPack = SoundPackModel.fromJson(soundPackData);
-//           universalController.userSoundPacks.add(soundPack);
-//         }
-//         debugPrint(
-//             'UsersSoundPacks: ${universalController.userSoundPacks.length}');
-//       },
-//     );
-//   } catch (e) {
-//     debugPrint('Error Getting SoundPacks: $e');
-//   }
-// }
 }

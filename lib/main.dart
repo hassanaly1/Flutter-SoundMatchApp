@@ -99,7 +99,7 @@ class AuthCheck extends StatelessWidget {
           return SplashScreen();
         } else {
           if (authController.isFirstTime.value) {
-            return const OnBoardingScreen();
+            return OnBoardingScreen();
           } else if (MyAppStorage.storage.read('token') != null &&
               authController.isTokenValid.value) {
             return const HomeScreen();

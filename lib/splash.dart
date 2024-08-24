@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:sound_app/helper/asset_helper.dart';
 
-class SplashScreen extends StatelessWidget {
-  SplashScreen({super.key});
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
-  final GetStorage storage = GetStorage();
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
 
+class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // SvgPicture.asset(
-        //   'assets/svgs/auth-background.svg',
-        //   fit: BoxFit.cover,
-        // ),
+        Image.asset(
+          MyAssetHelper.authBackground,
+          fit: BoxFit.cover,
+        ),
         Scaffold(
           backgroundColor: Colors.black,
           body: Center(

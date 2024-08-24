@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
@@ -11,21 +10,27 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 
-class SoundPackList extends StatelessWidget {
+class SoundPackList extends StatefulWidget {
   final SoundPackModel soundPackModel;
   final List<SoundModel> sounds;
 
-  SoundPackList(
+  const SoundPackList(
       {super.key, required this.soundPackModel, required this.sounds});
 
+  @override
+  State<SoundPackList> createState() => _SoundPackListState();
+}
+
+class _SoundPackListState extends State<SoundPackList> {
   var isSoundPlaying = false.obs;
+
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Stack(fit: StackFit.expand, children: [
-        SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+        Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
         Padding(
           padding: const EdgeInsets.only(top: 12.0),
           child: BackdropFilter(
@@ -38,7 +43,7 @@ class SoundPackList extends StatelessWidget {
                       Get.back();
                     },
                     icon: const Icon(Icons.arrow_back_rounded,
-                        color: Colors.white70)),
+                        color: Colors.white)),
                 iconTheme:
                     const IconThemeData(color: Colors.white60, size: 30.0),
                 backgroundColor: Colors.transparent,
@@ -95,7 +100,7 @@ class SoundPackList extends StatelessWidget {
                     child: ListView(
                       children: [
                         CustomTextWidget(
-                          text: '${soundPackModel.packName} Collection',
+                          text: '${widget.soundPackModel.packName} Collection',
                           fontSize: 16.0,
                           textAlign: TextAlign.center,
                           fontWeight: FontWeight.w600,
@@ -105,7 +110,7 @@ class SoundPackList extends StatelessWidget {
                         const Divider(),
                         SizedBox(height: context.height * 0.02),
                         Obx(
-                          () => sounds.isEmpty
+                          () => widget.sounds.isEmpty
                               ? const Center(
                                   heightFactor: 10,
                                   child: CircularProgressIndicator(
@@ -114,14 +119,14 @@ class SoundPackList extends StatelessWidget {
                                   ))
                               : ListView.builder(
                                   shrinkWrap: true,
-                                  itemCount: sounds.length,
+                                  itemCount: widget.sounds.length,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
-                                    final sound = sounds[index];
+                                    final sound = widget.sounds[index];
                                     return ListTile(
                                       leading: CircleAvatar(
                                         backgroundImage: NetworkImage(
-                                            soundPackModel.packImage),
+                                            widget.soundPackModel.packImage),
                                       ),
                                       title: CustomTextWidget(
                                         text: sound.name ?? '',

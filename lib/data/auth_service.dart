@@ -273,9 +273,8 @@ class AuthService {
         },
         body: jsonEncode(payload),
       );
-
+      debugPrint('StatusCode: ${response.statusCode} ${response.reasonPhrase}');
       if (response.statusCode == 200) {
-        debugPrint('StatusCode: ${response.statusCode}');
         debugPrint('ResponseBody: ${response.body}');
 
         return jsonDecode(response.body);

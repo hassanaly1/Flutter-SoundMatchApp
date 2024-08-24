@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sound_app/models/all_challenges_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/toast.dart';
 
 class ChallengeService {
@@ -81,16 +82,15 @@ class ChallengeService {
   }
 
   Future<List<AllChallengesModel>?> fetchAllChallenges() async {
-    String token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2NjlhNTU5NzcxN2U0N2M0NDY2NTI1NmIiLCJpYXQiOjE3MjE2MjUwMjIsImV4cCI6MTcyMjA1NzAyMn0.ZrjTe4LV3FKgrukOkOSu7hepM_1fO8OAjn1p2cw3ZUQ';
-
     var response = await http.post(
       Uri.parse('${ApiEndPoints.baseUrl}${ApiEndPoints.getUserResults}'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${MyAppStorage.storage.read('token')}',
       },
     );
+
+    debugPrint('Response: ${response.statusCode} ${response.body}');
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);

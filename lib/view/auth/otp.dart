@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
@@ -70,18 +70,12 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset('assets/svgs/auth-background.svg',
-              fit: BoxFit.cover),
+          Image.asset(MyAssetHelper.authBackground, fit: BoxFit.cover),
           Scaffold(
             backgroundColor: Colors.transparent,
             body: SingleChildScrollView(
@@ -145,7 +139,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Pinput(
                       length: 6,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.number,
                       controller: controller.otpController,
                       validator: (s) {
                         return null;
@@ -157,6 +151,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                       showCursor: true,
+                      closeKeyboardWhenCompleted: true,
                       defaultPinTheme: defaultPinTheme,
                       focusedPinTheme: defaultPinTheme.copyWith(
                         height: 68,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 
@@ -31,7 +30,7 @@ class RanksLoader extends StatelessWidget {
         children: [
           Row(
             children: [
-              SvgPicture.asset(
+              Image.asset(
                 MyAssetHelper.robot,
                 height: height * 0.15,
               ),

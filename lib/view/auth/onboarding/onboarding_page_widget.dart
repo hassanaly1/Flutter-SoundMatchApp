@@ -7,7 +7,7 @@ import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/view/auth/login.dart';
 
-class CustomOnboardingScreen extends StatelessWidget {
+class CustomOnboardingScreen extends StatefulWidget {
   final String text;
   final String subText;
   final String imageUrl;
@@ -22,15 +22,20 @@ class CustomOnboardingScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final OnBoardingController onBoardingController = Get.find();
+  State<CustomOnboardingScreen> createState() => _CustomOnboardingScreenState();
+}
 
+class _CustomOnboardingScreenState extends State<CustomOnboardingScreen> {
+  final OnBoardingController onBoardingController = Get.find();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         height: context.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: gradientColors,
+            colors: widget.gradientColors,
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
             stops: const [0.0, 1.0],
@@ -59,12 +64,12 @@ class CustomOnboardingScreen extends StatelessWidget {
             ),
             SizedBox(height: context.height * 0.05),
             Image.asset(
-              imageUrl,
+              widget.imageUrl,
               height: 150,
             ),
             SizedBox(height: context.height * 0.05),
             CustomTextWidget(
-              text: text,
+              text: widget.text,
               fontSize: 30.0,
               fontFamily: 'horta',
               fontWeight: FontWeight.bold,
@@ -74,7 +79,7 @@ class CustomOnboardingScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: CustomTextWidget(
-                text: subText,
+                text: widget.subText,
                 fontSize: 12.0,
                 fontFamily: 'poppins',
                 fontWeight: FontWeight.w500,

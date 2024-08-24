@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
@@ -29,8 +29,7 @@ class _SignupScreenState extends State<SignupScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            SvgPicture.asset('assets/svgs/auth-background.svg',
-                fit: BoxFit.cover),
+            Image.asset(MyAssetHelper.authBackground, fit: BoxFit.cover),
             Scaffold(
               backgroundColor: Colors.transparent,
               body: SingleChildScrollView(

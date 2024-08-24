@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/create_challenge_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
@@ -33,7 +32,7 @@ class _SelectParticipantsScreenState extends State<SelectParticipantsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Stack(fit: StackFit.expand, children: [
-        SvgPicture.asset(MyAssetHelper.backgroundImage, fit: BoxFit.fill),
+        Image.asset(MyAssetHelper.backgroundImage, fit: BoxFit.cover),
         Padding(
           padding: const EdgeInsets.only(top: 12.0),
           child: BackdropFilter(
@@ -83,7 +82,7 @@ class _SelectParticipantsScreenState extends State<SelectParticipantsScreen> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            SvgPicture.asset(
+                            Image.asset(
                               MyAssetHelper.addParticipants,
                               height: context.height * 0.2,
                               fit: BoxFit.contain,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/data/auth_service.dart';
 import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/toast.dart';
@@ -8,10 +9,12 @@ import 'package:sound_app/view/auth/login.dart';
 class CustomAppbar extends StatelessWidget {
   final bool showLogoutIcon;
 
-  const CustomAppbar({
+  CustomAppbar({
     super.key,
     this.showLogoutIcon = false,
   });
+
+  final GuestController guestController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,7 @@ class CustomAppbar extends StatelessWidget {
             child: const Icon(
               Icons.arrow_back_rounded,
               color: Colors.white,
+              size: 30,
             ),
           ),
           Row(
@@ -32,9 +36,17 @@ class CustomAppbar extends StatelessWidget {
               showLogoutIcon
                   ? IconButton(
                       onPressed: () async {
-                        bool isSuccess = await AuthService().logout(
-                            MyAppStorage.storage.read('user_info')['_id'] ??
-                                '');
+                        bool isSuccess;
+                        if (guestController.isGuestUser.value) {
+                          isSuccess = true;
+                        } else {
+                          isSuccess = await AuthService().logout(
+                            MyAppStorage.storage.read('user_info')['_id'] ?? '',
+                          );
+                        }
+                        // bool isSuccess = await AuthService().logout(
+                        //     MyAppStorage.storage.read('user_info')['_id'] ??
+                        //         '');
 
                         if (isSuccess) {
                           // MyAppStorage.instance.removeUser();
@@ -46,6 +58,10 @@ class CustomAppbar extends StatelessWidget {
                             message: 'Logout Successfully',
                             backgroundColor: Colors.green,
                           );
+                          print(
+                              'After Logout: ${MyAppStorage.storage.read('token')}');
+                          print(
+                              'After Logout: ${MyAppStorage.storage.read('user_info')}');
                         } else {
                           ToastMessage.showToastMessage(
                             message: 'Logout Operation Failed',
@@ -56,6 +72,7 @@ class CustomAppbar extends StatelessWidget {
                       icon: const Icon(
                         Icons.logout,
                         color: Colors.white,
+                        size: 30,
                       ),
                     )
                   : const SizedBox(),

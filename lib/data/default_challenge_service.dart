@@ -13,9 +13,7 @@ class DefaultChallengeService {
     required String soundId,
     required int userId,
   }) async {
-    var headers = {
-      'Content-Type': 'multipart/form-data', // Added header
-    };
+    var headers = {'Content-Type': 'multipart/form-data'};
 
     var request = http.MultipartRequest(
       'POST',

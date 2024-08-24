@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/utils/validator.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -15,6 +16,7 @@ class ForgetPasswordScreen extends StatefulWidget {
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final AuthController authController = Get.find();
+  final _validationKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +26,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            SvgPicture.asset(
-              'assets/svgs/auth-background.svg',
+            Image.asset(
+              MyAssetHelper.authBackground,
               fit: BoxFit.cover,
             ),
             Scaffold(
@@ -62,9 +64,14 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         textColor: Colors.white54,
                       ),
                       const SizedBox(height: 15.0),
-                      CustomTextField(
-                        hintText: 'Enter your Email',
-                        controller: authController.emailController,
+                      Form(
+                        key: _validationKey,
+                        child: CustomTextField(
+                          hintText: 'Enter your Email',
+                          controller: authController.emailController,
+                          validator: (p0) =>
+                              AppValidator.validateEmail(value: p0),
+                        ),
                       ),
                       const SizedBox(height: 20.0),
                       Obx(
@@ -72,7 +79,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           isLoading: authController.isLoading.value,
                           text: 'Send OTP',
                           onTap: () {
-                            authController.sendOtp();
+                            if (_validationKey.currentState!.validate()) {
+                              authController.sendOtp();
+                            }
                           },
                         ),
                       ),

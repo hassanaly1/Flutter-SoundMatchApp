@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
+import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/utils/storage_helper.dart';
 import 'package:sound_app/utils/validator.dart';
 import 'package:sound_app/view/auth/forget_password.dart';
 import 'package:sound_app/view/auth/signup.dart';
@@ -31,12 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  void dispose() {
-    authController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: GestureDetector(
@@ -44,8 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            SvgPicture.asset('assets/svgs/auth-background.svg',
-                fit: BoxFit.cover),
+            Image.asset(MyAssetHelper.authBackground, fit: BoxFit.fitHeight),
             Scaffold(
               backgroundColor: Colors.transparent,
               body: SingleChildScrollView(
@@ -211,6 +205,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20.0),
                         InkWell(
                           onTap: () {
+                            MyAppStorage.storage.remove('token');
+                            MyAppStorage.storage.remove('user_info');
                             Get.offAll(() => const HomeScreen(),
                                 transition: Transition.downToUp);
                             guestController.isGuestUser.value = true;

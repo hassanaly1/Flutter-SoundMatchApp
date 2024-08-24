@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
+import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 
-class VerifyEmailScreen extends StatelessWidget {
+class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({super.key});
 
   @override
+  State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
+}
+
+class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
+  final AuthController authController = Get.find();
+
+  @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find();
     return SafeArea(
       child: Stack(
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(
-            'assets/svgs/auth-background.svg',
+          Image.asset(
+            MyAssetHelper.authBackground,
             fit: BoxFit.cover,
           ),
           Scaffold(

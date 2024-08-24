@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 
@@ -41,7 +40,7 @@ class CreateAccountPopup extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             isSvg
-                ? SvgPicture.asset(imagePath, height: context.height * 0.2)
+                ? Image.asset(imagePath, height: context.height * 0.2)
                 : Image.asset(imagePath, height: context.height * 0.2),
             CustomTextWidget(
               text: text,
