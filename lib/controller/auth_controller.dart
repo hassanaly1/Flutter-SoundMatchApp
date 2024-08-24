@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
@@ -63,6 +66,13 @@ class AuthController extends GetxController {
                 verifyOtpForForgetPassword: false,
                 email: emailController.text.trim(),
               ));
+        } else if (response['message'] == 'Email already exists') {
+          ToastMessage.showToastMessage(
+            message: 'Email Already Registered, Please Login',
+            backgroundColor: Colors.green,
+          );
+          Get.offAll(() => const LoginScreen(),
+              transition: Transition.leftToRight);
         } else {
           ToastMessage.showToastMessage(
               message: 'Something went wrong, please try again.');
@@ -182,6 +192,17 @@ class AuthController extends GetxController {
           ToastMessage.showToastMessage(
               message: 'Something went wrong, please try again.');
         }
+      } on SocketException {
+        ToastMessage.showToastMessage(
+          message:
+              'No Internet connection. Please check your internet connection.',
+          backgroundColor: Colors.red,
+        );
+      } on TimeoutException {
+        ToastMessage.showToastMessage(
+          message: 'The request timed out. Please try again later.',
+          backgroundColor: Colors.red,
+        );
       } catch (e) {
         ToastMessage.showToastMessage(
             message: 'Something went wrong, please try again.');

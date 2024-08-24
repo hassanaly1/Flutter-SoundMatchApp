@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sound_app/data/default_challenge_service.dart';
+import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_model.dart';
 
 class DefaultMatchController extends GetxController {
@@ -66,7 +67,6 @@ class DefaultMatchController extends GetxController {
       isUserAudioPlaying.value = false;
       userAudioPosition.value = Duration.zero;
     });
-
     // fetchSoundsForDefaultMatch();
   }
 
@@ -83,59 +83,6 @@ class DefaultMatchController extends GetxController {
 
     _stopRecordingTimer();
   }
-
-  // Future<void> _initializeRecorder() async {
-  //   try {
-  //     PermissionStatus status = await Permission.microphone.request();
-  //
-  //     if (status.isGranted) {
-  //       await _audioRecorder.openRecorder();
-  //       _audioRecorder
-  //           .setSubscriptionDuration(const Duration(milliseconds: 500));
-  //     } else if (status.isDenied) {
-  //       // Show a dialog to explain why the permission is needed
-  //       showDialog(
-  //         context: context,
-  //         builder: (BuildContext context) {
-  //           return AlertDialog(
-  //             title: const Text('Audio Recording Permission'),
-  //             content: const Text(
-  //                 'This app needs access to your microphone to record audio.'),
-  //             actions: [
-  //               TextButton(
-  //                 child: const Text('Cancel'),
-  //                 onPressed: () {
-  //                   openAppSettings();
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //               TextButton(
-  //                 child: const Text('Allow'),
-  //                 onPressed: () {
-  //                   Navigator.of(context).pop();
-  //                   _initializeRecorder(); // Request permission again
-  //                 },
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     } else if (status.isPermanentlyDenied) {
-  //       // Open app settings automatically
-  //       bool opened = await openAppSettings();
-  //       if (!opened) {
-  //         // If settings could not be opened, show a message to the user
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(
-  //               content: Text(
-  //                   'Could not open app settings. Please grant permission manually.')),
-  //         );
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error Initializing Recorder: $e');
-  //   }
-  // }
 
   Future<void> _initializeRecorder() async {
     try {
@@ -212,9 +159,86 @@ class DefaultMatchController extends GetxController {
     }
   }
 
-  ///Starts Recording
-  Future<void> startRecording() async {
+  // ///Starts Recording
+  // Future<void> startRecording() async {
+  //   isUserRecordingCompleted.value = false;
+  //   try {
+  //     final directory = await getApplicationDocumentsDirectory();
+  //     recordedFilePath = '${directory.path}/recording.aac';
+  //     await _audioRecorder.startRecorder(toFile: recordedFilePath);
+  //     isUserRecording.value = true;
+  //     _startRecordingTimer();
+  //   } catch (e) {
+  //     debugPrint('Error Starting Recording: $e');
+  //   }
+  // }
+
+  // Future<void> startRecording() async {
+  //   // Check for microphone permission
+  //   var status = await Permission.microphone.status;
+  //   if (status.isDenied) {
+  //     // Request permission if not granted
+  //     status = await Permission.microphone.request();
+  //   }
+  //
+  //   if (status.isGranted) {
+  //     // If permission is granted, start recording
+  //     isUserRecordingCompleted.value = false;
+  //     try {
+  //       final directory = await getApplicationDocumentsDirectory();
+  //       recordedFilePath = '${directory.path}/recording.aac';
+  //       await _audioRecorder.startRecorder(toFile: recordedFilePath);
+  //       isUserRecording.value = true;
+  //       _startRecordingTimer();
+  //     } catch (e) {
+  //       debugPrint('Error Starting Recording: $e');
+  //     }
+  //   } else if (status.isPermanentlyDenied) {
+  //     // If permission is permanently denied, open app settings
+  //     debugPrint(
+  //         'Microphone permission permanently denied. Opening app settings...');
+  //     await openAppSettings();
+  //   } else {
+  //     // Handle other cases (like restricted, limited, etc.)
+  //     debugPrint('Microphone permission denied');
+  //     await openAppSettings();
+  //   }
+  // }
+
+  Future<void> startRecording(BuildContext context) async {
     isUserRecordingCompleted.value = false;
+
+    // Check for microphone permission
+    var status = await Permission.microphone.status;
+    if (status.isDenied || status.isLimited || status.isRestricted) {
+      // Show permission dialog first
+      _showPermissionDialog(context, onDialogDismiss: () async {
+        // Request permission after dialog is dismissed
+        status = await Permission.microphone.request();
+        _handlePermissionStatus(context, status);
+      });
+    } else {
+      // Handle the current permission status
+      _handlePermissionStatus(context, status);
+    }
+  }
+
+  void _handlePermissionStatus(BuildContext context, PermissionStatus status) {
+    if (status.isGranted) {
+      // If permission is granted, start recording
+      _startRecording(context);
+    } else if (status.isPermanentlyDenied) {
+      // If permission is permanently denied, open app settings
+      debugPrint(
+          'Microphone permission permanently denied. Opening app settings...');
+      openAppSettings();
+    } else {
+      // Handle other cases (like restricted, limited, etc.)
+      debugPrint('Microphone permission denied');
+    }
+  }
+
+  Future<void> _startRecording(BuildContext context) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       recordedFilePath = '${directory.path}/recording.aac';
@@ -224,6 +248,41 @@ class DefaultMatchController extends GetxController {
     } catch (e) {
       debugPrint('Error Starting Recording: $e');
     }
+  }
+
+  void _showPermissionDialog(BuildContext context,
+      {required VoidCallback onDialogDismiss}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const CustomTextWidget(
+            text: 'Microphone Permission Needed',
+            textColor: Colors.black87,
+            fontSize: 16.0,
+            fontWeight: FontWeight.w600,
+          ),
+          content: const CustomTextWidget(
+            text: 'This app needs access to your microphone to record audio.',
+            textColor: Colors.black87,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const CustomTextWidget(
+                text: 'OK',
+                textColor: Colors.black87,
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onDialogDismiss();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   ///Stops Recording

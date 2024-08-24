@@ -83,7 +83,7 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                 'TurnTimeAfterFormat: ${getFormattedTime(formattedTurnTime)}');
             debugPrint('Difference in seconds: $differenceInSeconds');
             controller.currentTurnDuration.value =
-                controller.originalTurnDuration.value - differenceInSeconds;
+                controller.originalTurnDuration.value + differenceInSeconds;
             debugPrint(
                 'Current Turn Duration: ${controller.currentTurnDuration.value}');
           } else {
@@ -335,9 +335,6 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                           ),
                                         ),
                                         Visibility(
-                                          // visible: controller
-                                          //         .currentTurnIndex.value ==
-                                          //     controller.currentUserIndex.value,
                                           visible:
                                               model!.currentTurnHolder?.id ==
                                                       MyAppStorage.storage.read(
@@ -345,8 +342,8 @@ class _ChallengeRoomScreenState extends State<ChallengeRoomScreen> {
                                                   controller.hasChallengeStarted
                                                       .value,
                                           child: GestureDetector(
-                                            onLongPress:
-                                                controller.onLongPressedStart,
+                                            onLongPress: () => controller
+                                                .onLongPressedStart(context),
                                             onLongPressEnd: (details) =>
                                                 controller.onLongPressedEnd(
                                               userId: controller
@@ -539,7 +536,6 @@ class TopContainer extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 20, top: 10),
         child: Column(
-          // mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             CustomTextWidget(
@@ -642,7 +638,6 @@ class TopContainer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomTextWidget(
-                  // text: 'Round # ${controller.currentRound.toString()}',
                   text:
                       'Round # ${model.challengeRoomNumber.toString()} / ${model.challengeGroup?.numberOfChallenges.toString()}',
                   fontWeight: FontWeight.w600,
@@ -661,8 +656,6 @@ class TopContainer extends StatelessWidget {
                         'start_challenge',
                         model.id,
                       );
-
-                      // controller.onGameStarts(model);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -685,65 +678,6 @@ class TopContainer extends StatelessWidget {
                     ),
                   ),
                 ),
-                // GestureDetector(
-                //   onTap: () {
-                //     io.Socket socket = SocketService().getSocket();
-                //     socket.emit(
-                //       'room_challenge_completed',
-                //       {
-                //         'data': {
-                //           'room_id': model.id,
-                //         }
-                //       },
-                //     );
-                //   },
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(8.0),
-                //     child: Container(
-                //       height: 40,
-                //       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                //       // width: 100,
-                //       decoration: BoxDecoration(
-                //           color: MyColorHelper.primaryColor,
-                //           borderRadius: BorderRadius.circular(12)),
-                //       child: const Center(
-                //         child: CustomTextWidget(
-                //           text: "Test",
-                //           textColor: MyColorHelper.white,
-                //           fontSize: 14,
-                //           fontWeight: FontWeight.w600,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // GestureDetector(
-                //   onTap: () {
-                //     ChallengeService().uploadUserSound(
-                //         userRecordingInBytes: null,
-                //         userId: MyAppStorage.userId,
-                //         roomId: model.id ?? '');
-                //   },
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(8.0),
-                //     child: Container(
-                //       height: 40,
-                //       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                //       // width: 100,
-                //       decoration: BoxDecoration(
-                //           color: MyColorHelper.primaryColor,
-                //           borderRadius: BorderRadius.circular(12)),
-                //       child: const Center(
-                //         child: CustomTextWidget(
-                //           text: "Test Sound",
-                //           textColor: MyColorHelper.white,
-                //           fontSize: 14,
-                //           fontWeight: FontWeight.w600,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
             const SizedBox(height: 8.0)

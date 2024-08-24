@@ -10,7 +10,6 @@ class CreateAccountPopup extends StatelessWidget {
   final String buttonText;
   final String imagePath;
   final VoidCallback onTap;
-  final bool isSvg;
 
   const CreateAccountPopup(
       {super.key,
@@ -18,7 +17,6 @@ class CreateAccountPopup extends StatelessWidget {
       required this.text,
       required this.buttonText,
       this.opacity,
-      required this.isSvg,
       required this.onTap});
 
   @override
@@ -39,9 +37,7 @@ class CreateAccountPopup extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            isSvg
-                ? Image.asset(imagePath, height: context.height * 0.2)
-                : Image.asset(imagePath, height: context.height * 0.2),
+            Image.asset(imagePath, height: context.height * 0.2),
             CustomTextWidget(
               text: text,
               fontSize: 12.0,

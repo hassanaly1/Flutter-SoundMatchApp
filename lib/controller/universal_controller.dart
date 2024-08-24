@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:sound_app/data/payment_service.dart';
 import 'package:sound_app/data/sounds_service.dart';
+import 'package:sound_app/helper/create_account_popup.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
@@ -17,7 +17,7 @@ class MyUniversalController extends GetxController {
   var isSoundPacksAreLoading = false.obs;
 
   RxBool isConnectedToInternet = false.obs;
-  StreamSubscription? _internetConnectionStreamSubscription;
+
   RxList<SoundModel> soundsById = <SoundModel>[].obs;
 
   RxList<SoundPackModel> allSoundPacks = <SoundPackModel>[].obs;
@@ -41,23 +41,6 @@ class MyUniversalController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _internetConnectionStreamSubscription =
-        InternetConnection().onStatusChange.listen(
-      (event) {
-        debugPrint('Internet Status: $event');
-        switch (event) {
-          case InternetStatus.connected:
-            isConnectedToInternet.value = true;
-            break;
-          case InternetStatus.disconnected:
-            isConnectedToInternet.value = false;
-            break;
-          default:
-            isConnectedToInternet.value = false;
-            break;
-        }
-      },
-    );
     userInfo.value = storage.read('user_info') ?? {};
     // userImageURL.value = MyAppStorage.userProfilePicture ?? '';
     userImageURL.value = userInfo.value['profile'] ?? '';
@@ -228,7 +211,27 @@ class MyUniversalController extends GetxController {
 
   @override
   void onClose() {
-    _internetConnectionStreamSubscription?.cancel();
     super.onClose();
   }
+}
+
+void _showNoInternetConnectionDialog(context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 10),
+        backgroundColor: Colors.transparent,
+        content: CreateAccountPopup(
+            onTap: () {
+              // Get.offAll(() => const SignupScreen(),
+              //     transition: Transition.upToDown);
+            },
+            buttonText: 'Create Account',
+            imagePath: 'assets/svgs/create-account.svg',
+            text: 'To Create the Challenge, Please Create the Account first.',
+            opacity: 1),
+      );
+    },
+  );
 }

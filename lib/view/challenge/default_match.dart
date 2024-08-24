@@ -568,7 +568,7 @@ class MyRecordAudioButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: controller.startRecording,
+      onLongPress: () => controller.startRecording(context),
       onLongPressEnd: (details) => controller.stopRecording(),
       child: Container(
         margin: const EdgeInsets.all(10),

@@ -353,8 +353,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       transition: Transition.upToDown);
                 },
                 buttonText: 'Create Account',
-                isSvg: true,
-                imagePath: 'assets/svgs/create-account.svg',
+                imagePath: 'assets/images/create-account.png',
                 text:
                     'To Create the Challenge, Please Create the Account first.',
                 opacity: 1),

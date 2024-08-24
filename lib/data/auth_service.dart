@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -96,8 +97,10 @@ class AuthService {
   }
 
   //LoginUser
-  Future<Map<String, dynamic>> loginUser(
-      {required String email, required String password}) async {
+  Future<Map<String, dynamic>> loginUser({
+    required String email,
+    required String password,
+  }) async {
     final Uri apiUrl =
         Uri.parse(ApiEndPoints.baseUrl + ApiEndPoints.loginUserUrl);
 
@@ -107,9 +110,11 @@ class AuthService {
     };
 
     try {
-      final response = await http.post(apiUrl,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(payload));
+      final response = await http.post(
+        apiUrl,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(payload),
+      );
 
       if (response.statusCode == 200) {
         debugPrint('StatusCode: ${response.statusCode}');
@@ -118,7 +123,7 @@ class AuthService {
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(response.body);
         debugPrint('StatusCodeIfError: ${response.statusCode}');
-        debugPrint('StatusCodeIfError: ${response.body}');
+        debugPrint('ResponseBodyIfError: ${response.body}');
 
         return {
           'status': 'error',
@@ -126,10 +131,21 @@ class AuthService {
           'code': response.statusCode,
         };
       }
+    } on SocketException {
+      return {
+        'status': 'error',
+        'message':
+            'No Internet connection. Please check your network settings.',
+      };
+    } on TimeoutException {
+      return {
+        'status': 'error',
+        'message': 'The request timed out. Please try again later.',
+      };
     } catch (e) {
       return {
         'status': 'error',
-        'message': 'Network error: $e',
+        'message': 'An unexpected error occurred: $e',
       };
     }
   }

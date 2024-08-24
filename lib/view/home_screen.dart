@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:another_flushbar/flushbar.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -8,6 +11,7 @@ import 'package:sound_app/controller/universal_controller.dart';
 import 'package:sound_app/data/socket_service.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
+import 'package:sound_app/helper/create_account_popup.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/models/sound_pack_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
@@ -32,16 +36,63 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    super.initState();
+    _checkInternetConnection();
     controller = Get.put(MyUniversalController());
     guestController = Get.find();
     if (guestController.isGuestUser.value == false) {
       // Initialize the socket service
-      SocketService(); // This will call the constructor and initialize the socket
+      SocketService();
       connectToRoomAndWaitingToGetInvitations(context);
-      getAllSoundPacksByUserId();
+      if (controller.userSoundPacks.isEmpty) {
+        getAllSoundPacksByUserId();
+      }
     }
+  }
 
-    super.initState();
+  void _checkInternetConnection() {
+    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((List<ConnectivityResult> result) {
+      for (var connectivityResult in result) {
+        if (connectivityResult == ConnectivityResult.mobile) {
+          controller.isConnectedToInternet.value = true;
+          print('Connection Status: ${controller.isConnectedToInternet.value}');
+        } else if (connectivityResult == ConnectivityResult.wifi) {
+          controller.isConnectedToInternet.value = true;
+          print('Connection Status: ${controller.isConnectedToInternet.value}');
+        } else if (connectivityResult == ConnectivityResult.ethernet) {
+          controller.isConnectedToInternet.value = true;
+          print('Connection Status: ${controller.isConnectedToInternet.value}');
+        } else if (connectivityResult == ConnectivityResult.none) {
+          controller.isConnectedToInternet.value = false;
+          print('Connection Status: ${controller.isConnectedToInternet.value}');
+          _showNoInternetConnectionDialog(context);
+        }
+      }
+    });
+  }
+
+  void _showNoInternetConnectionDialog(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 10),
+          backgroundColor: Colors.transparent,
+          content: CreateAccountPopup(
+              onTap: () {
+                Get.offAll(() => const HomeScreen(),
+                    transition: Transition.upToDown);
+              },
+              buttonText: 'Back to Home',
+              imagePath: 'assets/images/remove.png',
+              text:
+                  'OOPS, No Internet Connection. Please Connect to the Internet.',
+              opacity: 1),
+        );
+      },
+    );
   }
 
   void getAllSoundPacksByUserId() {
