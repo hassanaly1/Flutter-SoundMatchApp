@@ -1,10 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/data/auth_service.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/snackbars.dart';
-import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/utils/validator.dart';
 import 'package:sound_app/view/profile/profile_info_section.dart';
 
@@ -85,10 +85,10 @@ class _SecuritySectionState extends State<SecuritySection> {
                           confirmNewPasswordController.clear();
                         }
                       } else {
-                        ToastMessage.showToastMessage(
-                            message:
-                                'New Password and Confirm New Password does not match',
-                            backgroundColor: Colors.red);
+                        MySnackBarsHelper.showError(
+                            'Please try again.',
+                            'New Password and Confirm New Password does not match',
+                            Icons.error);
                       }
                     }
                   },
@@ -113,22 +113,17 @@ class _SecuritySectionState extends State<SecuritySection> {
           confirmNewPassword: confirmNewPasswordController.text,
         );
         if (response['status'] == 'success') {
-          ToastMessage.showToastMessage(
-            message: 'Password Changed Successfully.',
-            backgroundColor: Colors.green,
-          );
+          MySnackBarsHelper.showMessage('', 'Password Changed Successfully.',
+              CupertinoIcons.checkmark_alt_circle);
           return true;
         } else {
-          ToastMessage.showToastMessage(
-              message: response['message'], backgroundColor: Colors.red);
+          MySnackBarsHelper.showError(
+              'Please try again.', response['message'], Icons.error);
           return false;
         }
       } catch (e) {
-        ToastMessage.showToastMessage(
-          message:
-              'Something went wrong during Changing Password, please try again.',
-          backgroundColor: Colors.red,
-        );
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during Changing Password', Icons.error);
         return false;
       } finally {
         isLoading.value = false;

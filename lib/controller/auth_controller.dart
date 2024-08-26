@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/data/auth_service.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/utils/storage_helper.dart';
-import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/auth/change_password.dart';
 import 'package:sound_app/view/auth/login.dart';
 import 'package:sound_app/view/auth/otp.dart';
@@ -47,7 +48,6 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       try {
-        // Call the registerUser method in AuthService and handle the response
         Map<String, dynamic> response = await authService.registerUser(
           firstName: firstNameController.text.trim(),
           lastName: lastNameController.text.trim(),
@@ -56,31 +56,27 @@ class AuthController extends GetxController {
           confirmPassword: confirmPasswordController.text.trim(),
         );
 
-        // Handle registration success and failure
         if (response['status'] == 'success') {
-          ToastMessage.showToastMessage(
-            message: 'Account Created Successfully, Please Verify your Email',
-            backgroundColor: Colors.green,
-          );
+          MySnackBarsHelper.showMessage(
+              'Please Verify your Email',
+              'Account Created Successfully',
+              CupertinoIcons.checkmark_alt_circle);
           Get.to(() => OtpScreen(
                 verifyOtpForForgetPassword: false,
                 email: emailController.text.trim(),
               ));
         } else if (response['message'] == 'Email already exists') {
-          ToastMessage.showToastMessage(
-            message: 'Email Already Registered, Please Login',
-            backgroundColor: Colors.green,
-          );
+          MySnackBarsHelper.showError(
+              'Email Already Registered', 'Please Login', Icons.error);
           Get.offAll(() => const LoginScreen(),
               transition: Transition.leftToRight);
         } else {
-          ToastMessage.showToastMessage(
-              message: 'Something went wrong, please try again.');
+          MySnackBarsHelper.showError(
+              'Please try again.', 'Something went wrong', Icons.error);
         }
       } catch (e) {
-        ToastMessage.showToastMessage(
-            message:
-                'Something went wrong during Registration, please try again.');
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during Registration', Icons.error);
       } finally {
         isLoading.value = false;
       }
@@ -101,19 +97,17 @@ class AuthController extends GetxController {
         );
 
         if (response['status'] == 'success') {
-          ToastMessage.showToastMessage(
-            message: 'Email Verified Successfully',
-            backgroundColor: Colors.green,
-          );
+          MySnackBarsHelper.showMessage('Email Verified Successfully',
+              'Please Login', CupertinoIcons.checkmark_alt_circle);
           Get.offAll(() => const LoginScreen());
           clearAllControllers();
         } else {
-          ToastMessage.showToastMessage(
-              message: 'InCorrect Otp, Please Enter Correct Otp');
+          MySnackBarsHelper.showError('Please Enter Correct Otp & try again.',
+              'InCorrect Otp', Icons.error);
         }
       } catch (e) {
-        ToastMessage.showToastMessage(
-            message: 'Something went wrong during Email Verification');
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during Email Verification', Icons.error);
       } finally {
         isLoading.value = false;
       }
@@ -132,10 +126,8 @@ class AuthController extends GetxController {
         );
 
         if (response['status'] == 'success') {
-          ToastMessage.showToastMessage(
-            message: 'Login Successfully.',
-            backgroundColor: Colors.green,
-          );
+          MySnackBarsHelper.showMessage('Welcome Back!', 'Login Successfully.',
+              CupertinoIcons.checkmark_alt_circle);
           MyAppStorage.storage.write('token', response['token']);
 
           // saveUserInfo(response['user']);
@@ -151,15 +143,17 @@ class AuthController extends GetxController {
           clearAllControllers();
         } else {
           response['message'] == 'Please Verify Your Email First'
-              ? Get.to(() => VerifyEmailScreen(),
+              ? Get.to(() => const VerifyEmailScreen(),
                   transition: Transition.rightToLeft)
               : null;
-          ToastMessage.showToastMessage(message: response['message']);
-          // Get.offAll(() => OtpScreen(email: emailController.text.trim()));
+          MySnackBarsHelper.showError(
+              'Enter your email so that we can send you a Otp',
+              'Please Verify Your Email First',
+              Icons.error);
         }
       } catch (e) {
-        ToastMessage.showToastMessage(
-            message: 'Something went wrong, please try again.');
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during Login.', Icons.error);
       } finally {
         isLoading.value = false;
       }
@@ -177,10 +171,8 @@ class AuthController extends GetxController {
         );
 
         if (isSuccess) {
-          ToastMessage.showToastMessage(
-            message: 'Otp Sent Successfully, Check your Email',
-            backgroundColor: Colors.green,
-          );
+          MySnackBarsHelper.showMessage('Otp Sent Successfully',
+              'Please Check your Email', CupertinoIcons.checkmark_alt_circle);
 
           Get.to(() => OtpScreen(
                 verifyOtpForForgetPassword: true,
@@ -189,23 +181,18 @@ class AuthController extends GetxController {
 
           // clearAllControllers();
         } else {
-          ToastMessage.showToastMessage(
-              message: 'Something went wrong, please try again.');
+          MySnackBarsHelper.showError('Please try again.',
+              'Something went wrong during Sending Otp.', Icons.error);
         }
       } on SocketException {
-        ToastMessage.showToastMessage(
-          message:
-              'No Internet connection. Please check your internet connection.',
-          backgroundColor: Colors.red,
-        );
+        MySnackBarsHelper.showError('Please Check your Internet Connection.',
+            'No Internet Connection.', Icons.error);
       } on TimeoutException {
-        ToastMessage.showToastMessage(
-          message: 'The request timed out. Please try again later.',
-          backgroundColor: Colors.red,
-        );
+        MySnackBarsHelper.showError(
+            'Please try again.', 'The Request Timed Out.', Icons.error);
       } catch (e) {
-        ToastMessage.showToastMessage(
-            message: 'Something went wrong, please try again.');
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during Sending Otp.', Icons.error);
       } finally {
         isLoading.value = false;
       }
@@ -226,23 +213,23 @@ class AuthController extends GetxController {
         );
 
         if (response['status'] == 'success') {
-          ToastMessage.showToastMessage(
-            message: 'Otp Verified Successfully',
-            backgroundColor: Colors.green,
-          );
-          // Accessing the token correctly
+          MySnackBarsHelper.showMessage(
+              'Please Enter New Password And Confirm It.',
+              'Otp Verified Successfully.',
+              CupertinoIcons
+                  .checkmark_alt_circle); // Accessing the token correctly
           String token = response['data'][0]['token'];
           MyAppStorage.storage.write('token', token);
-          Get.offAll(() => ChangePasswordScreen());
+          Get.offAll(() => const ChangePasswordScreen());
 
           clearAllControllers();
         } else {
-          ToastMessage.showToastMessage(
-              message: 'Invalid Otp', backgroundColor: Colors.red);
+          MySnackBarsHelper.showError('Please Enter Correct Otp & try again.',
+              'InCorrect Otp', Icons.error);
         }
       } catch (e) {
-        ToastMessage.showToastMessage(
-            message: 'Something went wrong, please try again.');
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during OTP Verification', Icons.error);
       } finally {
         isLoading.value = false;
       }
@@ -261,20 +248,19 @@ class AuthController extends GetxController {
           confirmPassword: confirmPasswordController.text.trim(),
         );
         if (response['status'] == 'success') {
-          ToastMessage.showToastMessage(
-            message: 'Password Changed Successfully, Please Login Again',
-            backgroundColor: Colors.green,
-          );
+          MySnackBarsHelper.showMessage(
+              ' Please Login Again.',
+              'Password Changed Successfully.',
+              CupertinoIcons.checkmark_alt_circle);
           Get.offAll(() => const LoginScreen());
           clearAllControllers();
         } else {
-          ToastMessage.showToastMessage(
-              message: 'Something went wrong, please try again.');
+          MySnackBarsHelper.showError('Please try again.',
+              'Something went wrong during Changing Password', Icons.error);
         }
       } catch (e) {
-        ToastMessage.showToastMessage(
-            message:
-                'Something went wrong during Changing Password, please try again.');
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during Changing Password', Icons.error);
       } finally {
         isLoading.value = false;
       }

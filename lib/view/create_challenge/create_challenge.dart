@@ -63,7 +63,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(top: 16.0),
+                        padding: const EdgeInsets.only(top: 16.0),
                         child: CustomAppbar(),
                       ),
                       SizedBox(
@@ -228,12 +228,6 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             : MyColorHelper.blue,
                         context: context,
                         onTap: () {
-                          // if (universalController.userSoundPacks.isNotEmpty) {
-                          //   universalController.fetchSoundsByPackId(
-                          //     universalController.userSoundPacks[0].id,
-                          //   );
-                          // }
-                          // getAllSoundPacksByUserId();
                           showModalBottomSheet(
                             backgroundColor: Colors.transparent,
                             context: context,
@@ -367,28 +361,27 @@ class _CreateChallengeState extends State<CreateChallenge> {
           controller.selectedParticipants.isNotEmpty) {
         callChallengeSocket();
         MySnackBarsHelper.showMessage(
-          "Successfully ",
-          "Challenge Created",
+          "Enjoy the Sound Challenge with your Friends.",
+          "Challenge Created Successfully.",
           CupertinoIcons.check_mark_circled,
         );
-        // controller.challengeNameController.clear();
       } else {
         if (controller.challengeNameController.text.isEmpty) {
           MySnackBarsHelper.showMessage(
-            "To create the challenge.",
+            "To Create the Challenge.",
             "Please Enter Challenge Name",
             Icons.close,
           );
         } else if (controller.selectedSound.value == null) {
           MySnackBarsHelper.showMessage(
-            "To create the challenge.",
-            "Please Select Sound ",
+            "To Create the Challenge.",
+            "Please Select Sound.",
             Icons.music_note,
           );
         } else if (controller.selectedParticipants.isEmpty) {
           MySnackBarsHelper.showMessage(
-            "To create the challenge.",
-            "Please Select Participants ",
+            "To Create the Challenge.",
+            "Please Select Participants.",
             Icons.person,
           );
         }
@@ -422,7 +415,6 @@ class _CreateChallengeState extends State<CreateChallenge> {
       invitation: Invitation(
         type: 'challenge',
         recipients: [
-          // MyAppStorage.userId,
           ...controller.selectedParticipants.map((e) => e.id.toString()),
         ],
         createdBy: MyAppStorage.storage.read('user_info')['_id'] ?? '',
@@ -432,18 +424,9 @@ class _CreateChallengeState extends State<CreateChallenge> {
     try {
       final data = challengeModel.toJson();
       socket.emit(ApiEndPoints.connectToCreateChallenge, data);
-      // socket.on(
-      //   'challenge_room',
-      //   (data) {
-      //     print('Challenge Room: $data');
-      //     ChallengeRoomModel challengeRoomModel =
-      //         ChallengeRoomModel.fromJson(data['challenge_room']);
-      //     print('Challenge Room Model: ${challengeRoomModel.toJson()}');
       Get.off(
         () => const ChallengeRoomScreen(),
       );
-      //   },
-      // );
     } catch (e) {
       debugPrint('Error sending challenge data: $e');
     }

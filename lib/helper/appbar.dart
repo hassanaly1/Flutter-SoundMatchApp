@@ -1,9 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/carousel_controller.dart';
 import 'package:sound_app/data/auth_service.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/utils/storage_helper.dart';
-import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/auth/login.dart';
 
 class CustomAppbar extends StatelessWidget {
@@ -54,19 +55,19 @@ class CustomAppbar extends StatelessWidget {
                           MyAppStorage.storage.remove('user_info');
                           Get.offAll(() => const LoginScreen(),
                               transition: Transition.upToDown);
-                          ToastMessage.showToastMessage(
-                            message: 'Logout Successfully',
-                            backgroundColor: Colors.green,
-                          );
+                          MySnackBarsHelper.showMessage(
+                              'Logout Successfully',
+                              'Please Login Again',
+                              CupertinoIcons.checkmark_alt_circle);
                           print(
                               'After Logout: ${MyAppStorage.storage.read('token')}');
                           print(
                               'After Logout: ${MyAppStorage.storage.read('user_info')}');
                         } else {
-                          ToastMessage.showToastMessage(
-                            message: 'Logout Operation Failed',
-                            backgroundColor: Colors.red,
-                          );
+                          MySnackBarsHelper.showError(
+                              'Please try again.',
+                              'Something went wrong during Logout Operation',
+                              Icons.error);
                         }
                       },
                       icon: const Icon(

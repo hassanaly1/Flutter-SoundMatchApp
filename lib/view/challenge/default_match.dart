@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -12,9 +13,9 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/models/sound_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
-import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/home_screen.dart';
 
 class DefaultMatchScreen extends StatefulWidget {
@@ -67,9 +68,10 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
           controller.matchPercentage.value = data['percentage_matched'];
           controller.isResultCalculating.value = false;
           controller.isResultCalculated.value = true;
-          ToastMessage.showToastMessage(
-              message: 'Result Calculated Successfully',
-              backgroundColor: Colors.green);
+          MySnackBarsHelper.showMessage(
+              'Click on play again button to play again.',
+              'Result Calculated Successfully.',
+              CupertinoIcons.checkmark_alt_circle);
         }
       });
     } catch (e) {
@@ -88,7 +90,8 @@ class _DefaultMatchScreenState extends State<DefaultMatchScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
-        Get.offAll(() => const HomeScreen());
+        Get.offAll(() => const HomeScreen(),
+            transition: Transition.leftToRight);
         if (Get.isRegistered<DefaultMatchController>()) {
           Get.delete<DefaultMatchController>();
         }
@@ -397,7 +400,8 @@ class CenterPart extends StatelessWidget {
                         Get.delete<DefaultMatchController>();
                       }
 
-                      Get.back();
+                      Get.offAll(() => const HomeScreen(),
+                          transition: Transition.leftToRight);
                     },
                   ),
                   CustomAuthButton(
@@ -514,9 +518,10 @@ class CenterPart extends StatelessWidget {
                   controller.isResultCalculating.value = false;
                   controller.isResultCalculated.value = true;
                 } else {
-                  ToastMessage.showToastMessage(
-                      message: 'Something went wrong, please try again!',
-                      backgroundColor: Colors.red);
+                  MySnackBarsHelper.showError(
+                      'Please try again.',
+                      'Something went wrong during calculating the result.',
+                      Icons.error);
                   controller.isDefaultAudioPlaying = false.obs;
                   controller.isUserAudioPlaying = false.obs;
                   controller.isUserRecording = false.obs;

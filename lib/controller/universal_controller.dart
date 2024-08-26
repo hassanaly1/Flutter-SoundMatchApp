@@ -209,10 +209,6 @@ class MyUniversalController extends GetxController {
     storage.write('user_info', userInfo);
   }
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
 }
 
 void _showNoInternetConnectionDialog(context) {

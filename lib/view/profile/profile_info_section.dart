@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
@@ -9,7 +10,6 @@ import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/utils/storage_helper.dart';
-import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/utils/validator.dart';
 
 class PersonalInfoSection extends StatefulWidget {
@@ -94,22 +94,6 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                           FocusManager.instance.primaryFocus?.unfocus();
                         }
                       }
-                      // if (GuestController().isGuestUser.value) {
-                      //   ToastMessage.showToastMessage(
-                      //       message: 'Please login to update profile',
-                      //       backgroundColor: Colors.red);
-                      //   return;
-                      // } else {
-                      //   if (firstNameController.text.isEmpty &&
-                      //       lastNameController.text.isEmpty) {
-                      //     ToastMessage.showToastMessage(
-                      //         message: 'All fields are required',
-                      //         backgroundColor: Colors.red);
-                      //     return;
-                      //   }
-                      // }
-                      // FocusManager.instance.primaryFocus?.unfocus();
-                      // updateProfileInfo();
                     },
                   ),
                 ),
@@ -137,20 +121,16 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
       if (success) {
         universalController.firstName.value = firstNameController.text;
         universalController.lastName.value = lastNameController.text;
-        ToastMessage.showToastMessage(
-            message: 'Profile updated successfully',
-            backgroundColor: Colors.green);
-        // Profile update successful
+        MySnackBarsHelper.showMessage('', 'Profile Updated Successfully',
+            CupertinoIcons.checkmark_alt_circle);
       } else {
         // Profile update failed
-        ToastMessage.showToastMessage(
-            message: 'Something went wrong, try again',
-            backgroundColor: Colors.red);
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong in Profile Update.', Icons.error);
       }
     } catch (e) {
-      ToastMessage.showToastMessage(
-          message: 'Something went wrong, try again',
-          backgroundColor: Colors.red);
+      MySnackBarsHelper.showError(
+          'Please try again.', 'Something went wrong.', Icons.error);
       isLoading.value = false;
     }
   }

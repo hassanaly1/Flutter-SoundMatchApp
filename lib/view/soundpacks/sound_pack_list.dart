@@ -138,11 +138,13 @@ class _SoundPackListState extends State<SoundPackList> {
                                       trailing: Obx(
                                         () => InkWell(
                                           onTap: () async {
+                                            print(
+                                                'Playing Sound: ${sound.url}');
                                             if (isSoundPlaying.value) {
                                               await _audioPlayer.pause();
                                             } else {
-                                              await _audioPlayer
-                                                  .play(UrlSource(sound.url!));
+                                              await _audioPlayer.play(
+                                                  UrlSource(sound.url ?? ''));
                                             }
                                             isSoundPlaying.value =
                                                 !isSoundPlaying.value;

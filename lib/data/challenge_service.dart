@@ -3,10 +3,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/models/all_challenges_model.dart';
 import 'package:sound_app/utils/api_endpoints.dart';
 import 'package:sound_app/utils/storage_helper.dart';
-import 'package:sound_app/utils/toast.dart';
 
 class ChallengeService {
   Future<bool> uploadUserSound({
@@ -62,20 +62,16 @@ class ChallengeService {
       if (response.statusCode == 200) {
         return true;
       } else {
-        ToastMessage.showToastMessage(
-          message: 'Issue in Uploading Sound: ${response.reasonPhrase} ',
-          backgroundColor: Colors.red,
-        );
+        MySnackBarsHelper.showError('Please try again.',
+            'Something went wrong during Uploading Sound.', Icons.error);
         debugPrint(
           'Error in Uploading Sound: ${response.statusCode} ${response.reasonPhrase}',
         );
         return false;
       }
     } catch (e) {
-      ToastMessage.showToastMessage(
-        message: 'Something went wrong, please try again',
-        backgroundColor: Colors.red,
-      );
+      MySnackBarsHelper.showError('Please try again.',
+          'Something went wrong during Uploading Sound.', Icons.error);
       debugPrint('Exception: $e');
       return false;
     }

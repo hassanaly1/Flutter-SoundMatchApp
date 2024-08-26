@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/utils/validator.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -97,8 +97,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     authController
                                         .confirmPasswordController.text
                                         .trim()) {
-                                  Fluttertoast.showToast(
-                                      msg: 'Passwords do not match.');
+                                  MySnackBarsHelper.showMessage(
+                                      'Password Mismatch',
+                                      'New and Confirm Password should be same',
+                                      Icons.error);
                                 } else {
                                   authController.changePassword();
                                 }

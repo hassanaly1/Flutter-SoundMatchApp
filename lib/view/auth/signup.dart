@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:sound_app/controller/auth_controller.dart';
 import 'package:sound_app/helper/asset_helper.dart';
@@ -8,6 +7,7 @@ import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_field.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
+import 'package:sound_app/helper/snackbars.dart';
 import 'package:sound_app/utils/validator.dart';
 import 'package:sound_app/view/auth/login.dart';
 
@@ -20,6 +20,14 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final AuthController controller = Get.find();
+
+  @override
+  void initState() {
+    if (!Get.isRegistered<AuthController>()) {
+      Get.put(AuthController());
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,9 +163,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                   if (controller.passwordController.text !=
                                       controller
                                           .confirmPasswordController.text) {
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            'Password and Confirm Password does not match');
+                                    MySnackBarsHelper.showError(
+                                        'Please try again',
+                                        'Password and Confirm Password does not match',
+                                        Icons.error);
                                   } else {
                                     if (controller.signupFormKey.currentState!
                                         .validate()) {

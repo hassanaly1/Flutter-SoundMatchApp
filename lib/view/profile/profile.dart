@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +12,6 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
 import 'package:sound_app/helper/snackbars.dart';
-import 'package:sound_app/utils/toast.dart';
 import 'package:sound_app/view/profile/all_challenges_section.dart';
 import 'package:sound_app/view/profile/profile_info_section.dart';
 import 'package:sound_app/view/profile/security_section.dart';
@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     onTap: () {
                                       if (guestController.isGuestUser.value) {
                                         MySnackBarsHelper.showMessage(
-                                          "To Update the Profile Picture,",
+                                          "To Update the Profile Picture",
                                           "Please Create Account",
                                           Icons.no_accounts,
                                         );
@@ -232,31 +232,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
             universalController.setUserImageUrl = result.profileUrl ?? '';
             debugPrint(
                 'AfterUpdate: ${universalController.userImageURL.value}');
-            ToastMessage.showToastMessage(
-                message: 'Profile Image Updated',
-                backgroundColor: Colors.green);
+            MySnackBarsHelper.showMessage(
+                '',
+                'Profile Image Updated Successfully',
+                CupertinoIcons.checkmark_alt_circle);
           } else {
-            ToastMessage.showToastMessage(
-                message: 'Something went wrong, try again',
-                backgroundColor: Colors.yellow);
+            MySnackBarsHelper.showError(
+                'Please try again.', 'Something went wrong.', Icons.error);
           }
         } else {
-          ToastMessage.showToastMessage(
-              message: 'Something went wrong, try again',
-              backgroundColor: Colors.red);
+          MySnackBarsHelper.showError(
+              'Please try again.', 'Something went wrong.', Icons.error);
         }
         circularLoading.value = false;
         setState(() {});
       } else {
         debugPrint('No image selected');
-        ToastMessage.showToastMessage(
-            message: 'No image selected', backgroundColor: Colors.red);
+        MySnackBarsHelper.showError(
+            'Please try again.', 'No image selected.', Icons.error);
         circularLoading.value = false;
       }
     } catch (e) {
       debugPrint('Error occurred: $e');
-      ToastMessage.showToastMessage(
-          message: 'An error occurred: $e', backgroundColor: Colors.red);
+      MySnackBarsHelper.showError('Please try again.',
+          'Something went wrong during Updating Profile Image', Icons.error);
     }
   }
 }

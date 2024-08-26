@@ -96,10 +96,10 @@ class AuthCheck extends StatelessWidget {
       future: authController.checkAuthState(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return SplashScreen();
+          return const SplashScreen();
         } else {
           if (authController.isFirstTime.value) {
-            return OnBoardingScreen();
+            return const OnBoardingScreen();
           } else if (MyAppStorage.storage.read('token') != null &&
               authController.isTokenValid.value) {
             return const HomeScreen();

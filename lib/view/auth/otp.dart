@@ -8,57 +8,35 @@ import 'package:sound_app/helper/asset_helper.dart';
 import 'package:sound_app/helper/colors.dart';
 import 'package:sound_app/helper/custom_auth_button.dart';
 import 'package:sound_app/helper/custom_text_widget.dart';
-import 'package:sound_app/utils/toast.dart';
+import 'package:sound_app/helper/snackbars.dart';
 
 class OtpScreen extends StatefulWidget {
   final bool verifyOtpForForgetPassword;
   final String email;
 
-  const OtpScreen(
-      {super.key,
-      required this.email,
-      required this.verifyOtpForForgetPassword});
+  const OtpScreen({
+    super.key,
+    required this.email,
+    required this.verifyOtpForForgetPassword,
+  });
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  _OtpScreenState createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends State<OtpScreen> {
   final AuthController controller = Get.find();
 
-  Color borderColor = const Color.fromRGBO(114, 178, 238, 1);
-  Color errorColor = const Color.fromRGBO(255, 234, 238, 1);
-  Color fillColor = const Color.fromRGBO(222, 231, 240, .57);
-  final defaultPinTheme = PinTheme(
-    width: 56,
-    height: 60,
-    textStyle: const TextStyle(
-      fontFamily: 'Montserrat',
-      fontSize: 22,
-      color: Color.fromRGBO(30, 60, 87, 1),
-    ),
-    decoration: BoxDecoration(
-      color: const Color.fromRGBO(222, 231, 240, .57),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.transparent),
-    ),
-  );
-
-  bool _timerInProgress = true;
-  int _start = 60;
+  final RxInt _start = 60.obs;
+  final RxBool _timerInProgress = true.obs;
 
   void startTimer() {
-    const oneSec = Duration(seconds: 1);
-    Timer.periodic(oneSec, (Timer timer) {
-      if (_start == 0) {
-        setState(() {
-          _timerInProgress = false;
-        });
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_start.value == 0) {
+        _timerInProgress.value = false;
         timer.cancel();
       } else {
-        setState(() {
-          _start--;
-        });
+        _start.value--;
       }
     });
   }
@@ -89,12 +67,12 @@ class _OtpScreenState extends State<OtpScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                            onPressed: () => Get.back(),
-                            icon: const Icon(Icons.arrow_back,
-                                color: Colors.white)),
+                          onPressed: () => Get.back(),
+                          icon:
+                              const Icon(Icons.arrow_back, color: Colors.white),
+                        ),
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          // width: context.width * 0.3,
                           decoration: BoxDecoration(
                             color: MyColorHelper.verdigris.withOpacity(0.7),
                             borderRadius: const BorderRadius.only(
@@ -103,15 +81,16 @@ class _OtpScreenState extends State<OtpScreen> {
                             ),
                           ),
                           child: const Center(
-                              child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 6.0),
-                            child: CustomTextWidget(
-                              text: 'Verification',
-                              fontSize: 20.0,
-                              textColor: Colors.white,
-                              fontFamily: 'poppins',
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 6.0),
+                              child: CustomTextWidget(
+                                text: 'Verification',
+                                fontSize: 20.0,
+                                textColor: Colors.white,
+                                fontFamily: 'poppins',
+                              ),
                             ),
-                          )),
+                          ),
                         ),
                       ],
                     ),
@@ -121,7 +100,6 @@ class _OtpScreenState extends State<OtpScreen> {
                         fit: BoxFit.fill, height: 120),
                   ),
                   SizedBox(height: context.height * 0.02),
-                  //PinPut
                   CustomTextWidget(
                     text:
                         'Enter the 6-digit code sent to your email ${widget.email}',
@@ -130,10 +108,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     textColor: Colors.white,
                     textAlign: TextAlign.center,
                     fontWeight: FontWeight.w400,
-                    fontFamily: 'poppins',
                   ),
-                  //generate textfields
-
                   SizedBox(height: context.height * 0.05),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -141,28 +116,45 @@ class _OtpScreenState extends State<OtpScreen> {
                       length: 6,
                       keyboardType: TextInputType.number,
                       controller: controller.otpController,
-                      validator: (s) {
-                        return null;
-                      },
+                      validator: (s) => null,
                       errorTextStyle: const TextStyle(
-                        fontFamily: 'Montserrat',
+                        fontFamily: 'Poppins',
                         fontSize: 12,
                         color: Colors.redAccent,
                       ),
                       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                       showCursor: true,
                       closeKeyboardWhenCompleted: true,
-                      defaultPinTheme: defaultPinTheme,
-                      focusedPinTheme: defaultPinTheme.copyWith(
-                        height: 68,
-                        width: 64,
-                        decoration: defaultPinTheme.decoration!.copyWith(
-                          border: Border.all(color: borderColor),
+                      defaultPinTheme: PinTheme(
+                        width: 56,
+                        height: 60,
+                        textStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color.fromRGBO(30, 60, 87, 1),
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(222, 231, 240, .57),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.transparent),
                         ),
                       ),
-                      errorPinTheme: defaultPinTheme.copyWith(
+                      focusedPinTheme: PinTheme(
+                        width: 64,
+                        height: 68,
                         decoration: BoxDecoration(
-                          color: errorColor,
+                          color: const Color.fromRGBO(222, 231, 240, .57),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: const Color.fromRGBO(114, 178, 238, 1)),
+                        ),
+                      ),
+                      errorPinTheme: PinTheme(
+                        width: 56,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(255, 234, 238, 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
@@ -170,54 +162,53 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                   ),
                   SizedBox(height: context.height * 0.02),
-                  _timerInProgress
-                      ? CustomTextWidget(
-                          text: 'Resend OTP in $_start seconds',
-                          textColor: Colors.white,
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Column(
-                            children: [
-                              const CustomTextWidget(
-                                text: 'Didn\'t receive the code?',
-                                textColor: Colors.white54,
-                                fontSize: 14,
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _timerInProgress = true;
-                                    _start = 60;
-                                  });
-                                  controller.otpController.clear();
-                                  controller.sendOtp();
-                                  startTimer();
-                                },
-                                child: const CustomTextWidget(
-                                  text: 'Resend OTP',
-                                  fontSize: 16,
-                                  textColor: Colors.white70,
-                                  fontWeight: FontWeight.w500,
+                  Obx(() {
+                    return _timerInProgress.value
+                        ? CustomTextWidget(
+                            text: 'Resend OTP in ${_start.value} seconds',
+                            textColor: Colors.white,
+                          )
+                        : Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Column(
+                              children: [
+                                const CustomTextWidget(
+                                  text: 'Didn\'t receive the code?',
+                                  textColor: Colors.white54,
+                                  fontSize: 14,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
+                                TextButton(
+                                  onPressed: () {
+                                    _timerInProgress.value = true;
+                                    _start.value = 60;
+                                    controller.otpController.clear();
+                                    controller.sendOtp();
+                                    startTimer();
+                                  },
+                                  child: const CustomTextWidget(
+                                    text: 'Resend OTP',
+                                    fontSize: 16,
+                                    textColor: Colors.white70,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                  }),
                   SizedBox(height: context.height * 0.03),
-                  //Button
                   Obx(
                     () => CustomAuthButton(
                       isLoading: controller.isLoading.value,
                       text: 'Verify OTP',
                       onTap: () {
                         if (controller.otpController.text.isEmpty) {
-                          ToastMessage.showToastMessage(
-                              message: 'Please Enter OTP',
-                              backgroundColor: Colors.red);
+                          MySnackBarsHelper.showError(
+                              'Please Enter OTP and try again.',
+                              'Please Enter OTP.',
+                              Icons.error);
                         } else {
-                          debugPrint(
-                              widget.verifyOtpForForgetPassword.toString());
                           widget.verifyOtpForForgetPassword
                               ? controller.verifyOtp()
                               : controller.verifyEmail();
